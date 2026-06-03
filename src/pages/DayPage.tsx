@@ -5,6 +5,7 @@ import {
   TOTAL_DAYS,
   getPracticeById,
 } from "../data/practices";
+import { PixelBuddy } from "../components/PixelBuddy";
 import { usePracticeProgress } from "../hooks/usePracticeProgress";
 
 const sectionLabels: Record<PracticeSectionKey, string> = {
@@ -13,6 +14,14 @@ const sectionLabels: Record<PracticeSectionKey, string> = {
   cognitive: "认知练习",
   meditation: "冥想引导",
   question: "今日问句",
+};
+
+const sectionIcons: Record<PracticeSectionKey, string> = {
+  letter: "✉",
+  mirror: "🪞",
+  cognitive: "🧩",
+  meditation: "🌙",
+  question: "❓",
 };
 
 const sectionKeys: PracticeSectionKey[] = [
@@ -30,6 +39,7 @@ export default function DayPage() {
   const dayId = Number(params.id);
 
   const {
+    progress,
     isDayUnlocked,
     isDayCompleted,
     getReply,
@@ -60,14 +70,17 @@ export default function DayPage() {
     return (
       <main className="day-page day-page--locked">
         <section className="locked-notice">
-          <p className="eyebrow">LOCKED</p>
-          <h1>Day {practice.id} 还没有解锁</h1>
+          <div className="locked-notice__buddy">
+            <PixelBuddy mood="sleepy" size={88} />
+          </div>
+          <p className="eyebrow">🔒 STAGE LOCKED</p>
+          <h1>Day {practice.id} 关卡未解锁</h1>
           <p>
-            请先完成 Day {practice.id - 1}。练习不是为了赶进度，而是为了让你慢慢靠近自己。
+            请先通关 Day {practice.id - 1}。冒险不是为了赶进度，而是为了让你慢慢靠近自己。
           </p>
 
-          <Link to="/practice" className="primary-button">
-            返回 21 天练习
+          <Link to="/practice" className="btn btn--gold">
+            ← 返回冒险地图
           </Link>
         </section>
       </main>
@@ -97,89 +110,100 @@ export default function DayPage() {
 
   return (
     <main className="day-page">
-      <nav className="day-nav">
-        <Link to="/practice">← 返回练习列表</Link>
+      <div className="screen">
+        <nav className="day-nav">
+          <Link to="/practice">← 冒险地图</Link>
 
-        <div className="day-nav__actions">
-          {previousDay && (
-            <Link to={`/practice/day/${previousDay}`}>上一日</Link>
-          )}
+          <div className="day-nav__actions">
+            {previousDay && (
+              <Link to={`/practice/day/${previousDay}`}>‹ 上一关</Link>
+            )}
 
-          {nextDay && isDayUnlocked(nextDay) && (
-            <Link to={`/practice/day/${nextDay}`}>下一日</Link>
-          )}
-        </div>
-      </nav>
+            {nextDay && isDayUnlocked(nextDay) && (
+              <Link to={`/practice/day/${nextDay}`}>下一关 ›</Link>
+            )}
+          </div>
+        </nav>
 
-      <section className="day-hero">
-        <p className="eyebrow">
-          DAY {String(practice.id).padStart(2, "0")} · WEEK {practice.week} ·{" "}
-          {practice.minutes} MIN · {practice.id} / {TOTAL_DAYS}
-        </p>
+        <section className="day-hero">
+          <div className="day-hero__buddy">
+            <PixelBuddy level={progress.completedDays.length} size={72} />
+          </div>
 
-        <h1>{practice.title}</h1>
+          <div className="day-hero__text">
+            <p className="eyebrow">
+              STAGE {String(practice.id).padStart(2, "0")} · WORLD {practice.week} ·{" "}
+              {practice.minutes} MIN · {practice.id} / {TOTAL_DAYS}
+            </p>
 
-        {practice.subtitle && <p>{practice.subtitle}</p>}
+            <h1>{practice.title}</h1>
 
-        {completed && <span className="completed-badge">已完成</span>}
-      </section>
+            {practice.subtitle && <p>{practice.subtitle}</p>}
 
-      <section className="practice-tabs" aria-label="练习内容切换">
-        {sectionKeys.map((key) => (
+            {completed && <span className="completed-badge">★ 已通关</span>}
+          </div>
+        </section>
+
+        <section className="practice-tabs" aria-label="关卡任务切换">
+          {sectionKeys.map((key) => (
+            <button
+              key={key}
+              type="button"
+              className={activeSection === key ? "active" : ""}
+              onClick={() => setActiveSection(key)}
+            >
+              <span aria-hidden="true">{sectionIcons[key]}</span>{" "}
+              {sectionLabels[key]}
+            </button>
+          ))}
+        </section>
+
+        <section className="practice-content">
+          <h2>
+            {sectionIcons[activeSection]} {sectionLabels[activeSection]}
+          </h2>
+
+          {practice.sections[activeSection].map((paragraph, index) => (
+            <p key={index}>{paragraph}</p>
+          ))}
+        </section>
+
+        <section className="reply-box">
+          <div className="reply-box__header">
+            <p className="eyebrow">📝 冒险笔记</p>
+            <span>自动存档</span>
+          </div>
+
+          <label htmlFor="practice-reply">
+            你想对今天的练习说什么？
+          </label>
+
+          <textarea
+            id="practice-reply"
+            value={reply}
+            onChange={(event) => handleReplyChange(event.target.value)}
+            placeholder="写给自己，不需要完美。"
+            rows={6}
+          />
+        </section>
+
+        <section className="day-actions">
           <button
-            key={key}
             type="button"
-            className={activeSection === key ? "active" : ""}
-            onClick={() => setActiveSection(key)}
+            className="btn btn--gold btn--block"
+            onClick={handleComplete}
           >
-            {sectionLabels[key]}
+            {completed ? "★ 已通关 · 进入下一关" : "⚔ 完成关卡 · 领取 +1 EXP"}
           </button>
-        ))}
-      </section>
+        </section>
 
-      <section className="practice-content">
-        <h2>{sectionLabels[activeSection]}</h2>
-
-        {practice.sections[activeSection].map((paragraph, index) => (
-          <p key={index}>{paragraph}</p>
-        ))}
-      </section>
-
-      <section className="reply-box">
-        <div className="reply-box__header">
-          <p className="eyebrow">REPLY</p>
-          <span>SAVED</span>
-        </div>
-
-        <label htmlFor="practice-reply">
-          你想对今天的练习说什么？
-        </label>
-
-        <textarea
-          id="practice-reply"
-          value={reply}
-          onChange={(event) => handleReplyChange(event.target.value)}
-          placeholder="写给自己，不需要完美。"
-          rows={6}
-        />
-      </section>
-
-      <section className="day-actions">
-        <button
-          type="button"
-          className="primary-button"
-          onClick={handleComplete}
-        >
-          {completed ? "已完成，进入下一天" : "完成今天的练习"}
-        </button>
-      </section>
-
-      <section className="safety-note">
-        <p>
-          本练习仅用于自我觉察与情绪支持，不能替代专业心理咨询或医疗建议。
-          如果你正在经历强烈痛苦、自伤想法或长期失眠，请及时联系专业人士或身边可信任的人。
-        </p>
-      </section>
+        <section className="safety-note">
+          <p>
+            本练习仅用于自我觉察与情绪支持，不能替代专业心理咨询或医疗建议。
+            如果你正在经历强烈痛苦、自伤想法或长期失眠，请及时联系专业人士或身边可信任的人。
+          </p>
+        </section>
+      </div>
     </main>
   );
 }
