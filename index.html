@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0c1532" />
+    <meta name="description" content="流光互动音乐空间——在手势中唤醒画面与声响的实时生成体验。" />
+    <title>流光互动音乐空间</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <canvas id="particleCanvas" aria-hidden="true"></canvas>
+
+    <header class="site-nav" aria-label="站点导航">
+      <a class="brand" href="#top" aria-label="流光互动音乐空间">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>流光</span>
+      </a>
+      <nav>
+        <a href="#studio">Studio</a>
+        <a href="#scenes">Scenes</a>
+      </nav>
+    </header>
+
+    <main class="stage">
+      <section class="hero" id="top" aria-label="流光互动音乐空间">
+        <div class="hero-copy">
+          <p class="eyebrow">LIVE GENERATIVE EXPERIENCE</p>
+          <h1>流光互动音乐空间</h1>
+          <p class="lede">今晚，让画面和声响在你的手势里醒来。</p>
+        </div>
+
+        <div class="status-strip" aria-live="polite">
+          <span id="moodChip">Aurora / C Major</span>
+          <span id="tempoChip">92 BPM</span>
+          <span id="energyChip">Energy 62%</span>
+        </div>
+      </section>
+
+      <section class="control-shell" id="studio" aria-label="互动控制台">
+        <div class="panel palette-panel">
+          <div class="panel-head">
+            <h2>背景</h2>
+            <span id="paletteName">Aurora</span>
+          </div>
+          <div class="swatch-grid" id="paletteButtons" aria-label="背景色彩"></div>
+          <label class="field">
+            <span>流动速度</span>
+            <input id="flowSpeed" type="range" min="20" max="140" value="70" />
+          </label>
+          <label class="field">
+            <span>色彩强度</span>
+            <input id="colorPower" type="range" min="30" max="100" value="76" />
+          </label>
+        </div>
+
+        <div class="panel music-panel">
+          <div class="panel-head">
+            <h2>AI 音乐</h2>
+            <button class="icon-button" id="randomPrompt" type="button" aria-label="随机灵感">↻</button>
+          </div>
+
+          <label class="prompt-field">
+            <span>氛围提示</span>
+            <input id="musicPrompt" type="text" value="雨后城市，清亮，轻快" maxlength="48" />
+          </label>
+
+          <label class="toggle-field">
+            <input id="autoMusic" type="checkbox" checked />
+            <span>自动续写</span>
+          </label>
+
+          <div class="button-row">
+            <button class="primary-action" id="playToggle" type="button" aria-pressed="false">
+              <span id="playIcon" aria-hidden="true">▶</span>
+              <span id="playLabel">播放</span>
+            </button>
+            <button class="secondary-action" id="generateMusic" type="button">生成新段落</button>
+          </div>
+
+          <div class="music-visualizer" id="visualizer" aria-hidden="true"></div>
+          <div class="sequence-grid" id="sequenceGrid" aria-hidden="true"></div>
+
+          <div class="music-grid">
+            <label class="field">
+              <span>节奏</span>
+              <input id="tempo" type="range" min="62" max="148" value="92" />
+            </label>
+            <label class="field">
+              <span>能量</span>
+              <input id="energy" type="range" min="20" max="100" value="62" />
+            </label>
+          </div>
+        </div>
+
+        <div class="panel particle-panel">
+          <div class="panel-head">
+            <h2>粒子</h2>
+            <button class="icon-button" id="burstParticles" type="button" aria-label="粒子爆发">✦</button>
+          </div>
+          <div class="mode-switch" role="group" aria-label="粒子互动模式">
+            <button class="mode-button active" data-mode="orbit" type="button" aria-pressed="true">环绕</button>
+            <button class="mode-button" data-mode="repel" type="button" aria-pressed="false">推开</button>
+            <button class="mode-button" data-mode="draw" type="button" aria-pressed="false">绘制</button>
+          </div>
+          <label class="field">
+            <span>密度</span>
+            <input id="particleDensity" type="range" min="40" max="180" value="112" />
+          </label>
+          <label class="field">
+            <span>灵敏度</span>
+            <input id="particlePull" type="range" min="20" max="130" value="84" />
+          </label>
+        </div>
+      </section>
+
+      <section class="scene-strip" id="scenes" aria-label="场景预设">
+        <button class="scene-card active" type="button" data-scene="night" aria-pressed="true">
+          <span>霓虹夜游</span>
+          <small>Neon Drift</small>
+        </button>
+        <button class="scene-card" type="button" data-scene="rain" aria-pressed="false">
+          <span>雨后城市</span>
+          <small>After Rain</small>
+        </button>
+        <button class="scene-card" type="button" data-scene="solar" aria-pressed="false">
+          <span>日光花园</span>
+          <small>Solar Bloom</small>
+        </button>
+        <button class="scene-card" type="button" data-scene="glass" aria-pressed="false">
+          <span>玻璃森林</span>
+          <small>Glass Forest</small>
+        </button>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
