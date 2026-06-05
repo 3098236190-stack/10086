@@ -35,8 +35,10 @@
         min-height: 100%;
         color: var(--ink);
         font-family:
-          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-          "Microsoft YaHei", sans-serif;
+          "SF Pro Text", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Inter,
+          "PingFang SC", "Microsoft YaHei", sans-serif;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
         background: radial-gradient(120% 120% at 50% 0%, #0b1430, #060a18 70%);
         overflow-x: hidden;
       }
@@ -176,10 +178,14 @@
 
       h1 {
         margin: 6px 0 0;
-        font-size: clamp(3rem, 9vw, 6rem);
-        line-height: 0.94;
-        letter-spacing: -0.01em;
-        background: linear-gradient(178deg, #ffffff 30%, rgba(255, 255, 255, 0.78));
+        font-family:
+          "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont,
+          "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
+        font-size: clamp(3.2rem, 9.5vw, 6.4rem);
+        font-weight: 600;
+        line-height: 0.98;
+        letter-spacing: -0.03em;
+        background: linear-gradient(180deg, #ffffff, rgba(255, 255, 255, 0.86));
         -webkit-background-clip: text;
         background-clip: text;
         color: transparent;
@@ -188,10 +194,10 @@
 
       h1 small {
         display: block;
-        margin-top: 8px;
+        margin-top: 10px;
         font-size: clamp(1rem, 2.2vw, 1.5rem);
-        font-weight: 800;
-        letter-spacing: 0.02em;
+        font-weight: 500;
+        letter-spacing: -0.01em;
         -webkit-text-fill-color: rgba(255, 255, 255, 0.62);
         color: rgba(255, 255, 255, 0.62);
       }
@@ -527,8 +533,8 @@
           <article class="feature">
             <span class="tag">02 · 音乐 / MUSIC</span>
             <h3>AI 音乐<small>Generative Music</small></h3>
-            <p>六种曲风——流行 / 摇滚 / 民谣 / 轻音乐 / Lo-Fi / 治愈，一句氛围提示即驱动旋律、和声与节奏；可播放、自动续写。还能叠加白噪音 / 雨声 / 风铃 / 键盘声景，让音乐陪伴不同的人与阶段。</p>
-            <p class="en">Six styles — Pop, Rock, Folk, Ambient, Lo-Fi and Healing — driven by a mood prompt, with play & auto-continue. Layer in white noise, rain, wind chimes or keyboard sounds: music for every person and moment.</p>
+            <p>六种曲风——流行 / 摇滚 / 民谣 / 轻音乐 / Lo-Fi / 治愈，一句氛围提示即驱动旋律、和声与节奏；可播放、自动续写。还能叠加白噪音 / 雨声 / 风铃 / 键盘声景，甚至录下你自己的声音循环融入，让音乐陪伴不同的人与阶段。</p>
+            <p class="en">Six styles — Pop, Rock, Folk, Ambient, Lo-Fi and Healing — driven by a mood prompt, with play & auto-continue. Layer white noise, rain, wind chimes or keyboard sounds — or record your own voice into the loop: music for every person and moment.</p>
           </article>
 
           <article class="feature">
