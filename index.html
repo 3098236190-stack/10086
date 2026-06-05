@@ -224,7 +224,7 @@
         margin: 0 auto;
         padding: 94px 0 36px;
         display: grid;
-        grid-template-rows: minmax(280px, 40vh) auto auto auto;
+        grid-template-rows: minmax(280px, 40vh) auto auto;
         gap: 20px;
       }
 
@@ -653,85 +653,6 @@
           rgba(0, 0, 0, 0.22);
       }
 
-      /* —— 原理速览 / How it works —— */
-      .knowledge {
-        display: grid;
-        gap: 14px;
-      }
-
-      .know-head {
-        display: grid;
-        gap: 10px;
-      }
-
-      .know-head h2 {
-        font-size: clamp(1.5rem, 3.4vw, 2.2rem);
-        font-weight: 900;
-        line-height: 1.1;
-      }
-
-      .muted-copy {
-        color: var(--muted);
-        max-width: 72ch;
-        line-height: 1.6;
-        font-size: 0.95rem;
-      }
-
-      .know-grid {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 14px;
-      }
-
-      .know-card {
-        display: grid;
-        align-content: start;
-        gap: 8px;
-      }
-
-      .know-step {
-        font-size: 0.72rem;
-        font-weight: 800;
-        letter-spacing: 0.1em;
-        color: var(--accent);
-      }
-
-      .know-card h3 {
-        margin: 0;
-        font-size: 1rem;
-        font-weight: 850;
-      }
-
-      .know-card p {
-        color: rgba(255, 255, 255, 0.8);
-        font-size: 0.86rem;
-        line-height: 1.55;
-      }
-
-      .know-card .impl {
-        margin-top: 4px;
-        padding-top: 9px;
-        border-top: 1px solid var(--line);
-        color: rgba(255, 255, 255, 0.62);
-        font-size: 0.8rem;
-        line-height: 1.5;
-      }
-
-      .know-card .impl b {
-        color: rgba(255, 255, 255, 0.82);
-        font-weight: 800;
-      }
-
-      .credit {
-        color: rgba(255, 255, 255, 0.5);
-        font-size: 0.74rem;
-        line-height: 1.7;
-      }
-
-      .credit a {
-        color: rgba(255, 255, 255, 0.74);
-      }
-
       @keyframes drift {
         from {
           transform: rotate(0deg) scale(1.06);
@@ -770,7 +691,7 @@
 
         .stage {
           width: min(100% - 22px, 680px);
-          grid-template-rows: auto auto auto auto;
+          grid-template-rows: auto auto auto;
           padding-top: 88px;
         }
 
@@ -796,10 +717,6 @@
         }
 
         .scene-strip {
-          grid-template-columns: 1fr 1fr;
-        }
-
-        .know-grid {
           grid-template-columns: 1fr 1fr;
         }
       }
@@ -841,10 +758,6 @@
         .scene-strip {
           grid-template-columns: 1fr;
         }
-
-        .know-grid {
-          grid-template-columns: 1fr;
-        }
       }
 
       @media (prefers-reduced-motion: reduce) {
@@ -875,7 +788,7 @@
       <nav>
         <a href="#studio">Studio</a>
         <a href="#scenes">Scenes</a>
-        <a href="#about">原理</a>
+        <a href="./about.html">关于</a>
       </nav>
     </header>
 
@@ -990,56 +903,6 @@
         </button>
       </section>
 
-      <section class="knowledge" id="about" aria-label="原理速览">
-        <div class="panel know-head">
-          <p class="eyebrow">HOW IT WORKS · 原理速览</p>
-          <h2>从一句提示词，到一段声音</h2>
-          <p class="muted-copy">
-            像 Suno、Udio 这类 AI 音乐系统，本质是一条「文本条件 → 神经网络生成音频 →
-            解码成波形」的流水线：用大语言模型理解提示词与歌词，用神经音频编解码器把声音压成离散
-            token，再由 Transformer（自回归）配合扩散模型预测并细化这些 token，最终还原成带人声的完整音频。
-            本页是浏览器内的实时<strong>程序化合成 demo</strong>，借用了同一套「提示词驱动生成」的思路——下面是四个阶段，以及本页的对应实现。
-          </p>
-        </div>
-
-        <div class="know-grid">
-          <article class="panel know-card">
-            <span class="know-step">01 · 文本编码</span>
-            <h3>提示词 → 向量</h3>
-            <p>用 T5 等文本编码器，把自然语言描述与歌词编成「音乐描述向量」，作为生成的条件信号。</p>
-            <p class="impl"><b>本页：</b>analyzePrompt 解析情绪词（清亮/柔和/坚定/空灵…），换算成节奏、能量、明亮度与调式偏置。</p>
-          </article>
-
-          <article class="panel know-card">
-            <span class="know-step">02 · 音频离散化</span>
-            <h3>波形 → token</h3>
-            <p>EnCodec、Descript Audio Codec 等神经编解码器把连续波形压成可逆的离散 token，让模型能像处理文字一样处理声音。</p>
-            <p class="impl"><b>本页：</b>跳过 codec，直接用 Web Audio 振荡器即时合成音色。</p>
-          </article>
-
-          <article class="panel know-card">
-            <span class="know-step">03 · 生成模型</span>
-            <h3>Transformer + 扩散</h3>
-            <p>自回归 Transformer 在文本条件下逐个预测音频 token，扩散模型再做高保真细化，保证连贯与音质。</p>
-            <p class="impl"><b>本页：</b>确定性的 16 步序列器 + 调式/和弦规则，同一(提示词+种子)=同一段音乐。</p>
-          </article>
-
-          <article class="panel know-card">
-            <span class="know-step">04 · 解码成声</span>
-            <h3>token → 波形</h3>
-            <p>编解码器的解码端把 token 还原成完整波形（人声+伴奏），并支持多候选与「续写/扩展」。</p>
-            <p class="impl"><b>本页：</b>前瞻调度器实时播放，「自动续写」每 32 步重组一次乐段。</p>
-          </article>
-        </div>
-
-        <p class="credit">
-          原理参考：
-          <a href="https://musicgeneratorai.io/posts/how-does-suno-ai-create-music" target="_blank" rel="noopener">How Suno AI Creates Music (musicgeneratorai.io)</a>、
-          <a href="https://vi-control.net/community/threads/how-exactly-do-suno-ai-and-udio-com-work-technical-view.151041/" target="_blank" rel="noopener">How Suno &amp; Udio work — technical view (VI-CONTROL)</a>、
-          <a href="https://arxiv.org/pdf/2404.10301" target="_blank" rel="noopener">Long-form music generation with latent diffusion (arXiv:2404.10301)</a>。
-          本页为独立的程序化合成演示，与上述产品无从属关系。
-        </p>
-      </section>
     </main>
 
     <script>

@@ -1,0 +1,633 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0c1532" />
+    <meta name="description" content="关于「流光互动音乐空间」——一个会呼吸的浏览器内实时生成式视听体验。About Liúguāng: a real-time generative audio-visual space in your browser." />
+    <title>关于 · 流光互动音乐空间 / About · Liúguāng</title>
+    <style>
+      :root {
+        --bg-a: #0c1532;
+        --bg-b: #146c88;
+        --bg-c: #f4b35e;
+        --bg-d: #f44d76;
+        --accent: #8bf0c8;
+        --ink: #f8fbff;
+        --muted: rgba(248, 251, 255, 0.72);
+        --soft: rgba(248, 251, 255, 0.55);
+        --panel: rgba(9, 14, 28, 0.56);
+        --line: rgba(255, 255, 255, 0.16);
+        --shadow: 0 22px 70px rgba(0, 0, 0, 0.34);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 84px;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100%;
+        color: var(--ink);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          "Microsoft YaHei", sans-serif;
+        background: radial-gradient(120% 120% at 50% 0%, #0b1430, #060a18 70%);
+        overflow-x: hidden;
+      }
+
+      .backdrop {
+        position: fixed;
+        inset: -55%;
+        z-index: -2;
+        background: conic-gradient(from 130deg, var(--bg-a), var(--bg-b), var(--bg-c), var(--bg-d), var(--bg-a));
+        filter: blur(56px) saturate(150%);
+        opacity: 0.94;
+        animation: drift 64s linear infinite;
+        will-change: transform;
+      }
+
+      .aura {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 70vmax;
+        height: 70vmax;
+        margin: -35vmax 0 0 -35vmax;
+        z-index: -1;
+        border-radius: 50%;
+        background: radial-gradient(circle at center, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.05) 40%, transparent 68%);
+        mix-blend-mode: soft-light;
+        pointer-events: none;
+        transform: translate3d(50vw, 40vh, 0);
+        will-change: transform;
+      }
+
+      body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background: linear-gradient(to bottom, rgba(2, 7, 21, 0.06), rgba(2, 7, 21, 0.26) 58%, rgba(2, 7, 21, 0.7));
+        mix-blend-mode: soft-light;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .site-nav {
+        position: fixed;
+        top: 12px;
+        left: 50%;
+        z-index: 4;
+        width: min(1080px, calc(100% - 32px));
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 6px 8px 6px 12px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 8px;
+        background: rgba(6, 9, 18, 0.32);
+        backdrop-filter: blur(22px) saturate(140%);
+        box-shadow: 0 12px 38px rgba(0, 0, 0, 0.18);
+        transform: translateX(-50%);
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.98rem;
+        font-weight: 900;
+        text-decoration: none;
+      }
+
+      .brand-mark {
+        width: 23px;
+        height: 23px;
+        border: 1px solid rgba(255, 255, 255, 0.46);
+        border-radius: 7px;
+        background:
+          linear-gradient(135deg, rgba(255, 255, 255, 0.9), transparent 44%),
+          linear-gradient(135deg, var(--accent), rgba(255, 255, 255, 0.1));
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
+      }
+
+      .nav-link {
+        min-height: 36px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 0 14px;
+        border-radius: 7px;
+        text-decoration: none;
+        color: #082116;
+        background: linear-gradient(135deg, #ffffff, var(--accent));
+        border: 1px solid rgba(255, 255, 255, 0.62);
+        font-size: 0.82rem;
+        font-weight: 850;
+        transition: transform 180ms ease;
+      }
+
+      .nav-link:hover {
+        transform: translateY(-1px);
+      }
+
+      .wrap {
+        position: relative;
+        z-index: 1;
+        width: min(1080px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 108px 0 60px;
+        display: grid;
+        gap: 22px;
+      }
+
+      .eyebrow {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.78);
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+      }
+
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 22px;
+        background: var(--panel);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(24px) saturate(130%);
+      }
+
+      .hero {
+        display: grid;
+        gap: 16px;
+        padding: 30px 26px;
+      }
+
+      h1 {
+        margin: 6px 0 0;
+        font-size: clamp(3rem, 9vw, 6rem);
+        line-height: 0.94;
+        letter-spacing: -0.01em;
+        background: linear-gradient(178deg, #ffffff 30%, rgba(255, 255, 255, 0.78));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        filter: drop-shadow(0 16px 40px rgba(0, 0, 0, 0.42));
+      }
+
+      h1 small {
+        display: block;
+        margin-top: 8px;
+        font-size: clamp(1rem, 2.2vw, 1.5rem);
+        font-weight: 800;
+        letter-spacing: 0.02em;
+        -webkit-text-fill-color: rgba(255, 255, 255, 0.62);
+        color: rgba(255, 255, 255, 0.62);
+      }
+
+      .tagline {
+        margin: 0;
+        font-size: clamp(1.1rem, 2.4vw, 1.5rem);
+        font-weight: 800;
+        line-height: 1.35;
+      }
+
+      .tagline .en {
+        display: block;
+        margin-top: 4px;
+        font-size: 0.92rem;
+        font-weight: 600;
+        color: var(--soft);
+        letter-spacing: 0.01em;
+      }
+
+      .lede {
+        margin: 0;
+        max-width: 64ch;
+        color: var(--muted);
+        font-size: 1rem;
+        line-height: 1.65;
+      }
+
+      .lede .en {
+        display: block;
+        margin-top: 8px;
+        color: var(--soft);
+        font-size: 0.9rem;
+        line-height: 1.6;
+      }
+
+      .cta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 6px;
+      }
+
+      .btn {
+        min-height: 46px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 22px;
+        border-radius: 9px;
+        text-decoration: none;
+        font-weight: 850;
+        transition:
+          transform 180ms ease,
+          border-color 180ms ease,
+          background-color 180ms ease;
+      }
+
+      .btn.primary {
+        color: #082116;
+        background: linear-gradient(135deg, #ffffff, var(--accent));
+        border: 1px solid rgba(255, 255, 255, 0.62);
+      }
+
+      .btn.ghost {
+        color: #ffffff;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .btn:hover {
+        transform: translateY(-1px);
+      }
+
+      .btn.ghost:hover {
+        border-color: rgba(255, 255, 255, 0.4);
+        background: rgba(255, 255, 255, 0.14);
+      }
+
+      .section-head {
+        display: grid;
+        gap: 6px;
+      }
+
+      .section-head h2 {
+        margin: 0;
+        font-size: clamp(1.4rem, 3vw, 2rem);
+        font-weight: 900;
+      }
+
+      .section-head h2 small {
+        display: block;
+        margin-top: 2px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        color: var(--soft);
+      }
+
+      .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 14px;
+      }
+
+      .feature {
+        display: grid;
+        gap: 8px;
+        align-content: start;
+      }
+
+      .feature .tag {
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        color: var(--accent);
+      }
+
+      .feature h3 {
+        margin: 0;
+        font-size: 1.05rem;
+        font-weight: 850;
+      }
+
+      .feature h3 small {
+        display: block;
+        margin-top: 2px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        color: var(--soft);
+      }
+
+      .feature p {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.82);
+        font-size: 0.9rem;
+        line-height: 1.55;
+      }
+
+      .feature p.en {
+        margin-top: 2px;
+        color: var(--soft);
+        font-size: 0.82rem;
+        line-height: 1.5;
+      }
+
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 14px;
+        counter-reset: step;
+      }
+
+      .step {
+        display: grid;
+        gap: 8px;
+        align-content: start;
+      }
+
+      .step .num {
+        width: 34px;
+        height: 34px;
+        display: inline-grid;
+        place-items: center;
+        border-radius: 9px;
+        background: linear-gradient(135deg, #ffffff, var(--accent));
+        color: #082116;
+        font-weight: 900;
+      }
+
+      .step h3 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 850;
+      }
+
+      .step h3 small {
+        display: block;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--soft);
+      }
+
+      .step p {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.88rem;
+        line-height: 1.5;
+      }
+
+      .step p.en {
+        color: var(--soft);
+        font-size: 0.8rem;
+      }
+
+      .under {
+        display: grid;
+        gap: 10px;
+      }
+
+      .under p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.92rem;
+        line-height: 1.6;
+      }
+
+      .under .en {
+        color: var(--soft);
+        font-size: 0.85rem;
+      }
+
+      .refs {
+        margin: 4px 0 0;
+        color: var(--soft);
+        font-size: 0.76rem;
+        line-height: 1.7;
+      }
+
+      .refs a {
+        color: rgba(255, 255, 255, 0.78);
+      }
+
+      .foot-cta {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      .foot-cta .copy {
+        font-size: 1.05rem;
+        font-weight: 850;
+      }
+
+      .foot-cta .copy small {
+        display: block;
+        margin-top: 4px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--soft);
+      }
+
+      footer {
+        margin-top: 8px;
+        color: var(--soft);
+        font-size: 0.78rem;
+        line-height: 1.6;
+        text-align: center;
+      }
+
+      @keyframes drift {
+        from {
+          transform: rotate(0deg) scale(1.06);
+        }
+        to {
+          transform: rotate(360deg) scale(1.06);
+        }
+      }
+
+      @media (max-width: 760px) {
+        .wrap {
+          width: calc(100% - 22px);
+          padding-top: 96px;
+        }
+
+        .feature-grid,
+        .steps {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          scroll-behavior: auto !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="backdrop" aria-hidden="true"></div>
+    <div class="aura" id="aura" aria-hidden="true"></div>
+
+    <header class="site-nav" aria-label="站点导航">
+      <a class="brand" href="./index.html" aria-label="流光互动音乐空间">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>流光 / Liúguāng</span>
+      </a>
+      <a class="nav-link" href="./index.html#studio">进入体验 · Enter ›</a>
+    </header>
+
+    <main class="wrap">
+      <section class="panel hero" aria-label="关于产品 About">
+        <p class="eyebrow">ABOUT THE PRODUCT · 关于产品</p>
+        <h1>流光<small>Liúguāng · Interactive Music Space</small></h1>
+        <p class="tagline">
+          一个会呼吸的互动音乐空间
+          <span class="en">An interactive music space that breathes.</span>
+        </p>
+        <p class="lede">
+          「流光」是一个浏览器里的实时生成式视听玩具：输入一句氛围提示，它就把背景、AI 音乐与粒子编织成一个随手势流动的现场——无需安装、打开即玩，所有声音与画面都在你的设备上即时生成。
+          <span class="en">
+            Liúguāng is a real-time generative audio-visual toy that lives in your browser. Type a mood, and it weaves background, AI music and particles into a live scene that flows with your gestures — no install, everything generated on-device.
+          </span>
+        </p>
+        <div class="cta-row">
+          <a class="btn primary" href="./index.html#studio">进入体验 · Enter the experience ›</a>
+          <a class="btn ghost" href="#features">了解功能 · See features</a>
+        </div>
+      </section>
+
+      <section class="panel" id="features" aria-label="功能亮点 Features">
+        <div class="section-head">
+          <p class="eyebrow">FEATURES</p>
+          <h2>四个可玩的维度<small>Four dimensions to play with</small></h2>
+        </div>
+        <div class="feature-grid">
+          <article class="feature">
+            <span class="tag">01 · 背景 / BACKGROUND</span>
+            <h3>流动背景<small>Living Background</small></h3>
+            <p>GPU 合成的流光色场随指针漂移；5 套色板，流速与色彩强度可调。</p>
+            <p class="en">A GPU-composited colour field that drifts with your pointer — 5 palettes, adjustable flow and intensity.</p>
+          </article>
+
+          <article class="feature">
+            <span class="tag">02 · 音乐 / MUSIC</span>
+            <h3>AI 音乐<small>Generative Music</small></h3>
+            <p>一句氛围提示驱动旋律、和声与节奏；可播放、自动续写、随时生成新段落。</p>
+            <p class="en">One mood prompt drives melody, harmony and rhythm — play, auto-continue, or regenerate anytime.</p>
+          </article>
+
+          <article class="feature">
+            <span class="tag">03 · 粒子 / PARTICLES</span>
+            <h3>互动粒子<small>Interactive Particles</small></h3>
+            <p>环绕 / 推开 / 绘制三种手势模式，密度与灵敏度可调，点击即爆发。</p>
+            <p class="en">Orbit, repel and draw gestures with tunable density and sensitivity; click to burst.</p>
+          </article>
+
+          <article class="feature">
+            <span class="tag">04 · 场景 / SCENES</span>
+            <h3>场景预设<small>Scene Presets</small></h3>
+            <p>霓虹夜游、雨后城市、日光花园、玻璃森林——一键切换整套氛围。</p>
+            <p class="en">Neon Drift, After Rain, Solar Bloom and Glass Forest — switch a whole mood in one tap.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel" aria-label="使用方法 How to use">
+        <div class="section-head">
+          <p class="eyebrow">HOW TO USE · 三步开始</p>
+          <h2>怎么玩<small>Up and running in three steps</small></h2>
+        </div>
+        <div class="steps">
+          <div class="step">
+            <span class="num">1</span>
+            <h3>选场景<small>Pick a scene</small></h3>
+            <p>从四个预设里挑一个，或自己调色板与提示词。</p>
+            <p class="en">Choose a preset, or tune the palette and prompt yourself.</p>
+          </div>
+          <div class="step">
+            <span class="num">2</span>
+            <h3>点播放<small>Hit play</small></h3>
+            <p>让 AI 音乐开始流动，勾选「自动续写」可无限延展。</p>
+            <p class="en">Start the generative music; enable auto-continue for an endless flow.</p>
+          </div>
+          <div class="step">
+            <span class="num">3</span>
+            <h3>用手势<small>Move &amp; play</small></h3>
+            <p>移动鼠标或手指，画面与声音随你流动；点击触发粒子爆发。</p>
+            <p class="en">Move your cursor or finger; visuals and sound follow you — click for particle bursts.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel under" aria-label="底层原理 Under the hood">
+        <div class="section-head">
+          <p class="eyebrow">UNDER THE HOOD · 底层原理</p>
+          <h2>它如何「凭空生成」<small>How generative music works</small></h2>
+        </div>
+        <p>
+          像 Suno、Udio 这类 AI 音乐系统是一条流水线：<b>文本编码</b>（把提示词/歌词编成条件向量）→
+          <b>神经音频离散化</b>（EnCodec 等把波形压成可逆 token）→
+          <b>Transformer + 扩散</b>（在文本条件下预测并细化音频 token）→
+          <b>解码成波形</b>（还原带人声的完整音频，可多候选与续写）。
+          本页是浏览器内的<b>程序化合成 demo</b>，借用了同一套「提示词驱动生成」的思路：氛围提示被解析成节奏、能量、明亮度与调式，再由确定性序列器实时合成。
+        </p>
+        <p class="en">
+          Systems like Suno and Udio are a pipeline: <b>text encoding</b> → <b>neural audio tokenisation</b> (e.g. EnCodec) →
+          <b>Transformer + diffusion</b> over those tokens → <b>decoding back to a waveform</b>. This page is a procedural-synthesis demo that borrows the same prompt-driven idea — the mood prompt is parsed into tempo, energy, brightness and scale, then synthesised live by a deterministic sequencer.
+        </p>
+        <p class="refs">
+          资料 / References:
+          <a href="https://musicgeneratorai.io/posts/how-does-suno-ai-create-music" target="_blank" rel="noopener">musicgeneratorai.io</a> ·
+          <a href="https://vi-control.net/community/threads/how-exactly-do-suno-ai-and-udio-com-work-technical-view.151041/" target="_blank" rel="noopener">VI-CONTROL</a> ·
+          <a href="https://arxiv.org/pdf/2404.10301" target="_blank" rel="noopener">arXiv:2404.10301</a>。
+          本页为独立的程序化合成演示，与上述产品无从属关系。 / An independent demo, not affiliated with those products.
+        </p>
+      </section>
+
+      <section class="panel foot-cta" aria-label="开始体验 Get started">
+        <div class="copy">
+          准备好了吗？让画面和声响在你的手势里醒来。
+          <small>Ready? Let the visuals and sound wake up under your touch.</small>
+        </div>
+        <a class="btn primary" href="./index.html#studio">进入体验 · Enter ›</a>
+      </section>
+
+      <footer>
+        © 流光 · Liúguāng —— 浏览器内实时生成，全部在你的设备上完成。<br />
+        Generated live in the browser, entirely on your device.
+      </footer>
+    </main>
+
+    <script>
+      // Gentle pointer-following aura, matching the main experience.
+      const auraEl = document.getElementById("aura");
+      const target = { x: window.innerWidth / 2, y: window.innerHeight * 0.4 };
+      const pos = { x: target.x, y: target.y };
+      window.addEventListener("pointermove", (e) => {
+        target.x = e.clientX;
+        target.y = e.clientY;
+      });
+      (function loop() {
+        pos.x += (target.x - pos.x) * 0.08;
+        pos.y += (target.y - pos.y) * 0.08;
+        auraEl.style.transform = `translate3d(${pos.x}px, ${pos.y}px, 0)`;
+        requestAnimationFrame(loop);
+      })();
+    </script>
+  </body>
+</html>
