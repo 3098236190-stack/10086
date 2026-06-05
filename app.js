@@ -403,14 +403,65 @@ function setupVisualizer() {
   }
 }
 
+// Lightweight stand-in for Suno-style prompt conditioning: the descriptive
+// words in the text prompt are read as a control signal that biases tempo,
+// energy, brightness and scale — analogous to how a real model encodes the
+// prompt into an embedding that steers generation.
+const promptLexicon = {
+  tempo: [
+    { words: ["轻快", "跳动", "速度", "律动", "明快", "快"], delta: 16 },
+    { words: ["慢", "柔和", "空灵", "呼吸", "优雅", "舒缓"], delta: -16 },
+  ],
+  energy: [
+    { words: ["坚定", "速度", "跳动", "律动", "明亮", "强"], delta: 14 },
+    { words: ["柔和", "空灵", "呼吸", "轻", "慢"], delta: -14 },
+  ],
+  brightness: [
+    { words: ["清亮", "明亮", "星", "清", "亮"], delta: 0.18 },
+    { words: ["暖", "柔", "沉", "低"], delta: -0.16 },
+  ],
+};
+
+function analyzePrompt(prompt) {
+  const result = { tempo: 0, energy: 0, brightness: 1, scale: null };
+  promptLexicon.tempo.forEach((g) => {
+    if (g.words.some((w) => prompt.includes(w))) result.tempo += g.delta;
+  });
+  promptLexicon.energy.forEach((g) => {
+    if (g.words.some((w) => prompt.includes(w))) result.energy += g.delta;
+  });
+  promptLexicon.brightness.forEach((g) => {
+    if (g.words.some((w) => prompt.includes(w))) result.brightness += g.delta;
+  });
+  if (prompt.includes("空灵") || prompt.includes("星")) result.scale = "lydian";
+  else if (prompt.includes("坚定")) result.scale = "dorian";
+  else if (prompt.includes("明亮") || prompt.includes("清亮")) result.scale = "major";
+  return result;
+}
+
+// Steer a range input halfway toward the prompt-implied target, so the prompt
+// visibly shapes the result while still respecting manual control.
+function nudgeRange(input, delta) {
+  const value = Number(input.value);
+  const target = clamp(value + delta, Number(input.min), Number(input.max));
+  input.value = String(Math.round((value + target) / 2));
+}
+
 function composeMusic(forceNewSeed = true) {
   if (forceNewSeed) state.seed = Date.now() ^ hashString(els.musicPrompt.value);
   const prompt = els.musicPrompt.value.trim() || "flow";
   const palette = palettes[state.paletteIndex];
+  const analysis = analyzePrompt(prompt);
+
+  if (forceNewSeed) {
+    if (analysis.tempo) nudgeRange(els.tempo, analysis.tempo);
+    if (analysis.energy) nudgeRange(els.energy, analysis.energy);
+  }
+
   const rng = mulberry32(hashString(`${prompt}-${state.seed}-${palette.name}`));
   const scaleNames = Object.keys(scaleSteps);
-  const scale = prompt.includes("空灵") || prompt.includes("星") ? "lydian" : prompt.includes("坚定") ? "dorian" : palette.scale;
-  const pickedScale = rng() > 0.72 ? choose(scaleNames, rng) : scale;
+  const scale = analysis.scale || palette.scale;
+  const pickedScale = rng() > 0.82 ? choose(scaleNames, rng) : scale;
   const key = rng() > 0.8 ? choose(Object.keys(keyMidi), rng) : palette.key;
   const root = keyMidi[key] + (rng() > 0.55 ? 0 : -12);
   const steps = scaleSteps[pickedScale];
@@ -429,6 +480,7 @@ function composeMusic(forceNewSeed = true) {
     chordRoots,
     melody,
     hats,
+    brightness: clamp(analysis.brightness, 0.7, 1.3),
     wave: rng() > 0.48 ? "triangle" : "sine",
     sparkle: rng() > 0.5,
   };
@@ -509,8 +561,9 @@ function playTone(midi, time, duration, options = {}) {
   osc.frequency.setValueAtTime(midiToFreq(midi), time);
   if (options.detune) osc.detune.setValueAtTime(options.detune, time);
 
+  const brightness = state.composition ? state.composition.brightness : 1;
   filter.type = "lowpass";
-  filter.frequency.setValueAtTime(options.cutoff || 1400 + energy * 4200, time);
+  filter.frequency.setValueAtTime((options.cutoff || 1400 + energy * 4200) * brightness, time);
   filter.Q.value = options.q || 1.2;
 
   envelope(gain, time, options.peak || 0.08, options.attack || 0.012, options.decay || 0.08, options.sustain || 0.028, options.release || duration);
