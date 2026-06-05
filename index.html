@@ -653,6 +653,74 @@
           rgba(0, 0, 0, 0.22);
       }
 
+      .genre-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin-bottom: 16px;
+      }
+
+      .genre-chip {
+        min-height: 32px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 0 12px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 999px;
+        background: rgba(0, 0, 0, 0.2);
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.8rem;
+        font-weight: 800;
+        transition:
+          transform 160ms ease,
+          border-color 160ms ease,
+          background-color 160ms ease,
+          color 160ms ease;
+      }
+
+      .genre-chip:hover {
+        transform: translateY(-1px);
+        border-color: rgba(255, 255, 255, 0.36);
+      }
+
+      .genre-chip.active {
+        color: #071b16;
+        background: linear-gradient(135deg, #ffffff, var(--accent));
+        border-color: rgba(255, 255, 255, 0.52);
+      }
+
+      .genre-chip small {
+        font-size: 0.7rem;
+        font-weight: 700;
+        opacity: 0.66;
+      }
+
+      .full-action {
+        width: 100%;
+        margin-top: 16px;
+        min-height: 42px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        font-weight: 800;
+        transition:
+          transform 180ms ease,
+          border-color 180ms ease,
+          background-color 180ms ease;
+      }
+
+      .full-action:hover {
+        transform: translateY(-1px);
+        border-color: rgba(255, 255, 255, 0.36);
+        background: rgba(255, 255, 255, 0.16);
+      }
+
+      .full-action:active {
+        transform: translateY(0);
+      }
+
       @keyframes drift {
         from {
           transform: rotate(0deg) scale(1.06);
@@ -830,6 +898,8 @@
             <button class="icon-button" id="randomPrompt" type="button" aria-label="随机灵感">↻</button>
           </div>
 
+          <div class="genre-row" id="genreRow" role="group" aria-label="音乐类型 / Genre"></div>
+
           <label class="prompt-field">
             <span>氛围提示</span>
             <input id="musicPrompt" type="text" value="雨后城市，清亮，轻快" maxlength="48" />
@@ -881,6 +951,7 @@
             <span>灵敏度</span>
             <input id="particlePull" type="range" min="20" max="130" value="84" />
           </label>
+          <button class="full-action" id="summonFigures" type="button">召唤积木小人 · Summon ✦</button>
         </div>
       </section>
 
@@ -957,8 +1028,7 @@
         night: {
           palette: 4,
           prompt: "霓虹海面，柔和，慢慢升温",
-          tempo: 104,
-          energy: 72,
+          genre: "lofi",
           density: 132,
           pull: 94,
           mode: "orbit",
@@ -966,8 +1036,7 @@
         rain: {
           palette: 0,
           prompt: "雨后城市，清亮，轻快",
-          tempo: 92,
-          energy: 62,
+          genre: "pop",
           density: 112,
           pull: 84,
           mode: "draw",
@@ -975,8 +1044,7 @@
         solar: {
           palette: 1,
           prompt: "午后花园，明亮，跳动",
-          tempo: 118,
-          energy: 82,
+          genre: "folk",
           density: 146,
           pull: 104,
           mode: "repel",
@@ -984,13 +1052,77 @@
         glass: {
           palette: 3,
           prompt: "玻璃森林，空灵，有呼吸感",
-          tempo: 78,
-          energy: 46,
+          genre: "ambient",
           density: 92,
           pull: 72,
           mode: "orbit",
         },
       };
+
+      // Genre presets — each style reshapes tempo, scale pool, timbre and the
+      // drum / bass / chord patterns, the way style tags work on platforms like
+      // Suno. Patterns are 16 eighth-note steps. Healing & ambient lean on pads
+      // and sparse notes to soothe; rock & pop drive harder.
+      const genres = {
+        pop: {
+          zh: "流行", en: "Pop", tempo: 114, energy: 68,
+          scales: ["major", "lydian", "pentatonic"],
+          leadWave: "triangle", bassWave: "triangle", chordWave: "sine", chordShape: [0, 4, 7, 12],
+          padEvery: 8, padLong: 7.6, bassEvery: 2, bassLong: 0.8, noteDensity: 0.8, swing: 0,
+          kick: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+          snare: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+          hat: [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+        },
+        rock: {
+          zh: "摇滚", en: "Rock", tempo: 134, energy: 86,
+          scales: ["minor", "dorian"],
+          leadWave: "sawtooth", bassWave: "sawtooth", chordWave: "sawtooth", chordShape: [0, 7, 12],
+          padEvery: 8, padLong: 6, bassEvery: 2, bassLong: 0.7, noteDensity: 0.85, swing: 0,
+          kick: [1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0],
+          snare: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+          hat: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        },
+        folk: {
+          zh: "民谣", en: "Folk", tempo: 96, energy: 52,
+          scales: ["major", "pentatonic", "dorian"],
+          leadWave: "triangle", bassWave: "sine", chordWave: "triangle", chordShape: [0, 4, 7],
+          padEvery: 8, padLong: 7, bassEvery: 4, bassLong: 1.2, noteDensity: 0.7, swing: 0.06,
+          kick: [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+          snare: null,
+          hat: [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+        },
+        ambient: {
+          zh: "轻音乐", en: "Ambient", tempo: 74, energy: 40,
+          scales: ["lydian", "major"],
+          leadWave: "sine", bassWave: "sine", chordWave: "sine", chordShape: [0, 4, 7, 11],
+          padEvery: 8, padLong: 9, bassEvery: 8, bassLong: 3, noteDensity: 0.45, swing: 0,
+          kick: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          snare: null,
+          hat: null,
+        },
+        lofi: {
+          zh: "Lo-Fi", en: "Lo-Fi", tempo: 84, energy: 56,
+          scales: ["minor", "dorian", "pentatonic"],
+          leadWave: "triangle", bassWave: "sine", chordWave: "sine", chordShape: [0, 3, 7, 10],
+          padEvery: 8, padLong: 7.6, bassEvery: 2, bassLong: 0.9, noteDensity: 0.7, swing: 0.2,
+          kick: [1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+          snare: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+          hat: [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+        },
+        healing: {
+          zh: "治愈", en: "Healing", tempo: 66, energy: 34,
+          scales: ["lydian", "major", "pentatonic"],
+          leadWave: "sine", bassWave: "sine", chordWave: "sine", chordShape: [0, 4, 7, 11],
+          padEvery: 8, padLong: 10, bassEvery: 8, bassLong: 3.4, noteDensity: 0.4, swing: 0,
+          kick: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          snare: null,
+          hat: null,
+        },
+      };
+
+      // Soft pastel set for the cute "block people", independent of the theme
+      // palette so they always read as friendly and healing.
+      const figurePalette = ["#ffd1dc", "#bde8ff", "#c8f7d4", "#ffe9a8", "#e3d1ff", "#ffd6a5", "#b8f2e6", "#ffc8dd"];
 
       const scaleSteps = {
         major: [0, 2, 4, 5, 7, 9, 11, 12],
@@ -1026,6 +1158,8 @@
         particleDensity: document.querySelector("#particleDensity"),
         particlePull: document.querySelector("#particlePull"),
         burstParticles: document.querySelector("#burstParticles"),
+        genreRow: document.querySelector("#genreRow"),
+        summonFigures: document.querySelector("#summonFigures"),
       };
 
       const ctx = els.canvas.getContext("2d");
@@ -1033,7 +1167,9 @@
       const state = {
         paletteIndex: 0,
         mode: "orbit",
+        genre: "pop",
         particles: [],
+        figures: [],
         composition: null,
         seed: Date.now(),
         playing: false,
@@ -1047,6 +1183,7 @@
       let stepIndex = 0;
       let absoluteStep = 0;
       let lastFrameTime = performance.now();
+      let beatPulse = 0;
       const aura = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
 
       function clamp(value, min, max) {
@@ -1128,6 +1265,40 @@
           button.classList.toggle("active", isActive);
           button.setAttribute("aria-pressed", isActive ? "true" : "false");
         });
+      }
+
+      function setupGenres() {
+        Object.entries(genres).forEach(([id, g]) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "genre-chip" + (id === state.genre ? " active" : "");
+          button.dataset.genre = id;
+          button.setAttribute("aria-pressed", id === state.genre ? "true" : "false");
+          button.innerHTML = `${g.zh} <small>${g.en}</small>`;
+          button.addEventListener("click", () => {
+            setGenre(id);
+            burst(14);
+          });
+          els.genreRow.append(button);
+        });
+      }
+
+      function setGenre(id, options = {}) {
+        const { recompose = true, setSliders = true } = options;
+        if (!genres[id]) return;
+        state.genre = id;
+        const g = genres[id];
+        if (setSliders) {
+          els.tempo.value = g.tempo;
+          els.energy.value = g.energy;
+        }
+        document.querySelectorAll(".genre-chip").forEach((button) => {
+          const isActive = button.dataset.genre === id;
+          button.classList.toggle("active", isActive);
+          button.setAttribute("aria-pressed", isActive ? "true" : "false");
+        });
+        if (recompose) composeMusic(true);
+        else if (state.composition) updateStatus();
       }
 
       function updateBackgroundControls() {
@@ -1216,6 +1387,108 @@
         }
       }
 
+      // —— 积木小人 / cute block people ——
+      function spawnFigure(x, y) {
+        if (state.figures.length >= 16) state.figures.shift();
+        const r = Math.random;
+        state.figures.push({
+          x: x ?? r() * window.innerWidth,
+          baseY: y ?? window.innerHeight * (0.6 + r() * 0.28),
+          vx: (r() - 0.5) * 0.5,
+          scale: 1.7 + r() * 1.5,
+          phase: r() * Math.PI * 2,
+          bobSpeed: 0.03 + r() * 0.02,
+          bounce: 0.7 + r() * 0.5,
+          body: figurePalette[Math.floor(r() * figurePalette.length)],
+          blink: 0,
+          blinkAt: 60 + r() * 240,
+          appear: 0,
+        });
+      }
+
+      function blockRect(x, y, w, h, radius, color) {
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        if (ctx.roundRect) ctx.roundRect(x, y, w, h, radius);
+        else ctx.rect(x, y, w, h);
+        ctx.fill();
+      }
+
+      function drawFigure(f, hop) {
+        const s = f.scale;
+        const bob = Math.sin(f.phase) * 1.6;
+        const y = f.baseY + bob - hop * 9;
+        const a = f.appear;
+        const head = "#fdf3e3";
+        const dark = "rgba(44, 50, 74, 0.92)";
+
+        ctx.save();
+        ctx.translate(f.x, y);
+        ctx.scale(a, a * (1 + hop * 0.06));
+
+        ctx.globalAlpha = 0.16 * a;
+        ctx.fillStyle = "#000000";
+        ctx.beginPath();
+        ctx.ellipse(0, 19 * s, (11 + hop * 3) * s, 3.4 * s, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = a;
+
+        blockRect(-5.5 * s, 9 * s, 4 * s, 7 * s, 2 * s, dark);
+        blockRect(1.5 * s, 9 * s, 4 * s, 7 * s, 2 * s, dark);
+        const armY = -2 * s - hop * 3 * s;
+        blockRect(-12 * s, armY, 4 * s, 9 * s, 2 * s, f.body);
+        blockRect(8 * s, armY, 4 * s, 9 * s, 2 * s, f.body);
+        blockRect(-8.5 * s, -7 * s, 17 * s, 16 * s, 5 * s, f.body);
+        blockRect(-8 * s, -23 * s, 16 * s, 16 * s, 5 * s, head);
+
+        // Eyes follow the pointer a little.
+        const px = clamp((pointer.x - f.x) / 140, -1, 1) * 1.4 * s;
+        const py = clamp((pointer.y - f.baseY) / 160, -1, 1) * 1.2 * s;
+        ctx.fillStyle = "#3a2f2a";
+        if (f.blink > 0) {
+          ctx.fillRect(-4.6 * s + px, -16 * s + py, 2.8 * s, 0.9 * s);
+          ctx.fillRect(1.8 * s + px, -16 * s + py, 2.8 * s, 0.9 * s);
+        } else {
+          ctx.beginPath();
+          ctx.arc(-3.2 * s + px, -15.5 * s + py, 1.5 * s, 0, Math.PI * 2);
+          ctx.arc(3.2 * s + px, -15.5 * s + py, 1.5 * s, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.fillStyle = "rgba(255, 120, 150, 0.45)";
+        ctx.beginPath();
+        ctx.arc(-5.2 * s, -12.5 * s, 1.7 * s, 0, Math.PI * 2);
+        ctx.arc(5.2 * s, -12.5 * s, 1.7 * s, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "#3a2f2a";
+        ctx.lineWidth = 1.2 * s;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.arc(0, -13.5 * s, 2.3 * s, 0.18 * Math.PI, 0.82 * Math.PI);
+        ctx.stroke();
+
+        ctx.restore();
+      }
+
+      function drawFigures(dt) {
+        beatPulse *= Math.pow(0.86, dt);
+        for (const f of state.figures) {
+          f.phase += f.bobSpeed * dt;
+          f.x += f.vx * dt;
+          if (f.x < -30) f.x = window.innerWidth + 30;
+          if (f.x > window.innerWidth + 30) f.x = -30;
+          if (f.appear < 1) f.appear = Math.min(1, f.appear + 0.05 * dt);
+          f.blinkAt -= dt;
+          if (f.blinkAt <= 0) {
+            f.blink = 6;
+            f.blinkAt = 120 + Math.random() * 260;
+          }
+          if (f.blink > 0) f.blink -= dt;
+          const hop = (state.playing ? beatPulse : 0) * f.bounce;
+          drawFigure(f, hop);
+        }
+        ctx.globalAlpha = 1;
+      }
+
       function drawParticles(now) {
         const dt = Math.min(2.2, (now - lastFrameTime) / 16.67);
         lastFrameTime = now;
@@ -1300,6 +1573,7 @@
         aura.y += (pointer.y - aura.y) * ease;
         if (els.aura) els.aura.style.transform = `translate3d(${aura.x}px, ${aura.y}px, 0)`;
 
+        drawFigures(dt);
         syncParticleCount();
         requestAnimationFrame(drawParticles);
       }
@@ -1378,19 +1652,22 @@
           if (analysis.energy) nudgeRange(els.energy, analysis.energy);
         }
 
-        const rng = mulberry32(hashString(`${prompt}-${state.seed}-${palette.name}`));
+        const genre = genres[state.genre];
+        const rng = mulberry32(hashString(`${prompt}-${state.seed}-${palette.name}-${state.genre}`));
         const scaleNames = Object.keys(scaleSteps);
-        const scale = analysis.scale || palette.scale;
-        const pickedScale = rng() > 0.82 ? choose(scaleNames, rng) : scale;
+        // The active genre supplies the scale pool; an explicit prompt mood word
+        // still wins, and there is a small chance of a surprise scale.
+        const scale = analysis.scale || choose(genre.scales, rng) || palette.scale;
+        const pickedScale = rng() > 0.86 ? choose(scaleNames, rng) : scale;
         const key = rng() > 0.8 ? choose(Object.keys(keyMidi), rng) : palette.key;
         const root = keyMidi[key] + (rng() > 0.55 ? 0 : -12);
         const steps = scaleSteps[pickedScale];
         const chordRoots = [0, 3, 4, 2].map((base) => steps[base % steps.length]);
         const melody = Array.from({ length: 16 }, (_, index) => {
-          if (rng() < 0.24 && index % 4 !== 0) return null;
+          // Sparser genres (ambient / healing) drop more notes, leaving space.
+          if (rng() > genre.noteDensity && index % 4 !== 0) return null;
           return steps[Math.floor(rng() * steps.length)] + (rng() > 0.58 ? 12 : 0);
         });
-        const hats = Array.from({ length: 16 }, (_, index) => rng() > (index % 4 === 0 ? 0.24 : 0.48));
 
         state.composition = {
           key,
@@ -1399,9 +1676,8 @@
           steps,
           chordRoots,
           melody,
-          hats,
           brightness: clamp(analysis.brightness, 0.7, 1.3),
-          wave: rng() > 0.48 ? "triangle" : "sine",
+          wave: genre.leadWave,
           sparkle: rng() > 0.5,
         };
         updateStatus();
@@ -1411,7 +1687,7 @@
 
       function updateStatus() {
         const composition = state.composition;
-        els.moodChip.textContent = `${palettes[state.paletteIndex].name} / ${composition.key} ${composition.scale}`;
+        els.moodChip.textContent = `${genres[state.genre].zh} · ${palettes[state.paletteIndex].name} / ${composition.key} ${composition.scale}`;
         els.tempoChip.textContent = `${els.tempo.value} BPM`;
         els.energyChip.textContent = `Energy ${els.energy.value}%`;
       }
@@ -1427,12 +1703,13 @@
 
       function updateSequenceGrid(activeIndex = -1) {
         if (!state.composition) return;
+        const genre = genres[state.genre];
         state.sequenceDots.forEach((dot, index) => {
           const hasMelody = state.composition.melody[index] !== null;
-          const hasHat = state.composition.hats[index];
-          dot.classList.toggle("on", hasMelody || hasHat || index % 4 === 0);
+          const hasBeat = (genre.kick && genre.kick[index]) || (genre.hat && genre.hat[index]);
+          dot.classList.toggle("on", hasMelody || hasBeat || index % 4 === 0);
           dot.classList.toggle("active", index === activeIndex);
-          dot.style.opacity = hasMelody ? "1" : hasHat ? "0.74" : "0.38";
+          dot.style.opacity = hasMelody ? "1" : hasBeat ? "0.74" : "0.38";
         });
       }
 
@@ -1494,12 +1771,12 @@
         osc.stop(time + duration + 0.8);
       }
 
-      function playPad(rootMidi, time, duration) {
-        const chord = [0, 4, 7].map((offset, index) => rootMidi + offset + (index === 2 ? 12 : 0));
-        chord.forEach((midi, index) => {
-          playTone(midi, time + index * 0.012, duration, {
-            wave: "sine",
-            peak: 0.034,
+      function playPad(rootMidi, time, duration, wave, shape) {
+        const chord = shape || [0, 4, 7];
+        chord.forEach((offset, index) => {
+          playTone(rootMidi + offset, time + index * 0.012, duration, {
+            wave: wave || "sine",
+            peak: 0.03,
             attack: 0.28,
             decay: 0.32,
             sustain: 0.018,
@@ -1508,6 +1785,45 @@
             detune: index * 4 - 4,
           });
         });
+      }
+
+      function playSnare(time) {
+        const { context, master } = ensureAudio();
+        const bufferSize = context.sampleRate * 0.12;
+        const buffer = context.createBuffer(1, bufferSize, context.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i += 1) data[i] = Math.random() * 2 - 1;
+        const source = context.createBufferSource();
+        const bp = context.createBiquadFilter();
+        const gain = context.createGain();
+        source.buffer = buffer;
+        bp.type = "bandpass";
+        bp.frequency.value = 1850;
+        bp.Q.value = 0.8;
+        envelope(gain, time, 0.11, 0.002, 0.06, 0.02, 0.12);
+        source.connect(bp);
+        bp.connect(gain);
+        gain.connect(master);
+        source.start(time);
+
+        const osc = context.createOscillator();
+        const g2 = context.createGain();
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(190, time);
+        envelope(g2, time, 0.07, 0.002, 0.05, 0.01, 0.08);
+        osc.connect(g2);
+        g2.connect(master);
+        osc.start(time);
+        osc.stop(time + 0.2);
+      }
+
+      // Flag a visual beat pulse at the audio-scheduled kick time so the block
+      // people bounce in sync.
+      function scheduleBeat(time) {
+        const { context } = ensureAudio();
+        window.setTimeout(() => {
+          if (state.playing) beatPulse = 1;
+        }, Math.max(0, (time - context.currentTime) * 1000));
       }
 
       function playKick(time) {
@@ -1551,40 +1867,55 @@
         }
 
         const composition = state.composition;
+        const genre = genres[state.genre];
         const stepDuration = 60 / Number(els.tempo.value) / 2;
         const energy = Number(els.energy.value) / 100;
-        const chordRoot = composition.root + composition.chordRoots[Math.floor((index % 16) / 4)];
+        const i16 = index % 16;
+        const swingT = i16 % 2 === 1 ? time + stepDuration * (genre.swing || 0) : time;
+        const chordRoot = composition.root + composition.chordRoots[Math.floor(i16 / 4)];
         const melodyStep = composition.melody[index % composition.melody.length];
 
-        if (index % 8 === 0) playPad(chordRoot - 12, time, stepDuration * 7.6);
-        if (index % 4 === 0) playKick(time);
-        if (composition.hats[index % 16] && energy > 0.34) playHat(time + stepDuration * 0.04);
+        // Chords / pad
+        if (genre.padEvery && index % genre.padEvery === 0) {
+          playPad(chordRoot - 12, time, stepDuration * (genre.padLong || 7.6), genre.chordWave, genre.chordShape);
+        }
 
-        if (index % 2 === 0) {
-          playTone(chordRoot - 24, time, stepDuration * 0.8, {
-            wave: "triangle",
+        // Drums (driven by the genre patterns)
+        if (genre.kick[i16]) {
+          playKick(time);
+          scheduleBeat(time);
+        }
+        if (genre.snare && genre.snare[i16]) playSnare(time);
+        if (genre.hat && genre.hat[i16] && energy > 0.3) playHat(swingT + stepDuration * 0.02);
+
+        // Bass
+        if (genre.bassEvery && index % genre.bassEvery === 0) {
+          playTone(chordRoot - 24, time, stepDuration * (genre.bassLong || 0.8), {
+            wave: genre.bassWave,
             peak: 0.05 + energy * 0.06,
             attack: 0.01,
             decay: 0.06,
             sustain: 0.022,
             release: 0.18,
-            cutoff: 700 + energy * 1400,
+            cutoff: 600 + energy * 1400,
           });
         }
 
-        if (melodyStep !== null && (energy > 0.42 || index % 2 === 0)) {
-          playTone(composition.root + melodyStep + 12, time + stepDuration * 0.02, stepDuration * 0.72, {
+        // Lead melody
+        if (melodyStep !== null && (energy > 0.42 || i16 % 2 === 0)) {
+          playTone(composition.root + melodyStep + 12, swingT + stepDuration * 0.02, stepDuration * 0.72, {
+            wave: genre.leadWave,
             peak: 0.044 + energy * 0.05,
             attack: 0.01,
             decay: 0.05,
             sustain: 0.02,
             release: 0.2,
-            cutoff: 1700 + energy * 4200,
+            cutoff: 1500 + energy * 4200,
           });
         }
 
         window.setTimeout(() => {
-          if (state.playing) updateSequenceGrid(index % 16);
+          if (state.playing) updateSequenceGrid(i16);
         }, Math.max(0, (time - ensureAudio().context.currentTime) * 1000));
       }
 
@@ -1661,6 +1992,13 @@
         els.particleDensity.addEventListener("input", syncParticleCount);
         els.particlePull.addEventListener("change", () => burst(10));
         els.burstParticles.addEventListener("click", () => burst(52));
+        els.summonFigures.addEventListener("click", () => {
+          for (let i = 0; i < 3; i += 1) spawnFigure();
+          burst(12);
+        });
+        window.addEventListener("dblclick", (event) => {
+          spawnFigure(event.clientX, event.clientY);
+        });
 
         els.tempo.addEventListener("input", updateStatus);
         els.energy.addEventListener("input", () => {
@@ -1708,11 +2046,10 @@
         if (!scene) return;
 
         els.musicPrompt.value = scene.prompt;
-        els.tempo.value = scene.tempo;
-        els.energy.value = scene.energy;
         els.particleDensity.value = scene.density;
         els.particlePull.value = scene.pull;
         setParticleMode(scene.mode);
+        setGenre(scene.genre || state.genre, { recompose: false });
         setPalette(scene.palette);
         updateBackgroundControls();
         syncParticleCount();
@@ -1728,11 +2065,13 @@
 
       function init() {
         setupPalettes();
+        setupGenres();
         setupVisualizer();
         bindEvents();
         resizeCanvas();
         updateBackgroundControls();
         applyScene("night");
+        for (let i = 0; i < 6; i += 1) spawnFigure();
         requestAnimationFrame(drawParticles);
       }
 
