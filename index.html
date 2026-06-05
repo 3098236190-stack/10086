@@ -6,7 +6,861 @@
     <meta name="theme-color" content="#0c1532" />
     <meta name="description" content="流光互动音乐空间——在手势中唤醒画面与声响的实时生成体验。" />
     <title>流光互动音乐空间</title>
-    <link rel="stylesheet" href="./styles.css" />
+    <style>
+      :root {
+        --bg-a: #0c1532;
+        --bg-b: #146c88;
+        --bg-c: #f4b35e;
+        --bg-d: #f44d76;
+        --accent: #8bf0c8;
+        --ink: #f8fbff;
+        --muted: rgba(248, 251, 255, 0.72);
+        --panel: rgba(9, 14, 28, 0.56);
+        --panel-strong: rgba(9, 14, 28, 0.72);
+        --line: rgba(255, 255, 255, 0.16);
+        --shadow: 0 22px 70px rgba(0, 0, 0, 0.34);
+        --flow-duration: 60s;
+        --color-power: 0.76;
+        --shade-opacity: 1;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        min-height: 100%;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 84px;
+      }
+
+      body {
+        margin: 0;
+        color: var(--ink);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          "Microsoft YaHei", sans-serif;
+        background: radial-gradient(120% 120% at 50% 0%, #0b1430, #060a18 70%);
+        overflow-x: hidden;
+      }
+
+      /* Flowing colour field: a single large gradient layer that only ever
+         animates `transform`, so it is rasterised once and composited on the GPU —
+         no per-frame viewport repaints (the source of the previous jank). */
+      .backdrop {
+        position: fixed;
+        inset: -55%;
+        z-index: -2;
+        background: conic-gradient(
+          from 130deg,
+          var(--bg-a),
+          var(--bg-b),
+          var(--bg-c),
+          var(--bg-d),
+          var(--bg-a)
+        );
+        filter: blur(54px) saturate(calc(80% + var(--color-power, 0.76) * 110%));
+        opacity: 0.96;
+        transform: translateZ(0);
+        animation: drift var(--flow-duration, 60s) linear infinite;
+        will-change: transform;
+      }
+
+      /* Soft highlight that trails the pointer — moved only via translate3d in JS,
+         so it is also fully compositor-driven and stays smooth. */
+      .aura {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 72vmax;
+        height: 72vmax;
+        margin: -36vmax 0 0 -36vmax;
+        z-index: -1;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle at center,
+          rgba(255, 255, 255, 0.26),
+          rgba(255, 255, 255, 0.06) 40%,
+          transparent 68%
+        );
+        mix-blend-mode: soft-light;
+        opacity: calc(0.4 + var(--color-power, 0.76) * 0.6);
+        pointer-events: none;
+        transform: translate3d(50vw, 50vh, 0);
+        will-change: transform;
+      }
+
+      body::before,
+      body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+      }
+
+      body::before {
+        background:
+          linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+        background-size: 54px 54px;
+        mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.92), rgba(0, 0, 0, 0.18));
+      }
+
+      body::after {
+        background: linear-gradient(to bottom, rgba(2, 7, 21, 0.08), rgba(2, 7, 21, 0.24) 58%, rgba(2, 7, 21, 0.66));
+        mix-blend-mode: soft-light;
+        opacity: var(--shade-opacity);
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      button {
+        color: inherit;
+        cursor: pointer;
+      }
+
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
+      }
+
+      .prompt-field input:focus-visible {
+        outline: none;
+      }
+
+      #particleCanvas {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      .site-nav {
+        position: fixed;
+        top: 12px;
+        left: 50%;
+        z-index: 4;
+        width: min(1180px, calc(100% - 32px));
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 6px 8px 6px 12px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 8px;
+        background: rgba(6, 9, 18, 0.32);
+        backdrop-filter: blur(22px) saturate(140%);
+        box-shadow: 0 12px 38px rgba(0, 0, 0, 0.18);
+        transform: translateX(-50%);
+      }
+
+      .site-nav a {
+        color: rgba(255, 255, 255, 0.84);
+        text-decoration: none;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.98rem;
+        font-weight: 900;
+      }
+
+      .brand-mark {
+        width: 23px;
+        height: 23px;
+        border: 1px solid rgba(255, 255, 255, 0.46);
+        border-radius: 7px;
+        background:
+          linear-gradient(135deg, rgba(255, 255, 255, 0.9), transparent 44%),
+          linear-gradient(135deg, var(--accent), rgba(255, 255, 255, 0.1));
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
+      }
+
+      .site-nav nav {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 8px;
+        background: rgba(0, 0, 0, 0.18);
+        backdrop-filter: blur(18px);
+      }
+
+      .site-nav nav a {
+        min-height: 34px;
+        display: inline-flex;
+        align-items: center;
+        padding: 0 12px;
+        border-radius: 6px;
+        color: rgba(255, 255, 255, 0.78);
+        font-size: 0.82rem;
+        font-weight: 800;
+        transition:
+          background-color 180ms ease,
+          color 180ms ease;
+      }
+
+      .site-nav nav a:hover {
+        background: rgba(255, 255, 255, 0.12);
+        color: #ffffff;
+      }
+
+      .stage {
+        position: relative;
+        z-index: 1;
+        min-height: 100vh;
+        width: min(1180px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 94px 0 36px;
+        display: grid;
+        grid-template-rows: minmax(280px, 40vh) auto auto auto;
+        gap: 20px;
+      }
+
+      .hero {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 24px;
+        min-height: 0;
+      }
+
+      .hero-copy {
+        max-width: 760px;
+        padding-bottom: 8px;
+        animation: riseIn 880ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+      }
+
+      .status-strip {
+        animation: riseIn 880ms cubic-bezier(0.2, 0.7, 0.2, 1) 140ms both;
+      }
+
+      .eyebrow {
+        margin: 0 0 16px;
+        color: rgba(255, 255, 255, 0.78);
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0;
+      }
+
+      h1,
+      h2,
+      p {
+        margin: 0;
+      }
+
+      h1 {
+        max-width: 9ch;
+        font-size: clamp(3.7rem, 12vw, 8.4rem);
+        line-height: 0.9;
+        letter-spacing: -0.01em;
+        text-wrap: balance;
+        background: linear-gradient(178deg, #ffffff 32%, rgba(255, 255, 255, 0.78));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        filter: drop-shadow(0 16px 44px rgba(0, 0, 0, 0.42));
+      }
+
+      .lede {
+        margin-top: 20px;
+        max-width: 32rem;
+        color: rgba(255, 255, 255, 0.86);
+        font-size: clamp(1rem, 2vw, 1.28rem);
+        line-height: 1.6;
+      }
+
+      .status-strip {
+        align-self: flex-end;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 8px;
+        min-width: 236px;
+        padding-bottom: 16px;
+      }
+
+      .status-strip span {
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 999px;
+        padding: 8px 11px;
+        background: rgba(0, 0, 0, 0.22);
+        color: rgba(255, 255, 255, 0.86);
+        backdrop-filter: blur(16px);
+        font-size: 0.78rem;
+        white-space: nowrap;
+      }
+
+      .control-shell {
+        display: grid;
+        grid-template-columns: minmax(210px, 0.78fr) minmax(320px, 1.35fr) minmax(210px, 0.82fr);
+        gap: 14px;
+        align-items: stretch;
+      }
+
+      .panel {
+        min-width: 0;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 18px;
+        background: var(--panel);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(24px) saturate(130%);
+      }
+
+      .panel-head {
+        min-height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+
+      .panel-head h2 {
+        font-size: 1rem;
+        font-weight: 850;
+      }
+
+      .panel-head span {
+        color: var(--muted);
+        font-size: 0.82rem;
+      }
+
+      .swatch-grid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(34px, 1fr));
+        gap: 8px;
+        margin-bottom: 20px;
+      }
+
+      .swatch {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--s1), var(--s2), var(--s3), var(--s4));
+        box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.16);
+        transition: transform 160ms ease;
+      }
+
+      .swatch:hover {
+        transform: scale(1.07);
+      }
+
+      .swatch.active::after {
+        content: "";
+        position: absolute;
+        inset: -5px;
+        border: 2px solid rgba(255, 255, 255, 0.78);
+        border-radius: inherit;
+      }
+
+      .field,
+      .prompt-field,
+      .toggle-field {
+        display: grid;
+        gap: 8px;
+      }
+
+      .field + .field {
+        margin-top: 17px;
+      }
+
+      .field span,
+      .prompt-field span {
+        color: rgba(255, 255, 255, 0.78);
+        font-size: 0.82rem;
+        font-weight: 700;
+      }
+
+      input[type="range"] {
+        width: 100%;
+        accent-color: var(--accent);
+      }
+
+      .prompt-field input {
+        width: 100%;
+        min-height: 46px;
+        border: 1px solid rgba(255, 255, 255, 0.17);
+        border-radius: 8px;
+        outline: none;
+        padding: 0 13px;
+        color: #ffffff;
+        background: rgba(0, 0, 0, 0.22);
+        transition:
+          border-color 180ms ease,
+          box-shadow 180ms ease;
+      }
+
+      .prompt-field input:focus {
+        border-color: rgba(255, 255, 255, 0.5);
+        box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.08);
+      }
+
+      .toggle-field {
+        grid-template-columns: 40px 1fr;
+        align-items: center;
+        width: max-content;
+        margin-top: 12px;
+        color: rgba(255, 255, 255, 0.78);
+        font-size: 0.82rem;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .toggle-field input {
+        appearance: none;
+        position: relative;
+        width: 40px;
+        height: 22px;
+        border: 1px solid rgba(255, 255, 255, 0.24);
+        border-radius: 999px;
+        background: rgba(0, 0, 0, 0.28);
+        outline: none;
+        cursor: pointer;
+        transition:
+          background-color 180ms ease,
+          border-color 180ms ease;
+      }
+
+      .toggle-field input::after {
+        content: "";
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.9);
+        transition: transform 180ms ease;
+      }
+
+      .toggle-field input:checked {
+        border-color: rgba(255, 255, 255, 0.56);
+        background: var(--accent);
+      }
+
+      .toggle-field input:checked::after {
+        transform: translateX(18px);
+        background: #071b16;
+      }
+
+      .button-row {
+        display: grid;
+        grid-template-columns: minmax(118px, 0.65fr) minmax(152px, 1fr);
+        gap: 10px;
+        margin: 14px 0;
+      }
+
+      .primary-action,
+      .secondary-action,
+      .mode-button,
+      .icon-button {
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 8px;
+        min-height: 42px;
+        background: rgba(255, 255, 255, 0.1);
+        transition:
+          transform 180ms ease,
+          border-color 180ms ease,
+          background-color 180ms ease;
+      }
+
+      .primary-action:hover,
+      .secondary-action:hover,
+      .mode-button:hover,
+      .icon-button:hover {
+        transform: translateY(-1px);
+        border-color: rgba(255, 255, 255, 0.36);
+        background: rgba(255, 255, 255, 0.16);
+      }
+
+      .primary-action:active,
+      .secondary-action:active,
+      .mode-button:active,
+      .icon-button:active {
+        transform: translateY(0);
+      }
+
+      .primary-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        color: #082116;
+        background: linear-gradient(135deg, #ffffff, var(--accent));
+        border-color: rgba(255, 255, 255, 0.62);
+        font-weight: 850;
+      }
+
+      .secondary-action {
+        font-weight: 800;
+        color: #ffffff;
+      }
+
+      .icon-button {
+        width: 38px;
+        min-height: 38px;
+        display: inline-grid;
+        place-items: center;
+        padding: 0;
+        font-size: 1rem;
+        line-height: 1;
+      }
+
+      .music-visualizer {
+        height: 88px;
+        display: grid;
+        grid-template-columns: repeat(24, 1fr);
+        align-items: end;
+        gap: 4px;
+        padding: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 8px;
+        background: rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+      }
+
+      .bar {
+        min-height: 8px;
+        height: var(--h, 32%);
+        border-radius: 999px 999px 2px 2px;
+        background: linear-gradient(to top, rgba(255, 255, 255, 0.42), var(--accent));
+        opacity: 0.68;
+        transform-origin: bottom;
+        transition: height 320ms ease;
+      }
+
+      body.playing .bar {
+        animation: pulseBar var(--d, 820ms) ease-in-out infinite alternate;
+        animation-delay: var(--delay, 0ms);
+      }
+
+      .sequence-grid {
+        display: grid;
+        grid-template-columns: repeat(16, 1fr);
+        gap: 4px;
+        margin-top: 10px;
+      }
+
+      .sequence-dot {
+        height: 12px;
+        border-radius: 3px;
+        background: rgba(255, 255, 255, 0.14);
+        transition:
+          background-color 160ms ease,
+          transform 160ms ease,
+          opacity 160ms ease;
+      }
+
+      .sequence-dot.on {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), var(--accent));
+        opacity: 0.9;
+      }
+
+      .sequence-dot.active {
+        transform: translateY(-3px);
+        background: #ffffff;
+      }
+
+      .music-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 14px;
+      }
+
+      .mode-switch {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 7px;
+        padding: 4px;
+        border-radius: 8px;
+        background: rgba(0, 0, 0, 0.18);
+        margin-bottom: 20px;
+      }
+
+      .mode-button {
+        min-height: 34px;
+        padding: 0 8px;
+        color: rgba(255, 255, 255, 0.78);
+        font-size: 0.84rem;
+      }
+
+      .mode-button.active {
+        color: #071b16;
+        background: linear-gradient(135deg, #ffffff, var(--accent));
+        border-color: rgba(255, 255, 255, 0.52);
+        font-weight: 850;
+      }
+
+      .scene-strip {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .scene-card {
+        min-height: 108px;
+        display: grid;
+        align-content: end;
+        gap: 6px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 8px;
+        padding: 14px;
+        text-align: left;
+        background:
+          linear-gradient(160deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.02)),
+          rgba(0, 0, 0, 0.2);
+        box-shadow: 0 18px 54px rgba(0, 0, 0, 0.22);
+        backdrop-filter: blur(20px);
+        transition:
+          transform 200ms ease,
+          border-color 200ms ease,
+          background 200ms ease;
+      }
+
+      .scene-card span {
+        font-size: 1rem;
+        font-weight: 900;
+      }
+
+      .scene-card small {
+        color: rgba(255, 255, 255, 0.68);
+        font-size: 0.75rem;
+        font-weight: 800;
+      }
+
+      .scene-card:hover,
+      .scene-card.active {
+        transform: translateY(-2px);
+        border-color: rgba(255, 255, 255, 0.36);
+        background:
+          linear-gradient(160deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.06)),
+          rgba(0, 0, 0, 0.22);
+      }
+
+      /* —— 原理速览 / How it works —— */
+      .knowledge {
+        display: grid;
+        gap: 14px;
+      }
+
+      .know-head {
+        display: grid;
+        gap: 10px;
+      }
+
+      .know-head h2 {
+        font-size: clamp(1.5rem, 3.4vw, 2.2rem);
+        font-weight: 900;
+        line-height: 1.1;
+      }
+
+      .muted-copy {
+        color: var(--muted);
+        max-width: 72ch;
+        line-height: 1.6;
+        font-size: 0.95rem;
+      }
+
+      .know-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .know-card {
+        display: grid;
+        align-content: start;
+        gap: 8px;
+      }
+
+      .know-step {
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        color: var(--accent);
+      }
+
+      .know-card h3 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 850;
+      }
+
+      .know-card p {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.86rem;
+        line-height: 1.55;
+      }
+
+      .know-card .impl {
+        margin-top: 4px;
+        padding-top: 9px;
+        border-top: 1px solid var(--line);
+        color: rgba(255, 255, 255, 0.62);
+        font-size: 0.8rem;
+        line-height: 1.5;
+      }
+
+      .know-card .impl b {
+        color: rgba(255, 255, 255, 0.82);
+        font-weight: 800;
+      }
+
+      .credit {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 0.74rem;
+        line-height: 1.7;
+      }
+
+      .credit a {
+        color: rgba(255, 255, 255, 0.74);
+      }
+
+      @keyframes drift {
+        from {
+          transform: rotate(0deg) scale(1.06);
+        }
+        to {
+          transform: rotate(360deg) scale(1.06);
+        }
+      }
+
+      @keyframes riseIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      @keyframes pulseBar {
+        from {
+          height: calc(var(--h) * 0.52);
+          opacity: 0.48;
+        }
+        to {
+          height: min(100%, calc(var(--h) * 1.35));
+          opacity: 0.92;
+        }
+      }
+
+      @media (max-width: 900px) {
+        .site-nav {
+          width: min(100% - 22px, 680px);
+        }
+
+        .stage {
+          width: min(100% - 22px, 680px);
+          grid-template-rows: auto auto auto auto;
+          padding-top: 88px;
+        }
+
+        .hero {
+          min-height: 52vh;
+          align-items: flex-end;
+          flex-direction: column;
+          justify-content: flex-end;
+        }
+
+        .hero-copy,
+        .status-strip {
+          width: 100%;
+        }
+
+        .status-strip {
+          justify-content: flex-start;
+          padding-bottom: 0;
+        }
+
+        .control-shell {
+          grid-template-columns: 1fr;
+        }
+
+        .scene-strip {
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .know-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      @media (max-width: 520px) {
+        .site-nav {
+          min-height: 48px;
+          width: calc(100% - 18px);
+        }
+
+        .site-nav nav a {
+          min-height: 32px;
+          padding: 0 9px;
+        }
+
+        .stage {
+          width: calc(100% - 18px);
+          padding-top: 82px;
+          padding-bottom: 18px;
+        }
+
+        h1 {
+          font-size: clamp(3.15rem, 20vw, 5.4rem);
+        }
+
+        .panel {
+          padding: 14px;
+        }
+
+        .button-row,
+        .music-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .swatch-grid {
+          grid-template-columns: repeat(5, minmax(28px, 1fr));
+        }
+
+        .scene-strip {
+          grid-template-columns: 1fr;
+        }
+
+        .know-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          scroll-behavior: auto !important;
+        }
+
+        html {
+          scroll-behavior: auto;
+        }
+      }
+    </style>
   </head>
   <body>
     <div class="backdrop" aria-hidden="true"></div>
@@ -21,6 +875,7 @@
       <nav>
         <a href="#studio">Studio</a>
         <a href="#scenes">Scenes</a>
+        <a href="#about">原理</a>
       </nav>
     </header>
 
@@ -134,8 +989,891 @@
           <small>Glass Forest</small>
         </button>
       </section>
+
+      <section class="knowledge" id="about" aria-label="原理速览">
+        <div class="panel know-head">
+          <p class="eyebrow">HOW IT WORKS · 原理速览</p>
+          <h2>从一句提示词，到一段声音</h2>
+          <p class="muted-copy">
+            像 Suno、Udio 这类 AI 音乐系统，本质是一条「文本条件 → 神经网络生成音频 →
+            解码成波形」的流水线：用大语言模型理解提示词与歌词，用神经音频编解码器把声音压成离散
+            token，再由 Transformer（自回归）配合扩散模型预测并细化这些 token，最终还原成带人声的完整音频。
+            本页是浏览器内的实时<strong>程序化合成 demo</strong>，借用了同一套「提示词驱动生成」的思路——下面是四个阶段，以及本页的对应实现。
+          </p>
+        </div>
+
+        <div class="know-grid">
+          <article class="panel know-card">
+            <span class="know-step">01 · 文本编码</span>
+            <h3>提示词 → 向量</h3>
+            <p>用 T5 等文本编码器，把自然语言描述与歌词编成「音乐描述向量」，作为生成的条件信号。</p>
+            <p class="impl"><b>本页：</b>analyzePrompt 解析情绪词（清亮/柔和/坚定/空灵…），换算成节奏、能量、明亮度与调式偏置。</p>
+          </article>
+
+          <article class="panel know-card">
+            <span class="know-step">02 · 音频离散化</span>
+            <h3>波形 → token</h3>
+            <p>EnCodec、Descript Audio Codec 等神经编解码器把连续波形压成可逆的离散 token，让模型能像处理文字一样处理声音。</p>
+            <p class="impl"><b>本页：</b>跳过 codec，直接用 Web Audio 振荡器即时合成音色。</p>
+          </article>
+
+          <article class="panel know-card">
+            <span class="know-step">03 · 生成模型</span>
+            <h3>Transformer + 扩散</h3>
+            <p>自回归 Transformer 在文本条件下逐个预测音频 token，扩散模型再做高保真细化，保证连贯与音质。</p>
+            <p class="impl"><b>本页：</b>确定性的 16 步序列器 + 调式/和弦规则，同一(提示词+种子)=同一段音乐。</p>
+          </article>
+
+          <article class="panel know-card">
+            <span class="know-step">04 · 解码成声</span>
+            <h3>token → 波形</h3>
+            <p>编解码器的解码端把 token 还原成完整波形（人声+伴奏），并支持多候选与「续写/扩展」。</p>
+            <p class="impl"><b>本页：</b>前瞻调度器实时播放，「自动续写」每 32 步重组一次乐段。</p>
+          </article>
+        </div>
+
+        <p class="credit">
+          原理参考：
+          <a href="https://musicgeneratorai.io/posts/how-does-suno-ai-create-music" target="_blank" rel="noopener">How Suno AI Creates Music (musicgeneratorai.io)</a>、
+          <a href="https://vi-control.net/community/threads/how-exactly-do-suno-ai-and-udio-com-work-technical-view.151041/" target="_blank" rel="noopener">How Suno &amp; Udio work — technical view (VI-CONTROL)</a>、
+          <a href="https://arxiv.org/pdf/2404.10301" target="_blank" rel="noopener">Long-form music generation with latent diffusion (arXiv:2404.10301)</a>。
+          本页为独立的程序化合成演示，与上述产品无从属关系。
+        </p>
+      </section>
     </main>
 
-    <script src="./app.js"></script>
+    <script>
+      const palettes = [
+        {
+          name: "Aurora",
+          colors: ["#0c1532", "#146c88", "#f4b35e", "#f44d76"],
+          accent: "#8bf0c8",
+          key: "C",
+          scale: "major",
+        },
+        {
+          name: "Citrus",
+          colors: ["#11351f", "#35b76f", "#ffe26b", "#ff6f59"],
+          accent: "#fff1a6",
+          key: "D",
+          scale: "lydian",
+        },
+        {
+          name: "Coral",
+          colors: ["#1d1b2f", "#e85d75", "#ffba6b", "#57c4e5"],
+          accent: "#ffc9b7",
+          key: "A",
+          scale: "minor",
+        },
+        {
+          name: "Lagoon",
+          colors: ["#062f2f", "#0e9f8f", "#b4f06d", "#f45b69"],
+          accent: "#bff7ef",
+          key: "E",
+          scale: "dorian",
+        },
+        {
+          name: "Prism",
+          colors: ["#171717", "#ff4f9a", "#5df2d6", "#ffe156"],
+          accent: "#ffffff",
+          key: "G",
+          scale: "pentatonic",
+        },
+      ];
+
+      const promptIdeas = [
+        "雨后城市，清亮，轻快",
+        "霓虹海面，柔和，慢慢升温",
+        "午后花园，明亮，跳动",
+        "玻璃森林，空灵，有呼吸感",
+        "星光公路，坚定，速度感",
+        "暖色展厅，优雅，律动",
+      ];
+
+      const scenePresets = {
+        night: {
+          palette: 4,
+          prompt: "霓虹海面，柔和，慢慢升温",
+          tempo: 104,
+          energy: 72,
+          density: 132,
+          pull: 94,
+          mode: "orbit",
+        },
+        rain: {
+          palette: 0,
+          prompt: "雨后城市，清亮，轻快",
+          tempo: 92,
+          energy: 62,
+          density: 112,
+          pull: 84,
+          mode: "draw",
+        },
+        solar: {
+          palette: 1,
+          prompt: "午后花园，明亮，跳动",
+          tempo: 118,
+          energy: 82,
+          density: 146,
+          pull: 104,
+          mode: "repel",
+        },
+        glass: {
+          palette: 3,
+          prompt: "玻璃森林，空灵，有呼吸感",
+          tempo: 78,
+          energy: 46,
+          density: 92,
+          pull: 72,
+          mode: "orbit",
+        },
+      };
+
+      const scaleSteps = {
+        major: [0, 2, 4, 5, 7, 9, 11, 12],
+        minor: [0, 2, 3, 5, 7, 8, 10, 12],
+        dorian: [0, 2, 3, 5, 7, 9, 10, 12],
+        lydian: [0, 2, 4, 6, 7, 9, 11, 12],
+        pentatonic: [0, 2, 4, 7, 9, 12, 14, 16],
+      };
+
+      const keyMidi = { C: 60, D: 62, E: 64, F: 65, G: 67, A: 69, B: 71 };
+
+      const els = {
+        canvas: document.querySelector("#particleCanvas"),
+        aura: document.querySelector("#aura"),
+        paletteButtons: document.querySelector("#paletteButtons"),
+        paletteName: document.querySelector("#paletteName"),
+        flowSpeed: document.querySelector("#flowSpeed"),
+        colorPower: document.querySelector("#colorPower"),
+        musicPrompt: document.querySelector("#musicPrompt"),
+        randomPrompt: document.querySelector("#randomPrompt"),
+        autoMusic: document.querySelector("#autoMusic"),
+        playToggle: document.querySelector("#playToggle"),
+        playIcon: document.querySelector("#playIcon"),
+        playLabel: document.querySelector("#playLabel"),
+        generateMusic: document.querySelector("#generateMusic"),
+        visualizer: document.querySelector("#visualizer"),
+        sequenceGrid: document.querySelector("#sequenceGrid"),
+        tempo: document.querySelector("#tempo"),
+        energy: document.querySelector("#energy"),
+        moodChip: document.querySelector("#moodChip"),
+        tempoChip: document.querySelector("#tempoChip"),
+        energyChip: document.querySelector("#energyChip"),
+        particleDensity: document.querySelector("#particleDensity"),
+        particlePull: document.querySelector("#particlePull"),
+        burstParticles: document.querySelector("#burstParticles"),
+      };
+
+      const ctx = els.canvas.getContext("2d");
+      const pointer = { x: window.innerWidth / 2, y: window.innerHeight / 2, active: false, down: false };
+      const state = {
+        paletteIndex: 0,
+        mode: "orbit",
+        particles: [],
+        composition: null,
+        seed: Date.now(),
+        playing: false,
+        bars: [],
+        sequenceDots: [],
+      };
+
+      let audio = null;
+      let schedulerId = null;
+      let nextStepTime = 0;
+      let stepIndex = 0;
+      let absoluteStep = 0;
+      let lastFrameTime = performance.now();
+      const aura = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+
+      function clamp(value, min, max) {
+        return Math.max(min, Math.min(max, value));
+      }
+
+      function hashString(text) {
+        let h = 2166136261;
+        for (let i = 0; i < text.length; i += 1) {
+          h ^= text.charCodeAt(i);
+          h = Math.imul(h, 16777619);
+        }
+        return h >>> 0;
+      }
+
+      function mulberry32(seed) {
+        let t = seed >>> 0;
+        return () => {
+          t += 0x6d2b79f5;
+          let r = Math.imul(t ^ (t >>> 15), 1 | t);
+          r ^= r + Math.imul(r ^ (r >>> 7), 61 | r);
+          return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+
+      function hexToRgba(hex, alpha) {
+        const value = hex.replace("#", "");
+        const rgb = value.match(/.{1,2}/g).map((part) => parseInt(part, 16));
+        return `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${alpha})`;
+      }
+
+      function midiToFreq(midi) {
+        return 440 * 2 ** ((midi - 69) / 12);
+      }
+
+      function choose(array, rng) {
+        return array[Math.floor(rng() * array.length)];
+      }
+
+      function setupPalettes() {
+        palettes.forEach((palette, index) => {
+          const button = document.createElement("button");
+          button.className = "swatch";
+          button.type = "button";
+          button.setAttribute("aria-label", palette.name);
+          button.setAttribute("aria-pressed", index === state.paletteIndex ? "true" : "false");
+          button.style.setProperty("--s1", palette.colors[0]);
+          button.style.setProperty("--s2", palette.colors[1]);
+          button.style.setProperty("--s3", palette.colors[2]);
+          button.style.setProperty("--s4", palette.colors[3]);
+          button.addEventListener("click", () => setPalette(index));
+          els.paletteButtons.append(button);
+        });
+      }
+
+      function setPalette(index) {
+        state.paletteIndex = index;
+        const palette = palettes[index];
+        palette.colors.forEach((color, colorIndex) => {
+          document.documentElement.style.setProperty(`--bg-${String.fromCharCode(97 + colorIndex)}`, color);
+        });
+        document.documentElement.style.setProperty("--accent", palette.accent);
+        els.paletteName.textContent = palette.name;
+
+        document.querySelectorAll(".swatch").forEach((button, buttonIndex) => {
+          const isActive = buttonIndex === index;
+          button.classList.toggle("active", isActive);
+          button.setAttribute("aria-pressed", isActive ? "true" : "false");
+        });
+
+        tintParticles();
+        composeMusic(false);
+      }
+
+      function setParticleMode(mode) {
+        state.mode = mode;
+        document.querySelectorAll(".mode-button").forEach((button) => {
+          const isActive = button.dataset.mode === mode;
+          button.classList.toggle("active", isActive);
+          button.setAttribute("aria-pressed", isActive ? "true" : "false");
+        });
+      }
+
+      function updateBackgroundControls() {
+        const speed = Number(els.flowSpeed.value);
+        const power = Number(els.colorPower.value);
+        const root = document.documentElement.style;
+        // Higher speed -> shorter rotation period for the composited colour field.
+        root.setProperty("--flow-duration", `${clamp(124 - speed * 0.62, 26, 112).toFixed(1)}s`);
+        root.setProperty("--color-power", (power / 100).toFixed(3));
+        root.setProperty("--shade-opacity", (0.76 + power / 420).toFixed(3));
+      }
+
+      function resizeCanvas() {
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        els.canvas.width = Math.floor(window.innerWidth * dpr);
+        els.canvas.height = Math.floor(window.innerHeight * dpr);
+        els.canvas.style.width = `${window.innerWidth}px`;
+        els.canvas.style.height = `${window.innerHeight}px`;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        syncParticleCount();
+      }
+
+      function createParticle(rng = Math.random, fromPointer = false) {
+        const palette = palettes[state.paletteIndex];
+        const color = choose(palette.colors.concat(palette.accent), rng);
+        const angle = rng() * Math.PI * 2;
+        const speed = 0.18 + rng() * 0.72;
+        return {
+          x: fromPointer ? pointer.x + (rng() - 0.5) * 36 : rng() * window.innerWidth,
+          y: fromPointer ? pointer.y + (rng() - 0.5) * 36 : rng() * window.innerHeight,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          r: 1.3 + rng() * 3.8,
+          color,
+          glow: palette.accent,
+          phase: rng() * Math.PI * 2,
+          life: fromPointer ? 90 + rng() * 90 : Infinity,
+        };
+      }
+
+      // Ambient particles use life === Infinity and are governed by the density
+      // slider; burst particles are finite-life and live alongside them without
+      // being culled by the density target.
+      function syncParticleCount() {
+        const target = Math.round(Number(els.particleDensity.value));
+        let ambient = 0;
+        for (let i = 0; i < state.particles.length; i += 1) {
+          if (state.particles[i].life === Infinity) ambient += 1;
+        }
+
+        const rng = mulberry32(state.seed + target + state.paletteIndex * 97);
+        while (ambient < target) {
+          state.particles.push(createParticle(rng));
+          ambient += 1;
+        }
+        while (ambient > target) {
+          for (let i = state.particles.length - 1; i >= 0; i -= 1) {
+            if (state.particles[i].life === Infinity) {
+              state.particles.splice(i, 1);
+              ambient -= 1;
+              break;
+            }
+          }
+        }
+      }
+
+      function tintParticles() {
+        const rng = mulberry32(state.seed + state.paletteIndex * 997);
+        const palette = palettes[state.paletteIndex];
+        state.particles.forEach((particle) => {
+          particle.color = choose(palette.colors.concat(palette.accent), rng);
+          particle.glow = palette.accent;
+        });
+      }
+
+      function burst(count = 34) {
+        const rng = mulberry32(hashString(`${state.seed}-${performance.now()}`));
+        for (let i = 0; i < count; i += 1) {
+          const particle = createParticle(rng, true);
+          const angle = (i / count) * Math.PI * 2 + rng() * 0.2;
+          const speed = 2 + rng() * 5.5;
+          particle.vx = Math.cos(angle) * speed;
+          particle.vy = Math.sin(angle) * speed;
+          particle.r += 1.4;
+          state.particles.push(particle);
+        }
+      }
+
+      function drawParticles(now) {
+        const dt = Math.min(2.2, (now - lastFrameTime) / 16.67);
+        lastFrameTime = now;
+        const pull = Number(els.particlePull.value) / 100;
+        const maxDistance = 210 * pull;
+        const palette = palettes[state.paletteIndex];
+
+        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        ctx.globalCompositeOperation = "lighter";
+
+        for (let i = state.particles.length - 1; i >= 0; i -= 1) {
+          const p = state.particles[i];
+          const dx = pointer.x - p.x;
+          const dy = pointer.y - p.y;
+          const distance = Math.hypot(dx, dy) || 1;
+          const influence = pointer.active ? clamp(1 - distance / maxDistance, 0, 1) : 0;
+
+          if (influence > 0) {
+            if (state.mode === "repel") {
+              p.vx -= (dx / distance) * influence * 0.42 * pull;
+              p.vy -= (dy / distance) * influence * 0.42 * pull;
+            } else if (state.mode === "draw" || pointer.down) {
+              p.vx += (dx / distance) * influence * 0.34 * pull;
+              p.vy += (dy / distance) * influence * 0.34 * pull;
+            } else {
+              const tangentX = -dy / distance;
+              const tangentY = dx / distance;
+              p.vx += tangentX * influence * 0.24 * pull + (dx / distance) * influence * 0.05;
+              p.vy += tangentY * influence * 0.24 * pull + (dy / distance) * influence * 0.05;
+            }
+          }
+
+          p.phase += 0.025 * dt;
+          p.vx += Math.cos(p.phase) * 0.008 * dt;
+          p.vy += Math.sin(p.phase * 0.8) * 0.008 * dt;
+          p.vx *= 0.988;
+          p.vy *= 0.988;
+          p.x += p.vx * dt;
+          p.y += p.vy * dt;
+
+          if (p.x < -24) p.x = window.innerWidth + 24;
+          if (p.x > window.innerWidth + 24) p.x = -24;
+          if (p.y < -24) p.y = window.innerHeight + 24;
+          if (p.y > window.innerHeight + 24) p.y = -24;
+
+          if (p.life !== Infinity) {
+            p.life -= dt;
+            if (p.life <= 0) {
+              state.particles.splice(i, 1);
+              continue;
+            }
+          }
+
+          const alpha = p.life !== Infinity ? clamp(p.life / 80, 0, 0.75) : 0.62;
+          const radius = p.r + Math.sin(p.phase) * 0.7 + influence * 3.6;
+          const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, radius * 5.2);
+          gradient.addColorStop(0, hexToRgba(p.color, alpha));
+          gradient.addColorStop(0.32, hexToRgba(p.glow, alpha * 0.36));
+          gradient.addColorStop(1, hexToRgba(p.color, 0));
+
+          ctx.fillStyle = gradient;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, radius * 5.2, 0, Math.PI * 2);
+          ctx.fill();
+
+          if (influence > 0.34) {
+            ctx.strokeStyle = hexToRgba(palette.accent, influence * 0.16);
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(pointer.x, pointer.y);
+            ctx.stroke();
+          }
+        }
+
+        ctx.globalCompositeOperation = "source-over";
+
+        // Ease the pointer-following aura toward the cursor and move it with a
+        // compositor-only transform (frame-rate independent smoothing).
+        const ease = 1 - Math.pow(0.86, dt);
+        aura.x += (pointer.x - aura.x) * ease;
+        aura.y += (pointer.y - aura.y) * ease;
+        if (els.aura) els.aura.style.transform = `translate3d(${aura.x}px, ${aura.y}px, 0)`;
+
+        syncParticleCount();
+        requestAnimationFrame(drawParticles);
+      }
+
+      function setupVisualizer() {
+        for (let i = 0; i < 24; i += 1) {
+          const bar = document.createElement("span");
+          bar.className = "bar";
+          bar.style.setProperty("--h", `${22 + Math.sin(i * 1.7) * 13 + (i % 7) * 7}%`);
+          bar.style.setProperty("--d", `${560 + (i % 6) * 120}ms`);
+          bar.style.setProperty("--delay", `${i * 34}ms`);
+          els.visualizer.append(bar);
+          state.bars.push(bar);
+        }
+
+        for (let i = 0; i < 16; i += 1) {
+          const dot = document.createElement("span");
+          dot.className = "sequence-dot";
+          els.sequenceGrid.append(dot);
+          state.sequenceDots.push(dot);
+        }
+      }
+
+      // Lightweight stand-in for Suno-style prompt conditioning: the descriptive
+      // words in the text prompt are read as a control signal that biases tempo,
+      // energy, brightness and scale — analogous to how a real model encodes the
+      // prompt into an embedding that steers generation.
+      const promptLexicon = {
+        tempo: [
+          { words: ["轻快", "跳动", "速度", "律动", "明快", "快"], delta: 16 },
+          { words: ["慢", "柔和", "空灵", "呼吸", "优雅", "舒缓"], delta: -16 },
+        ],
+        energy: [
+          { words: ["坚定", "速度", "跳动", "律动", "明亮", "强"], delta: 14 },
+          { words: ["柔和", "空灵", "呼吸", "轻", "慢"], delta: -14 },
+        ],
+        brightness: [
+          { words: ["清亮", "明亮", "星", "清", "亮"], delta: 0.18 },
+          { words: ["暖", "柔", "沉", "低"], delta: -0.16 },
+        ],
+      };
+
+      function analyzePrompt(prompt) {
+        const result = { tempo: 0, energy: 0, brightness: 1, scale: null };
+        promptLexicon.tempo.forEach((g) => {
+          if (g.words.some((w) => prompt.includes(w))) result.tempo += g.delta;
+        });
+        promptLexicon.energy.forEach((g) => {
+          if (g.words.some((w) => prompt.includes(w))) result.energy += g.delta;
+        });
+        promptLexicon.brightness.forEach((g) => {
+          if (g.words.some((w) => prompt.includes(w))) result.brightness += g.delta;
+        });
+        if (prompt.includes("空灵") || prompt.includes("星")) result.scale = "lydian";
+        else if (prompt.includes("坚定")) result.scale = "dorian";
+        else if (prompt.includes("明亮") || prompt.includes("清亮")) result.scale = "major";
+        return result;
+      }
+
+      // Steer a range input halfway toward the prompt-implied target, so the prompt
+      // visibly shapes the result while still respecting manual control.
+      function nudgeRange(input, delta) {
+        const value = Number(input.value);
+        const target = clamp(value + delta, Number(input.min), Number(input.max));
+        input.value = String(Math.round((value + target) / 2));
+      }
+
+      function composeMusic(forceNewSeed = true) {
+        if (forceNewSeed) state.seed = Date.now() ^ hashString(els.musicPrompt.value);
+        const prompt = els.musicPrompt.value.trim() || "flow";
+        const palette = palettes[state.paletteIndex];
+        const analysis = analyzePrompt(prompt);
+
+        if (forceNewSeed) {
+          if (analysis.tempo) nudgeRange(els.tempo, analysis.tempo);
+          if (analysis.energy) nudgeRange(els.energy, analysis.energy);
+        }
+
+        const rng = mulberry32(hashString(`${prompt}-${state.seed}-${palette.name}`));
+        const scaleNames = Object.keys(scaleSteps);
+        const scale = analysis.scale || palette.scale;
+        const pickedScale = rng() > 0.82 ? choose(scaleNames, rng) : scale;
+        const key = rng() > 0.8 ? choose(Object.keys(keyMidi), rng) : palette.key;
+        const root = keyMidi[key] + (rng() > 0.55 ? 0 : -12);
+        const steps = scaleSteps[pickedScale];
+        const chordRoots = [0, 3, 4, 2].map((base) => steps[base % steps.length]);
+        const melody = Array.from({ length: 16 }, (_, index) => {
+          if (rng() < 0.24 && index % 4 !== 0) return null;
+          return steps[Math.floor(rng() * steps.length)] + (rng() > 0.58 ? 12 : 0);
+        });
+        const hats = Array.from({ length: 16 }, (_, index) => rng() > (index % 4 === 0 ? 0.24 : 0.48));
+
+        state.composition = {
+          key,
+          scale: pickedScale,
+          root,
+          steps,
+          chordRoots,
+          melody,
+          hats,
+          brightness: clamp(analysis.brightness, 0.7, 1.3),
+          wave: rng() > 0.48 ? "triangle" : "sine",
+          sparkle: rng() > 0.5,
+        };
+        updateStatus();
+        animateVisualizerPattern();
+        updateSequenceGrid();
+      }
+
+      function updateStatus() {
+        const composition = state.composition;
+        els.moodChip.textContent = `${palettes[state.paletteIndex].name} / ${composition.key} ${composition.scale}`;
+        els.tempoChip.textContent = `${els.tempo.value} BPM`;
+        els.energyChip.textContent = `Energy ${els.energy.value}%`;
+      }
+
+      function animateVisualizerPattern() {
+        const rng = mulberry32(state.seed + hashString(els.musicPrompt.value));
+        state.bars.forEach((bar, index) => {
+          const height = 16 + rng() * 70 + Math.sin(index * 0.6) * 12;
+          bar.style.setProperty("--h", `${clamp(height, 10, 96)}%`);
+          bar.style.setProperty("--d", `${520 + rng() * 780}ms`);
+        });
+      }
+
+      function updateSequenceGrid(activeIndex = -1) {
+        if (!state.composition) return;
+        state.sequenceDots.forEach((dot, index) => {
+          const hasMelody = state.composition.melody[index] !== null;
+          const hasHat = state.composition.hats[index];
+          dot.classList.toggle("on", hasMelody || hasHat || index % 4 === 0);
+          dot.classList.toggle("active", index === activeIndex);
+          dot.style.opacity = hasMelody ? "1" : hasHat ? "0.74" : "0.38";
+        });
+      }
+
+      function ensureAudio() {
+        if (audio) return audio;
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const context = new AudioContext();
+        const master = context.createGain();
+        const delay = context.createDelay(0.5);
+        const delayGain = context.createGain();
+        const filter = context.createBiquadFilter();
+
+        master.gain.value = 0.7;
+        filter.type = "lowpass";
+        filter.frequency.value = 5200;
+        filter.Q.value = 0.55;
+        delay.delayTime.value = 0.18;
+        delayGain.gain.value = 0.16;
+
+        master.connect(filter);
+        filter.connect(context.destination);
+        filter.connect(delay);
+        delay.connect(delayGain);
+        delayGain.connect(filter);
+
+        audio = { context, master, filter };
+        return audio;
+      }
+
+      function envelope(gain, time, peak, attack, decay, sustain, release) {
+        gain.gain.cancelScheduledValues(time);
+        gain.gain.setValueAtTime(0.0001, time);
+        gain.gain.exponentialRampToValueAtTime(Math.max(0.0002, peak), time + attack);
+        gain.gain.exponentialRampToValueAtTime(Math.max(0.0002, sustain), time + attack + decay);
+        gain.gain.exponentialRampToValueAtTime(0.0001, time + attack + decay + release);
+      }
+
+      function playTone(midi, time, duration, options = {}) {
+        const { context, master } = ensureAudio();
+        const osc = context.createOscillator();
+        const gain = context.createGain();
+        const filter = context.createBiquadFilter();
+        const energy = Number(els.energy.value) / 100;
+
+        osc.type = options.wave || state.composition.wave;
+        osc.frequency.setValueAtTime(midiToFreq(midi), time);
+        if (options.detune) osc.detune.setValueAtTime(options.detune, time);
+
+        const brightness = state.composition ? state.composition.brightness : 1;
+        filter.type = "lowpass";
+        filter.frequency.setValueAtTime((options.cutoff || 1400 + energy * 4200) * brightness, time);
+        filter.Q.value = options.q || 1.2;
+
+        envelope(gain, time, options.peak || 0.08, options.attack || 0.012, options.decay || 0.08, options.sustain || 0.028, options.release || duration);
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(master);
+        osc.start(time);
+        osc.stop(time + duration + 0.8);
+      }
+
+      function playPad(rootMidi, time, duration) {
+        const chord = [0, 4, 7].map((offset, index) => rootMidi + offset + (index === 2 ? 12 : 0));
+        chord.forEach((midi, index) => {
+          playTone(midi, time + index * 0.012, duration, {
+            wave: "sine",
+            peak: 0.034,
+            attack: 0.28,
+            decay: 0.32,
+            sustain: 0.018,
+            release: duration + 0.42,
+            cutoff: 1200,
+            detune: index * 4 - 4,
+          });
+        });
+      }
+
+      function playKick(time) {
+        const { context, master } = ensureAudio();
+        const osc = context.createOscillator();
+        const gain = context.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(120, time);
+        osc.frequency.exponentialRampToValueAtTime(38, time + 0.18);
+        envelope(gain, time, 0.3, 0.006, 0.04, 0.12, 0.14);
+        osc.connect(gain);
+        gain.connect(master);
+        osc.start(time);
+        osc.stop(time + 0.28);
+      }
+
+      function playHat(time) {
+        const { context, master } = ensureAudio();
+        const bufferSize = context.sampleRate * 0.06;
+        const buffer = context.createBuffer(1, bufferSize, context.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i += 1) data[i] = Math.random() * 2 - 1;
+
+        const source = context.createBufferSource();
+        const gain = context.createGain();
+        const filter = context.createBiquadFilter();
+        source.buffer = buffer;
+        filter.type = "highpass";
+        filter.frequency.value = 6500;
+        envelope(gain, time, 0.045, 0.003, 0.012, 0.018, 0.035);
+        source.connect(filter);
+        filter.connect(gain);
+        gain.connect(master);
+        source.start(time);
+      }
+
+      function scheduleStep(time, index) {
+        if (index > 0 && index % 32 === 0 && els.autoMusic.checked) {
+          composeMusic(true);
+          burst(14);
+        }
+
+        const composition = state.composition;
+        const stepDuration = 60 / Number(els.tempo.value) / 2;
+        const energy = Number(els.energy.value) / 100;
+        const chordRoot = composition.root + composition.chordRoots[Math.floor((index % 16) / 4)];
+        const melodyStep = composition.melody[index % composition.melody.length];
+
+        if (index % 8 === 0) playPad(chordRoot - 12, time, stepDuration * 7.6);
+        if (index % 4 === 0) playKick(time);
+        if (composition.hats[index % 16] && energy > 0.34) playHat(time + stepDuration * 0.04);
+
+        if (index % 2 === 0) {
+          playTone(chordRoot - 24, time, stepDuration * 0.8, {
+            wave: "triangle",
+            peak: 0.05 + energy * 0.06,
+            attack: 0.01,
+            decay: 0.06,
+            sustain: 0.022,
+            release: 0.18,
+            cutoff: 700 + energy * 1400,
+          });
+        }
+
+        if (melodyStep !== null && (energy > 0.42 || index % 2 === 0)) {
+          playTone(composition.root + melodyStep + 12, time + stepDuration * 0.02, stepDuration * 0.72, {
+            peak: 0.044 + energy * 0.05,
+            attack: 0.01,
+            decay: 0.05,
+            sustain: 0.02,
+            release: 0.2,
+            cutoff: 1700 + energy * 4200,
+          });
+        }
+
+        window.setTimeout(() => {
+          if (state.playing) updateSequenceGrid(index % 16);
+        }, Math.max(0, (time - ensureAudio().context.currentTime) * 1000));
+      }
+
+      function schedulerTick() {
+        const { context } = ensureAudio();
+        const lookAhead = 0.16;
+        while (nextStepTime < context.currentTime + lookAhead) {
+          scheduleStep(nextStepTime, absoluteStep);
+          nextStepTime += 60 / Number(els.tempo.value) / 2;
+          stepIndex = (stepIndex + 1) % 16;
+          absoluteStep += 1;
+        }
+      }
+
+      async function startMusic() {
+        const { context } = ensureAudio();
+        if (context.state === "suspended") await context.resume();
+        state.playing = true;
+        document.body.classList.add("playing");
+        els.playIcon.textContent = "Ⅱ";
+        els.playLabel.textContent = "暂停";
+        els.playToggle.setAttribute("aria-pressed", "true");
+        nextStepTime = context.currentTime + 0.04;
+        stepIndex = 0;
+        absoluteStep = 0;
+        schedulerId = window.setInterval(schedulerTick, 48);
+        burst(22);
+      }
+
+      function stopMusic() {
+        state.playing = false;
+        document.body.classList.remove("playing");
+        els.playIcon.textContent = "▶";
+        els.playLabel.textContent = "播放";
+        els.playToggle.setAttribute("aria-pressed", "false");
+        if (schedulerId) window.clearInterval(schedulerId);
+        schedulerId = null;
+        updateSequenceGrid();
+      }
+
+      function bindEvents() {
+        window.addEventListener("resize", resizeCanvas);
+
+        window.addEventListener("pointermove", (event) => {
+          pointer.x = event.clientX;
+          pointer.y = event.clientY;
+          pointer.active = true;
+        });
+
+        window.addEventListener("pointerdown", (event) => {
+          pointer.down = true;
+          pointer.active = true;
+          pointer.x = event.clientX;
+          pointer.y = event.clientY;
+          burst(28);
+        });
+
+        window.addEventListener("pointerup", () => {
+          pointer.down = false;
+        });
+
+        window.addEventListener("pointercancel", () => {
+          pointer.down = false;
+          pointer.active = false;
+        });
+
+        window.addEventListener("pointerleave", () => {
+          pointer.active = false;
+          pointer.down = false;
+        });
+
+        els.flowSpeed.addEventListener("input", updateBackgroundControls);
+        els.colorPower.addEventListener("input", updateBackgroundControls);
+        els.particleDensity.addEventListener("input", syncParticleCount);
+        els.particlePull.addEventListener("change", () => burst(10));
+        els.burstParticles.addEventListener("click", () => burst(52));
+
+        els.tempo.addEventListener("input", updateStatus);
+        els.energy.addEventListener("input", () => {
+          updateStatus();
+          animateVisualizerPattern();
+          if (audio) audio.filter.frequency.setTargetAtTime(2400 + Number(els.energy.value) * 56, audio.context.currentTime, 0.08);
+        });
+
+        els.randomPrompt.addEventListener("click", () => {
+          const current = els.musicPrompt.value;
+          const choices = promptIdeas.filter((idea) => idea !== current);
+          els.musicPrompt.value = choose(choices, Math.random);
+          composeMusic(true);
+          burst(18);
+        });
+
+        els.musicPrompt.addEventListener("change", () => composeMusic(true));
+
+        els.generateMusic.addEventListener("click", () => {
+          composeMusic(true);
+          burst(26);
+        });
+
+        els.playToggle.addEventListener("click", () => {
+          if (state.playing) stopMusic();
+          else startMusic();
+        });
+
+        document.querySelectorAll(".mode-button").forEach((button) => {
+          button.addEventListener("click", () => {
+            setParticleMode(button.dataset.mode);
+            burst(18);
+          });
+        });
+
+        document.querySelectorAll(".scene-card").forEach((button) => {
+          button.addEventListener("click", () => {
+            applyScene(button.dataset.scene);
+          });
+        });
+      }
+
+      function applyScene(sceneId) {
+        const scene = scenePresets[sceneId];
+        if (!scene) return;
+
+        els.musicPrompt.value = scene.prompt;
+        els.tempo.value = scene.tempo;
+        els.energy.value = scene.energy;
+        els.particleDensity.value = scene.density;
+        els.particlePull.value = scene.pull;
+        setParticleMode(scene.mode);
+        setPalette(scene.palette);
+        updateBackgroundControls();
+        syncParticleCount();
+        composeMusic(true);
+        burst(38);
+
+        document.querySelectorAll(".scene-card").forEach((button) => {
+          const isActive = button.dataset.scene === sceneId;
+          button.classList.toggle("active", isActive);
+          button.setAttribute("aria-pressed", isActive ? "true" : "false");
+        });
+      }
+
+      function init() {
+        setupPalettes();
+        setupVisualizer();
+        bindEvents();
+        resizeCanvas();
+        updateBackgroundControls();
+        applyScene("night");
+        requestAnimationFrame(drawParticles);
+      }
+
+      init();
+    </script>
   </body>
 </html>
