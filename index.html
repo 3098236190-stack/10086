@@ -8,17 +8,20 @@
     <title>流光互动音乐空间</title>
     <style>
       :root {
-        --bg-a: #0c1532;
-        --bg-b: #146c88;
-        --bg-c: #f4b35e;
-        --bg-d: #f44d76;
-        --accent: #8bf0c8;
-        --ink: #f8fbff;
-        --muted: rgba(248, 251, 255, 0.72);
-        --panel: rgba(9, 14, 28, 0.56);
-        --panel-strong: rgba(9, 14, 28, 0.72);
-        --line: rgba(255, 255, 255, 0.16);
-        --shadow: 0 22px 70px rgba(0, 0, 0, 0.34);
+        --bg-a: #0a0a0f;
+        --bg-b: #4c1d95;
+        --bg-c: #7c3aed;
+        --bg-d: #38bdf8;
+        --accent: #38bdf8;
+        --accent-2: #a78bfa;
+        --energy: #7c3aed;
+        --ink: #f4f6fb;
+        --muted: rgba(244, 246, 251, 0.6);
+        --panel: rgba(255, 255, 255, 0.05);
+        --panel-strong: rgba(255, 255, 255, 0.07);
+        --line: rgba(255, 255, 255, 0.12);
+        --shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+        --glow: 0 0 0 1px rgba(255, 255, 255, 0.06), 0 1px 0 0 rgba(255, 255, 255, 0.08) inset;
         --flow-duration: 60s;
         --color-power: 0.76;
         --shade-opacity: 1;
@@ -50,76 +53,58 @@
         font-family: var(--font-text);
         -webkit-font-smoothing: antialiased;
         text-rendering: optimizeLegibility;
-        background: radial-gradient(120% 120% at 50% 0%, #0b1430, #060a18 70%);
+        background:
+          radial-gradient(90% 55% at 50% 8%, rgba(124, 58, 237, 0.32), transparent 60%),
+          radial-gradient(80% 60% at 50% 118%, rgba(56, 189, 248, 0.16), transparent 60%),
+          linear-gradient(180deg, #0a0a0f, #0d0f1a 50%, #08080c);
+        background-attachment: fixed;
         overflow-x: hidden;
       }
 
-      /* Flowing colour field: a single large gradient layer that only ever
-         animates `transform`, so it is rasterised once and composited on the GPU —
-         no per-frame viewport repaints (the source of the previous jank). */
+      /* Single, restrained "energy field": one soft purple core that breathes
+         slowly — the only animated background element, so it reads as a focal
+         glow rather than visual noise. */
       .backdrop {
         position: fixed;
-        inset: -55%;
+        inset: 0;
         z-index: -2;
-        background: conic-gradient(
-          from 130deg,
-          var(--bg-a),
-          var(--bg-b),
-          var(--bg-c),
-          var(--bg-d),
-          var(--bg-a)
-        );
-        filter: blur(54px) saturate(calc(80% + var(--color-power, 0.76) * 110%));
-        opacity: 0.96;
+        background:
+          radial-gradient(42% 40% at 50% 36%, rgba(124, 58, 237, 0.5), transparent 70%),
+          radial-gradient(36% 30% at 68% 30%, rgba(56, 189, 248, 0.22), transparent 70%);
+        filter: blur(10px);
+        opacity: calc(0.5 + var(--color-power, 0.76) * 0.5);
         transform: translateZ(0);
-        animation: drift var(--flow-duration, 60s) linear infinite;
+        animation: breathe var(--flow-duration, 16s) ease-in-out infinite;
         will-change: transform;
       }
 
-      /* Soft highlight that trails the pointer — moved only via translate3d in JS,
-         so it is also fully compositor-driven and stays smooth. */
       .aura {
         position: fixed;
         top: 0;
         left: 0;
-        width: 72vmax;
-        height: 72vmax;
-        margin: -36vmax 0 0 -36vmax;
+        width: 50vmax;
+        height: 50vmax;
+        margin: -25vmax 0 0 -25vmax;
         z-index: -1;
         border-radius: 50%;
         background: radial-gradient(
           circle at center,
-          rgba(255, 255, 255, 0.26),
-          rgba(255, 255, 255, 0.06) 40%,
-          transparent 68%
+          rgba(56, 189, 248, 0.12),
+          rgba(124, 58, 237, 0.06) 42%,
+          transparent 70%
         );
-        mix-blend-mode: soft-light;
-        opacity: calc(0.4 + var(--color-power, 0.76) * 0.6);
         pointer-events: none;
         transform: translate3d(50vw, 50vh, 0);
         will-change: transform;
       }
 
-      body::before,
       body::after {
         content: "";
         position: fixed;
         inset: 0;
+        z-index: -1;
         pointer-events: none;
-      }
-
-      body::before {
-        background:
-          linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-        background-size: 54px 54px;
-        mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.92), rgba(0, 0, 0, 0.18));
-      }
-
-      body::after {
-        background: linear-gradient(to bottom, rgba(2, 7, 21, 0.08), rgba(2, 7, 21, 0.24) 58%, rgba(2, 7, 21, 0.66));
-        mix-blend-mode: soft-light;
-        opacity: var(--shade-opacity);
+        background: radial-gradient(120% 100% at 50% 0%, transparent 55%, rgba(0, 0, 0, 0.55));
       }
 
       button,
@@ -151,20 +136,22 @@
 
       .site-nav {
         position: fixed;
-        top: 12px;
+        top: 14px;
         left: 50%;
         z-index: 4;
-        width: min(1180px, calc(100% - 32px));
-        min-height: 48px;
+        width: min(1120px, calc(100% - 32px));
+        min-height: 52px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 6px 8px 6px 12px;
-        border: 1px solid rgba(255, 255, 255, 0.16);
-        border-radius: 8px;
-        background: rgba(6, 9, 18, 0.32);
-        backdrop-filter: blur(22px) saturate(140%);
-        box-shadow: 0 12px 38px rgba(0, 0, 0, 0.18);
+        padding: 7px 8px 7px 16px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.04);
+        backdrop-filter: blur(30px) saturate(150%);
+        box-shadow:
+          0 1px 0 0 rgba(255, 255, 255, 0.08) inset,
+          0 18px 50px rgba(0, 0, 0, 0.4);
         transform: translateX(-50%);
       }
 
@@ -225,40 +212,58 @@
       .stage {
         position: relative;
         z-index: 1;
-        min-height: 100vh;
-        width: min(1180px, calc(100% - 32px));
+        width: min(1120px, calc(100% - 32px));
         margin: 0 auto;
-        padding: 94px 0 36px;
+        padding: 0 0 48px;
         display: grid;
-        grid-template-rows: minmax(280px, 40vh) auto auto;
-        gap: 20px;
+        gap: 22px;
       }
 
+      /* Tier 1 — a full-height cinematic hero. The audio sphere (canvas) sits
+         behind this, making one clear focal point. */
       .hero {
+        min-height: 100svh;
         display: flex;
-        align-items: flex-end;
-        justify-content: space-between;
-        gap: 24px;
-        min-height: 0;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        gap: 0;
+        padding: 96px 0 40px;
       }
 
       .hero-copy {
-        max-width: 760px;
-        padding-bottom: 8px;
-        animation: riseIn 880ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
-      }
-
-      .status-strip {
-        animation: riseIn 880ms cubic-bezier(0.2, 0.7, 0.2, 1) 140ms both;
+        max-width: 880px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        animation: riseIn 1000ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
       }
 
       .eyebrow {
-        margin: 0 0 14px;
-        color: var(--accent);
-        font-size: 0.82rem;
+        margin: 0 0 22px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 14px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.04);
+        backdrop-filter: blur(12px);
+        color: rgba(255, 255, 255, 0.82);
+        font-size: 0.76rem;
         font-weight: 600;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.14em;
         text-transform: uppercase;
+      }
+
+      .eyebrow::before {
+        content: "";
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 10px 1px var(--accent);
       }
 
       h1,
@@ -267,106 +272,160 @@
         margin: 0;
       }
 
-      /* Apple-style display headline: SF Pro Display, semibold, very tight
-         tracking, crisp near-white with a whisper of gradient. */
+      /* Vision-Pro-scale display headline. */
       h1 {
-        max-width: 11ch;
+        max-width: 16ch;
         font-family: var(--font-display);
-        font-size: clamp(3.9rem, 12.5vw, 9rem);
+        font-size: clamp(3.4rem, 9vw, 7.6rem);
         font-weight: 600;
         line-height: 1.02;
-        letter-spacing: -0.03em;
+        letter-spacing: -0.035em;
         text-wrap: balance;
-        background: linear-gradient(180deg, #ffffff, rgba(255, 255, 255, 0.86));
+        background: linear-gradient(180deg, #ffffff 38%, rgba(214, 224, 255, 0.72));
         -webkit-background-clip: text;
         background-clip: text;
         color: transparent;
-        filter: drop-shadow(0 14px 40px rgba(0, 0, 0, 0.4));
+        filter: drop-shadow(0 18px 60px rgba(124, 58, 237, 0.35));
+      }
+
+      h1 .accent-line {
+        background: linear-gradient(180deg, var(--accent), var(--accent-2));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
       }
 
       .lede {
-        margin-top: 22px;
-        max-width: 30rem;
-        color: rgba(255, 255, 255, 0.84);
+        margin-top: 24px;
+        max-width: 40ch;
+        color: rgba(255, 255, 255, 0.72);
         font-family: var(--font-display);
-        font-size: clamp(1.15rem, 2.1vw, 1.55rem);
+        font-size: clamp(1.1rem, 1.7vw, 1.45rem);
         font-weight: 400;
-        line-height: 1.42;
+        line-height: 1.5;
         letter-spacing: -0.01em;
       }
 
       .hero-cta {
         display: flex;
         flex-wrap: wrap;
-        gap: 22px;
-        margin-top: 24px;
+        justify-content: center;
+        gap: 14px;
+        margin-top: 36px;
       }
 
-      .hero-cta a {
+      .btn {
         display: inline-flex;
         align-items: center;
-        gap: 4px;
-        color: var(--accent);
+        gap: 8px;
+        min-height: 50px;
+        padding: 0 26px;
+        border-radius: 999px;
         font-family: var(--font-display);
-        font-size: clamp(1.05rem, 1.6vw, 1.25rem);
-        font-weight: 500;
+        font-size: 1.02rem;
+        font-weight: 600;
         letter-spacing: -0.01em;
         text-decoration: none;
+        cursor: pointer;
+        transition:
+          transform 200ms ease,
+          box-shadow 200ms ease,
+          background-color 200ms ease,
+          border-color 200ms ease;
       }
 
-      .hero-cta a::after {
-        content: "›";
-        font-size: 1.15em;
-        line-height: 1;
-        transform: translateY(-1px);
-        transition: transform 200ms ease;
+      .btn.primary {
+        color: #05131c;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        background: linear-gradient(135deg, #ffffff, var(--accent));
+        box-shadow: 0 10px 40px rgba(56, 189, 248, 0.35);
       }
 
-      .hero-cta a:hover {
-        text-decoration: underline;
-        text-underline-offset: 4px;
+      .btn.primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 16px 54px rgba(56, 189, 248, 0.5);
       }
 
-      .hero-cta a:hover::after {
-        transform: translate(3px, -1px);
+      .btn.ghost {
+        color: #ffffff;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px);
+      }
+
+      .btn.ghost:hover {
+        transform: translateY(-2px);
+        border-color: rgba(255, 255, 255, 0.36);
+        background: rgba(255, 255, 255, 0.1);
       }
 
       .status-strip {
-        align-self: flex-end;
         display: flex;
         flex-wrap: wrap;
-        justify-content: flex-end;
+        justify-content: center;
         gap: 8px;
-        min-width: 236px;
-        padding-bottom: 16px;
+        margin-top: 44px;
+        animation: riseIn 1000ms cubic-bezier(0.2, 0.7, 0.2, 1) 160ms both;
       }
 
       .status-strip span {
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 999px;
-        padding: 8px 11px;
-        background: rgba(0, 0, 0, 0.22);
-        color: rgba(255, 255, 255, 0.86);
+        padding: 7px 13px;
+        background: rgba(255, 255, 255, 0.03);
+        color: rgba(255, 255, 255, 0.6);
         backdrop-filter: blur(16px);
-        font-size: 0.78rem;
+        font-size: 0.74rem;
+        font-weight: 500;
         white-space: nowrap;
+      }
+
+      .scroll-hint {
+        margin-top: 30px;
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 1.4rem;
+        line-height: 1;
+        animation: bobDown 2s ease-in-out infinite;
       }
 
       .control-shell {
         display: grid;
         grid-template-columns: minmax(210px, 0.78fr) minmax(320px, 1.35fr) minmax(210px, 0.82fr);
         gap: 14px;
-        align-items: stretch;
+        align-items: start;
+        scroll-margin-top: 90px;
+      }
+
+      .section-label {
+        grid-column: 1 / -1;
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+        margin: 8px 2px 2px;
+        color: var(--muted);
+        font-size: 0.92rem;
+        font-weight: 500;
+      }
+
+      .section-label .tier {
+        color: #ffffff;
+        font-family: var(--font-display);
+        font-weight: 600;
+        font-size: 1.05rem;
+        letter-spacing: -0.01em;
       }
 
       .panel {
         min-width: 0;
         border: 1px solid var(--line);
-        border-radius: 8px;
-        padding: 18px;
+        border-radius: 18px;
+        padding: 20px;
         background: var(--panel);
-        box-shadow: var(--shadow);
-        backdrop-filter: blur(24px) saturate(130%);
+        box-shadow:
+          0 1px 0 0 rgba(255, 255, 255, 0.08) inset,
+          0 0 0 1px rgba(124, 58, 237, 0.04),
+          var(--shadow);
+        backdrop-filter: blur(30px) saturate(140%);
       }
 
       .panel-head {
@@ -829,6 +888,28 @@
         }
       }
 
+      @keyframes breathe {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.08);
+        }
+      }
+
+      @keyframes bobDown {
+        0%,
+        100% {
+          transform: translateY(0);
+          opacity: 0.4;
+        }
+        50% {
+          transform: translateY(6px);
+          opacity: 0.8;
+        }
+      }
+
       @keyframes riseIn {
         from {
           opacity: 0;
@@ -962,23 +1043,27 @@
     <main class="stage">
       <section class="hero" id="top" aria-label="流光互动音乐空间">
         <div class="hero-copy">
-          <p class="eyebrow">Live Generative Experience</p>
-          <h1>流光互动<br />音乐空间</h1>
-          <p class="lede">今晚，让画面和声响在你的手势里醒来。</p>
+          <p class="eyebrow">AI Music Universe</p>
+          <h1>让音乐<span class="accent-line">看得见</span></h1>
+          <p class="lede">生成属于你的声音宇宙 —— Create living soundscapes with AI.</p>
           <div class="hero-cta">
-            <a href="#studio">立即体验</a>
-            <a href="./about.html">了解产品</a>
+            <button class="btn primary" id="heroStart" type="button">开始创作 · Start Creating</button>
+            <a class="btn ghost" href="#studio">看演示 · Watch Demo</a>
+          </div>
+          <div class="status-strip" aria-live="polite">
+            <span id="moodChip">Nebula / C Major</span>
+            <span id="tempoChip">92 BPM</span>
+            <span id="energyChip">Energy 62%</span>
           </div>
         </div>
-
-        <div class="status-strip" aria-live="polite">
-          <span id="moodChip">Aurora / C Major</span>
-          <span id="tempoChip">92 BPM</span>
-          <span id="energyChip">Energy 62%</span>
-        </div>
+        <a class="scroll-hint" href="#studio" aria-label="向下滚动">⌄</a>
       </section>
 
       <section class="control-shell" id="studio" aria-label="互动控制台">
+        <p class="section-label">
+          <span class="tier">控制台 · Studio</span>
+          调出你的声音宇宙 · Shape your universe
+        </p>
         <div class="panel palette-panel">
           <div class="panel-head">
             <h2>背景</h2>
@@ -1058,7 +1143,7 @@
           </div>
           <label class="field">
             <span>密度</span>
-            <input id="particleDensity" type="range" min="40" max="180" value="112" />
+            <input id="particleDensity" type="range" min="20" max="180" value="60" />
           </label>
           <label class="field">
             <span>灵敏度</span>
@@ -1091,39 +1176,41 @@
     </main>
 
     <script>
+      // Neon-luxury palettes: restrained violet / indigo / cyan families so the
+      // particles and accents read as premium, not rainbow.
       const palettes = [
         {
-          name: "Aurora",
-          colors: ["#0c1532", "#146c88", "#f4b35e", "#f44d76"],
-          accent: "#8bf0c8",
+          name: "Nebula",
+          colors: ["#0a0a12", "#7c3aed", "#38bdf8", "#a855f7"],
+          accent: "#38bdf8",
           key: "C",
           scale: "major",
         },
         {
-          name: "Citrus",
-          colors: ["#11351f", "#35b76f", "#ffe26b", "#ff6f59"],
-          accent: "#fff1a6",
+          name: "Violet",
+          colors: ["#0a0a14", "#6d28d9", "#c084fc", "#22d3ee"],
+          accent: "#a78bfa",
           key: "D",
           scale: "lydian",
         },
         {
-          name: "Coral",
-          colors: ["#1d1b2f", "#e85d75", "#ffba6b", "#57c4e5"],
-          accent: "#ffc9b7",
+          name: "Cyan",
+          colors: ["#06101a", "#0891b2", "#22d3ee", "#7c3aed"],
+          accent: "#22d3ee",
           key: "A",
           scale: "minor",
         },
         {
-          name: "Lagoon",
-          colors: ["#062f2f", "#0e9f8f", "#b4f06d", "#f45b69"],
-          accent: "#bff7ef",
+          name: "Indigo",
+          colors: ["#070b1c", "#2563eb", "#60a5fa", "#7c3aed"],
+          accent: "#60a5fa",
           key: "E",
           scale: "dorian",
         },
         {
-          name: "Prism",
-          colors: ["#171717", "#ff4f9a", "#5df2d6", "#ffe156"],
-          accent: "#ffffff",
+          name: "Orchid",
+          colors: ["#120617", "#be185d", "#a855f7", "#38bdf8"],
+          accent: "#f0abfc",
           key: "G",
           scale: "pentatonic",
         },
@@ -1143,7 +1230,7 @@
           palette: 4,
           prompt: "霓虹海面，柔和，慢慢升温",
           genre: "lofi",
-          density: 132,
+          density: 64,
           pull: 94,
           mode: "orbit",
         },
@@ -1151,7 +1238,7 @@
           palette: 0,
           prompt: "雨后城市，清亮，轻快",
           genre: "pop",
-          density: 112,
+          density: 56,
           pull: 84,
           mode: "draw",
         },
@@ -1159,7 +1246,7 @@
           palette: 1,
           prompt: "午后花园，明亮，跳动",
           genre: "folk",
-          density: 146,
+          density: 72,
           pull: 104,
           mode: "repel",
         },
@@ -1167,7 +1254,7 @@
           palette: 3,
           prompt: "玻璃森林，空灵，有呼吸感",
           genre: "ambient",
-          density: 92,
+          density: 46,
           pull: 72,
           mode: "orbit",
         },
@@ -1293,6 +1380,7 @@
         recordVoice: document.querySelector("#recordVoice"),
         playVoice: document.querySelector("#playVoice"),
         voiceHint: document.querySelector("#voiceHint"),
+        heroStart: document.querySelector("#heroStart"),
       };
 
       const ctx = els.canvas.getContext("2d");
@@ -1301,6 +1389,8 @@
         paletteIndex: 0,
         mode: "orbit",
         genre: "pop",
+        flow: 1,
+        glow: 1,
         particles: [],
         figures: [],
         composition: null,
@@ -1318,6 +1408,7 @@
       let lastFrameTime = performance.now();
       let beatPulse = 0;
       const aura = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+      const sphere = { cx: window.innerWidth / 2, cy: window.innerHeight * 0.46, r0: 120, rot: 0 };
 
       function clamp(value, min, max) {
         return Math.max(min, Math.min(max, value));
@@ -1438,10 +1529,11 @@
         const speed = Number(els.flowSpeed.value);
         const power = Number(els.colorPower.value);
         const root = document.documentElement.style;
-        // Higher speed -> shorter rotation period for the composited colour field.
-        root.setProperty("--flow-duration", `${clamp(124 - speed * 0.62, 26, 112).toFixed(1)}s`);
+        // 流动速度 -> sphere spin / energy-field breathe; 色彩强度 -> glow.
+        state.flow = speed / 70;
+        state.glow = power / 76;
+        root.setProperty("--flow-duration", `${clamp(30 - speed * 0.13, 9, 26).toFixed(1)}s`);
         root.setProperty("--color-power", (power / 100).toFixed(3));
-        root.setProperty("--shade-opacity", (0.76 + power / 420).toFixed(3));
       }
 
       function resizeCanvas() {
@@ -1451,6 +1543,11 @@
         els.canvas.style.width = `${window.innerWidth}px`;
         els.canvas.style.height = `${window.innerHeight}px`;
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        sphere.cx = w / 2;
+        sphere.cy = h * (w < 760 ? 0.4 : 0.46);
+        sphere.r0 = Math.min(w, h) * (w < 760 ? 0.15 : 0.16);
         syncParticleCount();
       }
 
@@ -1709,6 +1806,102 @@
         ctx.globalAlpha = 1;
       }
 
+      // The single focal visual: a glowing audio sphere with a real-time
+      // spectrum ring and orbiting motes. Reacts to the analyser + beat.
+      function drawSphere(dt) {
+        const cx = sphere.cx;
+        const cy = sphere.cy;
+        const palette = palettes[state.paletteIndex];
+        let level = 0;
+        let bins = null;
+        if (audio && audio.analyser) {
+          audio.analyser.getByteFrequencyData(audio.freqData);
+          bins = audio.freqData;
+          let sum = 0;
+          for (let i = 0; i < bins.length; i += 1) sum += bins[i];
+          level = sum / (bins.length * 255);
+        }
+
+        sphere.rot += dt * 0.004 * (state.flow || 1);
+        const breath = 0.5 + 0.5 * Math.sin(performance.now() * 0.0009);
+        const pulse = level * 0.5 + beatPulse * 0.18 + breath * 0.05;
+        const r = sphere.r0 * (1 + pulse * 0.16);
+        const glowK = state.glow || 1;
+
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+
+        // outer glow halo
+        const glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, r * 3.2);
+        glow.addColorStop(0, hexToRgba(palette.colors[2], (0.2 + level * 0.22) * glowK));
+        glow.addColorStop(0.4, hexToRgba(palette.colors[1], 0.1 * glowK));
+        glow.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.fillStyle = glow;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r * 3.2, 0, Math.PI * 2);
+        ctx.fill();
+
+        // real-time spectrum ring
+        const ringCount = 72;
+        const innerR = r * 1.16;
+        const maxBar = r * 0.95;
+        ctx.lineCap = "round";
+        for (let i = 0; i < ringCount; i += 1) {
+          const t = i / ringCount;
+          const a = t * Math.PI * 2 + sphere.rot;
+          const bi = bins ? Math.floor(Math.abs(t * 2 - 1) * (bins.length - 1)) : 0;
+          const v = bins ? bins[bi] / 255 : 0.28 + 0.2 * Math.sin(a * 6 + performance.now() * 0.002);
+          const len = 4 + v * maxBar * (0.4 + level * 0.9);
+          const x1 = cx + Math.cos(a) * innerR;
+          const y1 = cy + Math.sin(a) * innerR;
+          const x2 = cx + Math.cos(a) * (innerR + len);
+          const y2 = cy + Math.sin(a) * (innerR + len);
+          ctx.strokeStyle = hexToRgba(i % 2 ? palette.colors[2] : palette.accent, 0.22 + v * 0.5);
+          ctx.lineWidth = 2.2;
+          ctx.beginPath();
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+          ctx.stroke();
+        }
+
+        // core orb
+        const core = ctx.createRadialGradient(cx - r * 0.32, cy - r * 0.32, r * 0.08, cx, cy, r);
+        core.addColorStop(0, "rgba(255,255,255,0.95)");
+        core.addColorStop(0.28, hexToRgba(palette.accent, 0.8));
+        core.addColorStop(0.72, hexToRgba(palette.colors[1], 0.5));
+        core.addColorStop(1, hexToRgba(palette.colors[1], 0));
+        ctx.fillStyle = core;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.fill();
+
+        // rim light
+        ctx.strokeStyle = hexToRgba("#ffffff", 0.1 + level * 0.18);
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r * 0.98, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // orbiting motes
+        for (let i = 0; i < 5; i += 1) {
+          const a = sphere.rot * (1 + i * 0.18) + i * 1.3;
+          const orx = r * (1.5 + i * 0.22);
+          const ory = r * (0.5 + i * 0.16);
+          const x = cx + Math.cos(a) * orx;
+          const y = cy + Math.sin(a) * ory * 0.62;
+          const dr = 2.2 + (i % 2) * 1.4;
+          const g = ctx.createRadialGradient(x, y, 0, x, y, dr * 4);
+          g.addColorStop(0, hexToRgba(palette.accent, 0.9));
+          g.addColorStop(1, "rgba(0,0,0,0)");
+          ctx.fillStyle = g;
+          ctx.beginPath();
+          ctx.arc(x, y, dr * 4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        ctx.restore();
+      }
+
       function drawParticles(now) {
         const dt = Math.min(2.2, (now - lastFrameTime) / 16.67);
         lastFrameTime = now;
@@ -1717,6 +1910,7 @@
         const palette = palettes[state.paletteIndex];
 
         ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        drawSphere(dt);
         ctx.globalCompositeOperation = "lighter";
 
         for (let i = state.particles.length - 1; i >= 0; i -= 1) {
@@ -1762,20 +1956,20 @@
             }
           }
 
-          const alpha = p.life !== Infinity ? clamp(p.life / 80, 0, 0.75) : 0.62;
-          const radius = p.r + Math.sin(p.phase) * 0.7 + influence * 3.6;
-          const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, radius * 5.2);
+          const alpha = p.life !== Infinity ? clamp(p.life / 90, 0, 0.6) : 0.34;
+          const radius = p.r + Math.sin(p.phase) * 0.7 + influence * 3.2;
+          const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, radius * 4.4);
           gradient.addColorStop(0, hexToRgba(p.color, alpha));
-          gradient.addColorStop(0.32, hexToRgba(p.glow, alpha * 0.36));
+          gradient.addColorStop(0.32, hexToRgba(p.glow, alpha * 0.32));
           gradient.addColorStop(1, hexToRgba(p.color, 0));
 
           ctx.fillStyle = gradient;
           ctx.beginPath();
-          ctx.arc(p.x, p.y, radius * 5.2, 0, Math.PI * 2);
+          ctx.arc(p.x, p.y, radius * 4.4, 0, Math.PI * 2);
           ctx.fill();
 
           if (influence > 0.34) {
-            ctx.strokeStyle = hexToRgba(palette.accent, influence * 0.16);
+            ctx.strokeStyle = hexToRgba(palette.accent, influence * 0.1);
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
@@ -1961,7 +2155,15 @@
         ambientBus.gain.value = 0.9;
         ambientBus.connect(context.destination);
 
-        audio = { context, master, filter, ambientBus };
+        // Analyser drives the central audio sphere's real-time spectrum.
+        const analyser = context.createAnalyser();
+        analyser.fftSize = 128;
+        analyser.smoothingTimeConstant = 0.8;
+        master.connect(analyser);
+        ambientBus.connect(analyser);
+        const freqData = new Uint8Array(analyser.frequencyBinCount);
+
+        audio = { context, master, filter, ambientBus, analyser, freqData };
         return audio;
       }
 
@@ -2525,6 +2727,13 @@
           if (state.playing) stopMusic();
           else startMusic();
         });
+
+        if (els.heroStart) {
+          els.heroStart.addEventListener("click", () => {
+            if (!state.playing) startMusic();
+            document.querySelector("#studio").scrollIntoView({ behavior: "smooth", block: "start" });
+          });
+        }
 
         document.querySelectorAll(".mode-button").forEach((button) => {
           button.addEventListener("click", () => {
