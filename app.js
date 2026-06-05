@@ -96,6 +96,7 @@ const keyMidi = { C: 60, D: 62, E: 64, F: 65, G: 67, A: 69, B: 71 };
 
 const els = {
   canvas: document.querySelector("#particleCanvas"),
+  aura: document.querySelector("#aura"),
   paletteButtons: document.querySelector("#paletteButtons"),
   paletteName: document.querySelector("#paletteName"),
   flowSpeed: document.querySelector("#flowSpeed"),
@@ -138,6 +139,7 @@ let nextStepTime = 0;
 let stepIndex = 0;
 let absoluteStep = 0;
 let lastFrameTime = performance.now();
+const aura = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
@@ -223,9 +225,11 @@ function setParticleMode(mode) {
 function updateBackgroundControls() {
   const speed = Number(els.flowSpeed.value);
   const power = Number(els.colorPower.value);
-  document.documentElement.style.setProperty("--flow-duration", `${clamp(190 - speed, 58, 170) / 8}s`);
-  document.documentElement.style.setProperty("--wash-alpha", (0.06 + power / 650).toFixed(3));
-  document.documentElement.style.setProperty("--shade-opacity", (0.76 + power / 420).toFixed(3));
+  const root = document.documentElement.style;
+  // Higher speed -> shorter rotation period for the composited colour field.
+  root.setProperty("--flow-duration", `${clamp(124 - speed * 0.62, 26, 112).toFixed(1)}s`);
+  root.setProperty("--color-power", (power / 100).toFixed(3));
+  root.setProperty("--shade-opacity", (0.76 + power / 420).toFixed(3));
 }
 
 function resizeCanvas() {
@@ -380,6 +384,14 @@ function drawParticles(now) {
   }
 
   ctx.globalCompositeOperation = "source-over";
+
+  // Ease the pointer-following aura toward the cursor and move it with a
+  // compositor-only transform (frame-rate independent smoothing).
+  const ease = 1 - Math.pow(0.86, dt);
+  aura.x += (pointer.x - aura.x) * ease;
+  aura.y += (pointer.y - aura.y) * ease;
+  if (els.aura) els.aura.style.transform = `translate3d(${aura.x}px, ${aura.y}px, 0)`;
+
   syncParticleCount();
   requestAnimationFrame(drawParticles);
 }
@@ -712,8 +724,6 @@ function bindEvents() {
     pointer.x = event.clientX;
     pointer.y = event.clientY;
     pointer.active = true;
-    document.documentElement.style.setProperty("--mx", `${(event.clientX / window.innerWidth) * 100}%`);
-    document.documentElement.style.setProperty("--my", `${(event.clientY / window.innerHeight) * 100}%`);
   });
 
   window.addEventListener("pointerdown", (event) => {
