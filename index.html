@@ -653,6 +653,13 @@
           rgba(0, 0, 0, 0.22);
       }
 
+      .panel-label {
+        margin: 18px 0 8px;
+        color: rgba(255, 255, 255, 0.78);
+        font-size: 0.82rem;
+        font-weight: 700;
+      }
+
       .genre-row {
         display: flex;
         flex-wrap: wrap;
@@ -931,6 +938,9 @@
               <input id="energy" type="range" min="20" max="100" value="62" />
             </label>
           </div>
+
+          <div class="panel-label">声景 · Ambient</div>
+          <div class="genre-row" id="soundRow" role="group" aria-label="环境声景 / Ambient sounds"></div>
         </div>
 
         <div class="panel particle-panel">
@@ -952,6 +962,7 @@
             <input id="particlePull" type="range" min="20" max="130" value="84" />
           </label>
           <button class="full-action" id="summonFigures" type="button">召唤积木小人 · Summon ✦</button>
+          <button class="full-action" id="summonForest" type="button">召唤小树林小人 · Forest Sprite 🌿</button>
         </div>
       </section>
 
@@ -1123,6 +1134,18 @@
       // Soft pastel set for the cute "block people", independent of the theme
       // palette so they always read as friendly and healing.
       const figurePalette = ["#ffd1dc", "#bde8ff", "#c8f7d4", "#ffe9a8", "#e3d1ff", "#ffd6a5", "#b8f2e6", "#ffc8dd"];
+      // Mossy greens for the cyber forest sprites.
+      const forestPalette = ["#5c7d4f", "#4e7a52", "#6b8f5a", "#3f6b4a", "#577a45"];
+
+      // Ambient soundscapes — independent of the music transport so they can
+      // play on their own for focus / sleep.
+      const soundscapes = [
+        { id: "white", zh: "白噪音", en: "White" },
+        { id: "rain", zh: "雨声", en: "Rain" },
+        { id: "chime", zh: "风铃", en: "Chimes" },
+        { id: "type", zh: "键盘", en: "Keys" },
+      ];
+      const ambient = { white: null, rain: null, chimeOn: false, typeOn: false, chimeTimer: null, typeTimer: null };
 
       const scaleSteps = {
         major: [0, 2, 4, 5, 7, 9, 11, 12],
@@ -1159,7 +1182,9 @@
         particlePull: document.querySelector("#particlePull"),
         burstParticles: document.querySelector("#burstParticles"),
         genreRow: document.querySelector("#genreRow"),
+        soundRow: document.querySelector("#soundRow"),
         summonFigures: document.querySelector("#summonFigures"),
+        summonForest: document.querySelector("#summonForest"),
       };
 
       const ctx = els.canvas.getContext("2d");
@@ -1388,10 +1413,12 @@
       }
 
       // —— 积木小人 / cute block people ——
-      function spawnFigure(x, y) {
+      function spawnFigure(x, y, type = "buddy") {
         if (state.figures.length >= 16) state.figures.shift();
         const r = Math.random;
+        const pool = type === "forest" ? forestPalette : figurePalette;
         state.figures.push({
+          type,
           x: x ?? r() * window.innerWidth,
           baseY: y ?? window.innerHeight * (0.6 + r() * 0.28),
           vx: (r() - 0.5) * 0.5,
@@ -1399,7 +1426,7 @@
           phase: r() * Math.PI * 2,
           bobSpeed: 0.03 + r() * 0.02,
           bounce: 0.7 + r() * 0.5,
-          body: figurePalette[Math.floor(r() * figurePalette.length)],
+          body: pool[Math.floor(r() * pool.length)],
           blink: 0,
           blinkAt: 60 + r() * 240,
           appear: 0,
@@ -1469,6 +1496,91 @@
         ctx.restore();
       }
 
+      // 小树林赛博小人 · style 1: moss-and-circuit symbiote — matte green body
+      // with moss & a mushroom, a CRT head, twig antenna and firefly-green
+      // pixel eyes that breathe.
+      function drawForestSprite(f, hop) {
+        const s = f.scale;
+        const bob = Math.sin(f.phase) * 1.6;
+        const y = f.baseY + bob - hop * 9;
+        const a = f.appear;
+        const body = f.body;
+        const dark = "rgba(28, 38, 26, 0.92)";
+
+        ctx.save();
+        ctx.translate(f.x, y);
+        ctx.scale(a, a * (1 + hop * 0.06));
+
+        ctx.globalAlpha = 0.16 * a;
+        ctx.fillStyle = "#000000";
+        ctx.beginPath();
+        ctx.ellipse(0, 19 * s, (11 + hop * 3) * s, 3.4 * s, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = a;
+
+        // legs / arms / body
+        blockRect(-5.5 * s, 9 * s, 4 * s, 7 * s, 2 * s, dark);
+        blockRect(1.5 * s, 9 * s, 4 * s, 7 * s, 2 * s, dark);
+        const armY = -2 * s - hop * 3 * s;
+        blockRect(-12 * s, armY, 4 * s, 9 * s, 2 * s, body);
+        blockRect(8 * s, armY, 4 * s, 9 * s, 2 * s, body);
+        blockRect(-8.5 * s, -7 * s, 17 * s, 16 * s, 5 * s, body);
+
+        // moss specks
+        ctx.fillStyle = "rgba(160, 205, 120, 0.75)";
+        ctx.beginPath();
+        ctx.arc(-5 * s, 3 * s, 1.2 * s, 0, Math.PI * 2);
+        ctx.arc(3 * s, 6 * s, 1 * s, 0, Math.PI * 2);
+        ctx.arc(6 * s, -2 * s, 1.1 * s, 0, Math.PI * 2);
+        ctx.fill();
+
+        // tiny mushroom on the shoulder
+        blockRect(5.6 * s, -10 * s, 2.2 * s, 4 * s, 1 * s, "#fdf3e3");
+        ctx.fillStyle = "#ff7a8a";
+        ctx.beginPath();
+        ctx.ellipse(6.7 * s, -10 * s, 3 * s, 2 * s, 0, Math.PI, Math.PI * 2);
+        ctx.fill();
+
+        // twig + antenna with a glowing tip
+        ctx.strokeStyle = "#8a7550";
+        ctx.lineWidth = 1.1 * s;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(0, -23 * s);
+        ctx.lineTo(-1.5 * s, -30 * s);
+        ctx.lineTo(2 * s, -33 * s);
+        ctx.moveTo(-1.5 * s, -30 * s);
+        ctx.lineTo(-5 * s, -32 * s);
+        ctx.stroke();
+        ctx.fillStyle = "rgba(125, 255, 158, 0.95)";
+        ctx.beginPath();
+        ctx.arc(2 * s, -33 * s, 1.3 * s, 0, Math.PI * 2);
+        ctx.fill();
+
+        // CRT head (bezel + dark screen)
+        blockRect(-8 * s, -23 * s, 16 * s, 16 * s, 4 * s, "#2c3a30");
+        blockRect(-6 * s, -21 * s, 12 * s, 12 * s, 2.5 * s, "#0b1a12");
+
+        // firefly-green pixel eyes that breathe, follow the pointer, and blink
+        const pulse = 0.55 + 0.45 * Math.abs(Math.sin(f.phase * 2));
+        const px = clamp((pointer.x - f.x) / 150, -1, 1) * 1.2 * s;
+        const py = clamp((pointer.y - f.baseY) / 170, -1, 1) * 1 * s;
+        ctx.save();
+        ctx.shadowColor = `rgba(125, 255, 158, ${pulse})`;
+        ctx.shadowBlur = 8 * s;
+        ctx.fillStyle = `rgba(125, 255, 158, ${pulse})`;
+        if (f.blink > 0) {
+          ctx.fillRect(-4 * s + px, -15.6 * s + py, 3 * s, 0.9 * s);
+          ctx.fillRect(1 * s + px, -15.6 * s + py, 3 * s, 0.9 * s);
+        } else {
+          ctx.fillRect(-3.8 * s + px, -16.8 * s + py, 2.4 * s, 2.4 * s);
+          ctx.fillRect(1.4 * s + px, -16.8 * s + py, 2.4 * s, 2.4 * s);
+        }
+        ctx.restore();
+
+        ctx.restore();
+      }
+
       function drawFigures(dt) {
         beatPulse *= Math.pow(0.86, dt);
         for (const f of state.figures) {
@@ -1484,7 +1596,7 @@
           }
           if (f.blink > 0) f.blink -= dt;
           const hop = (state.playing ? beatPulse : 0) * f.bounce;
-          drawFigure(f, hop);
+          (f.type === "forest" ? drawForestSprite : drawFigure)(f, hop);
         }
         ctx.globalAlpha = 1;
       }
@@ -1735,8 +1847,205 @@
         delay.connect(delayGain);
         delayGain.connect(filter);
 
-        audio = { context, master, filter };
+        // Dedicated bus for ambient soundscapes, straight to output (bypasses
+        // the music filter/delay so noise stays clean).
+        const ambientBus = context.createGain();
+        ambientBus.gain.value = 0.9;
+        ambientBus.connect(context.destination);
+
+        audio = { context, master, filter, ambientBus };
         return audio;
+      }
+
+      // —— 声景 / ambient soundscapes ——
+      function noiseBuffer(seconds) {
+        const { context } = ensureAudio();
+        const len = Math.floor(context.sampleRate * seconds);
+        const buffer = context.createBuffer(1, len, context.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < len; i += 1) data[i] = Math.random() * 2 - 1;
+        return buffer;
+      }
+
+      function startNoiseLayer(kind) {
+        const { context, ambientBus } = ensureAudio();
+        const src = context.createBufferSource();
+        src.buffer = noiseBuffer(2);
+        src.loop = true;
+        const gain = context.createGain();
+        const extra = [];
+        if (kind === "white") {
+          const lp = context.createBiquadFilter();
+          lp.type = "lowpass";
+          lp.frequency.value = 9200;
+          gain.gain.value = 0.05;
+          src.connect(lp);
+          lp.connect(gain);
+          extra.push(lp);
+        } else {
+          const hp = context.createBiquadFilter();
+          hp.type = "highpass";
+          hp.frequency.value = 430;
+          const lp = context.createBiquadFilter();
+          lp.type = "lowpass";
+          lp.frequency.value = 7200;
+          gain.gain.value = 0.09;
+          src.connect(hp);
+          hp.connect(lp);
+          lp.connect(gain);
+          // gentle shimmer so the rain breathes
+          const lfo = context.createOscillator();
+          lfo.frequency.value = 0.5;
+          const lfoGain = context.createGain();
+          lfoGain.gain.value = 0.03;
+          lfo.connect(lfoGain);
+          lfoGain.connect(gain.gain);
+          lfo.start();
+          extra.push(hp, lp, lfo, lfoGain);
+        }
+        gain.connect(ambientBus);
+        src.start();
+        return { src, gain, extra };
+      }
+
+      function stopNoiseLayer(layer) {
+        if (!layer) return;
+        try {
+          layer.src.stop();
+        } catch (e) {
+          /* already stopped */
+        }
+        layer.src.disconnect();
+        layer.gain.disconnect();
+        layer.extra.forEach((node) => {
+          if (node.stop) {
+            try {
+              node.stop();
+            } catch (e) {
+              /* noop */
+            }
+          }
+          node.disconnect();
+        });
+      }
+
+      function chimeHit(time, midi) {
+        const { context, ambientBus } = ensureAudio();
+        const osc = context.createOscillator();
+        const osc2 = context.createOscillator();
+        const gain = context.createGain();
+        osc.type = "sine";
+        osc2.type = "sine";
+        osc.frequency.value = midiToFreq(midi);
+        osc2.frequency.value = midiToFreq(midi + 12) * 1.001;
+        gain.gain.setValueAtTime(0.0001, time);
+        gain.gain.exponentialRampToValueAtTime(0.16, time + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, time + 2.4);
+        osc.connect(gain);
+        osc2.connect(gain);
+        gain.connect(ambientBus);
+        osc.start(time);
+        osc2.start(time);
+        osc.stop(time + 2.6);
+        osc2.stop(time + 2.6);
+      }
+
+      function chimeLoop() {
+        if (!ambient.chimeOn) return;
+        const { context } = ensureAudio();
+        const pentatonic = [72, 74, 76, 79, 81, 84, 86, 88];
+        const hits = Math.random() < 0.3 ? 2 : 1;
+        for (let i = 0; i < hits; i += 1) {
+          chimeHit(context.currentTime + i * 0.13, pentatonic[Math.floor(Math.random() * pentatonic.length)]);
+        }
+        ambient.chimeTimer = window.setTimeout(chimeLoop, 600 + Math.random() * 2000);
+      }
+
+      function keyClick(time) {
+        const { context, ambientBus } = ensureAudio();
+        const src = context.createBufferSource();
+        src.buffer = noiseBuffer(0.03);
+        const bp = context.createBiquadFilter();
+        bp.type = "bandpass";
+        bp.frequency.value = 2200 + Math.random() * 1300;
+        bp.Q.value = 0.9;
+        const gain = context.createGain();
+        gain.gain.setValueAtTime(0.0001, time);
+        gain.gain.exponentialRampToValueAtTime(0.12, time + 0.002);
+        gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.05);
+        src.connect(bp);
+        bp.connect(gain);
+        gain.connect(ambientBus);
+        src.start(time);
+        // little key "thock"
+        const osc = context.createOscillator();
+        const g2 = context.createGain();
+        osc.type = "triangle";
+        osc.frequency.value = 170 + Math.random() * 90;
+        g2.gain.setValueAtTime(0.0001, time);
+        g2.gain.exponentialRampToValueAtTime(0.05, time + 0.002);
+        g2.gain.exponentialRampToValueAtTime(0.0001, time + 0.045);
+        osc.connect(g2);
+        g2.connect(ambientBus);
+        osc.start(time);
+        osc.stop(time + 0.06);
+      }
+
+      function typeLoop() {
+        if (!ambient.typeOn) return;
+        const { context } = ensureAudio();
+        keyClick(context.currentTime);
+        // bursts of quick keys with occasional pauses, like real typing
+        const gap = Math.random() < 0.18 ? 420 + Math.random() * 900 : 90 + Math.random() * 150;
+        ambient.typeTimer = window.setTimeout(typeLoop, gap);
+      }
+
+      function toggleAmbient(id, chip) {
+        const { context } = ensureAudio();
+        if (context.state === "suspended") context.resume();
+        let on = false;
+        if (id === "white") {
+          if (ambient.white) {
+            stopNoiseLayer(ambient.white);
+            ambient.white = null;
+          } else {
+            ambient.white = startNoiseLayer("white");
+            on = true;
+          }
+        } else if (id === "rain") {
+          if (ambient.rain) {
+            stopNoiseLayer(ambient.rain);
+            ambient.rain = null;
+          } else {
+            ambient.rain = startNoiseLayer("rain");
+            on = true;
+          }
+        } else if (id === "chime") {
+          ambient.chimeOn = !ambient.chimeOn;
+          on = ambient.chimeOn;
+          if (on) chimeLoop();
+          else window.clearTimeout(ambient.chimeTimer);
+        } else if (id === "type") {
+          ambient.typeOn = !ambient.typeOn;
+          on = ambient.typeOn;
+          if (on) typeLoop();
+          else window.clearTimeout(ambient.typeTimer);
+        }
+        chip.classList.toggle("active", on);
+        chip.setAttribute("aria-pressed", on ? "true" : "false");
+      }
+
+      function setupSoundscapes() {
+        soundscapes.forEach((s) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "genre-chip";
+          button.dataset.sound = s.id;
+          button.setAttribute("aria-pressed", "false");
+          button.innerHTML = `${s.zh} <small>${s.en}</small>`;
+          button.addEventListener("click", () => toggleAmbient(s.id, button));
+          els.soundRow.append(button);
+        });
       }
 
       function envelope(gain, time, peak, attack, decay, sustain, release) {
@@ -1996,6 +2305,10 @@
           for (let i = 0; i < 3; i += 1) spawnFigure();
           burst(12);
         });
+        els.summonForest.addEventListener("click", () => {
+          for (let i = 0; i < 3; i += 1) spawnFigure(undefined, undefined, "forest");
+          burst(12);
+        });
         window.addEventListener("dblclick", (event) => {
           spawnFigure(event.clientX, event.clientY);
         });
@@ -2066,12 +2379,14 @@
       function init() {
         setupPalettes();
         setupGenres();
+        setupSoundscapes();
         setupVisualizer();
         bindEvents();
         resizeCanvas();
         updateBackgroundControls();
         applyScene("night");
-        for (let i = 0; i < 6; i += 1) spawnFigure();
+        for (let i = 0; i < 5; i += 1) spawnFigure();
+        for (let i = 0; i < 2; i += 1) spawnFigure(undefined, undefined, "forest");
         requestAnimationFrame(drawParticles);
       }
 
