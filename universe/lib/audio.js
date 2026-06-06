@@ -24,6 +24,15 @@ export const GENRES = {
   funk: { zh: "放克", tempo: 112, scale: "dorian", wave: "sawtooth", kickEvery: 4, spikes: 0.6, hue: 0.1 },
   jazz: { zh: "爵士", tempo: 108, scale: "dorian", wave: "sine", kickEvery: 8, spikes: 0.32, hue: 0.13 },
   folk: { zh: "民谣", tempo: 96, scale: "major", wave: "triangle", kickEvery: 8, spikes: 0.34, hue: 0.33 },
+  dnb: { zh: "鼓贝斯", tempo: 132, scale: "minor", wave: "sawtooth", kickEvery: 2, spikes: 0.78, hue: 0.42 },
+  dubstep: { zh: "回响贝斯", tempo: 140, scale: "minor", wave: "sawtooth", kickEvery: 4, spikes: 0.95, hue: 0.3 },
+  kpop: { zh: "K-Pop", tempo: 120, scale: "major", wave: "triangle", kickEvery: 4, spikes: 0.58, hue: 0.92 },
+  citypop: { zh: "都市流行", tempo: 104, scale: "major", wave: "triangle", kickEvery: 4, spikes: 0.46, hue: 0.04 },
+  blues: { zh: "蓝调", tempo: 88, scale: "dorian", wave: "triangle", kickEvery: 8, spikes: 0.34, hue: 0.6 },
+  reggae: { zh: "雷鬼", tempo: 92, scale: "major", wave: "triangle", kickEvery: 8, spikes: 0.4, hue: 0.36 },
+  latin: { zh: "拉丁", tempo: 110, scale: "dorian", wave: "triangle", kickEvery: 4, spikes: 0.5, hue: 0.07 },
+  metal: { zh: "金属", tempo: 150, scale: "minor", wave: "sawtooth", kickEvery: 1, spikes: 1.0, hue: 0.0 },
+  guofeng: { zh: "国风", tempo: 84, scale: "penta", wave: "sine", kickEvery: 8, spikes: 0.36, hue: 0.95 },
   epic: { zh: "史诗", tempo: 128, scale: "minor", wave: "sawtooth", kickEvery: 2, spikes: 1.0, hue: 0.86 },
   classical: { zh: "古典", tempo: 96, scale: "major", wave: "sine", kickEvery: 8, spikes: 0.4, hue: 0.62 },
   ambient: { zh: "氛围", tempo: 60, scale: "lydian", wave: "sine", kickEvery: 16, spikes: 0.14, hue: 0.48 },
@@ -51,6 +60,10 @@ export function createAudioEngine() {
   let recBuffers = [];
   let recLen = 0;
   let capturing = false;
+  let streamDest = null;
+  let micStream = null;
+  let micSource = null;
+  let micOn = false;
 
   function ensure() {
     if (ctx) return;
@@ -68,6 +81,9 @@ export function createAudioEngine() {
     master.connect(filter);
     filter.connect(analyser);
     analyser.connect(ctx.destination);
+    // Live audio stream tap (used as the audio track when recording video).
+    streamDest = ctx.createMediaStreamDestination();
+    filter.connect(streamDest);
     data = new Uint8Array(analyser.frequencyBinCount);
   }
 
@@ -196,6 +212,33 @@ export function createAudioEngine() {
       timer = null;
     },
     isCapturing: () => capturing,
+    // Live audio MediaStream (used as the audio track for video recording).
+    getAudioStream() {
+      ensure();
+      return streamDest ? streamDest.stream : null;
+    },
+    // Microphone: blend your own voice / sound into the universe.
+    micEnabled: () => micOn,
+    async toggleMic() {
+      ensure();
+      if (ctx.state === "suspended") await ctx.resume();
+      if (micOn) {
+        if (micSource) micSource.disconnect();
+        if (micStream) micStream.getTracks().forEach((t) => t.stop());
+        micSource = null;
+        micStream = null;
+        micOn = false;
+        return false;
+      }
+      micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      micSource = ctx.createMediaStreamSource(micStream);
+      const g = ctx.createGain();
+      g.gain.value = 0.8;
+      micSource.connect(g);
+      g.connect(master);
+      micOn = true;
+      return true;
+    },
     // Record the live output as raw PCM, exported as a universal .wav.
     startCapture() {
       ensure();

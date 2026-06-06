@@ -4,7 +4,18 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { GENRES } from "@/lib/audio";
 
-export default function HUD({ playing, genre, onToggle, onGenre, onSave, capturing }) {
+export default function HUD({
+  playing,
+  genre,
+  onToggle,
+  onGenre,
+  onSave,
+  capturing,
+  onMic,
+  micOn,
+  onFilm,
+  filming,
+}) {
   return (
     <motion.div
       className="hud"
@@ -40,6 +51,14 @@ export default function HUD({ playing, genre, onToggle, onGenre, onSave, capturi
 
       <button className={`save ${capturing ? "rec" : ""}`} type="button" onClick={onSave}>
         {capturing ? "● 录制中 · 点此保存" : "↓ 保存音乐"}
+      </button>
+
+      <button className={`save ${micOn ? "rec" : ""}`} type="button" onClick={onMic}>
+        {micOn ? "🎙 麦克风开" : "🎙 麦克风"}
+      </button>
+
+      <button className={`save ${filming ? "rec" : ""}`} type="button" onClick={onFilm}>
+        {filming ? "● 录像中 · 点此保存" : "🎬 录视频"}
       </button>
     </motion.div>
   );

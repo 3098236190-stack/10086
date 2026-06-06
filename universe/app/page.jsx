@@ -16,10 +16,25 @@ export default function Page() {
   const [playing, setPlaying] = useState(false);
   const [genre, setGenre] = useState("lofi");
   const [capturing, setCapturing] = useState(false);
+  const [micOn, setMicOn] = useState(false);
+  const [filming, setFilming] = useState(false);
+  const videoRec = useRef(null);
+  const videoChunks = useRef([]);
 
   const ensureEngine = () => {
     if (!audioRef.current) audioRef.current = createAudioEngine();
     return audioRef.current;
+  };
+
+  const download = (blob, name) => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
   };
 
   const enter = useCallback(async () => {
@@ -63,18 +78,60 @@ export default function Page() {
     } else {
       const blob = await e.stopCapture();
       setCapturing(false);
-      if (blob) {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `liuguang-${genre}-${Date.now()}.wav`;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        setTimeout(() => URL.revokeObjectURL(url), 4000);
-      }
+      if (blob) download(blob, `liuguang-${genre}-${Date.now()}.wav`);
     }
   }, [genre]);
+
+  // Microphone: blend your own voice/sound into the universe.
+  const toggleMic = useCallback(async () => {
+    const e = ensureEngine();
+    try {
+      const on = await e.toggleMic();
+      setMicOn(on);
+    } catch (err) {
+      alert("无法访问麦克风，请检查浏览器权限。");
+    }
+  }, []);
+
+  // Film = record the 3D scene (canvas) + sound into a video.
+  const film = useCallback(async () => {
+    const e = ensureEngine();
+    if (!filming) {
+      if (!e.isPlaying()) {
+        await e.start();
+        setPlaying(true);
+      }
+      const canvas = document.querySelector(".stage canvas") || document.querySelector("canvas");
+      if (!canvas || !canvas.captureStream) {
+        alert("此浏览器不支持画面录制。");
+        return;
+      }
+      const vstream = canvas.captureStream(30);
+      const astream = e.getAudioStream();
+      const tracks = [...vstream.getVideoTracks(), ...(astream ? astream.getAudioTracks() : [])];
+      const mixed = new MediaStream(tracks);
+      const mime = ["video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm"].find(
+        (m) => typeof MediaRecorder !== "undefined" && MediaRecorder.isTypeSupported(m),
+      );
+      videoChunks.current = [];
+      videoRec.current = new MediaRecorder(mixed, mime ? { mimeType: mime } : undefined);
+      videoRec.current.ondataavailable = (ev) => {
+        if (ev.data && ev.data.size > 0) videoChunks.current.push(ev.data);
+      };
+      videoRec.current.start();
+      setFilming(true);
+    } else {
+      const rec = videoRec.current;
+      if (rec) {
+        rec.onstop = () => {
+          const blob = new Blob(videoChunks.current, { type: "video/webm" });
+          download(blob, `liuguang-${genre}-${Date.now()}.webm`);
+        };
+        rec.stop();
+      }
+      setFilming(false);
+    }
+  }, [filming, genre]);
 
   return (
     <main className="stage">
@@ -89,6 +146,10 @@ export default function Page() {
           onGenre={chooseGenre}
           onSave={save}
           capturing={capturing}
+          onMic={toggleMic}
+          micOn={micOn}
+          onFilm={film}
+          filming={filming}
         />
       )}
     </main>
