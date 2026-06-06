@@ -107,6 +107,131 @@
         background: radial-gradient(120% 100% at 50% 0%, transparent 55%, rgba(0, 0, 0, 0.55));
       }
 
+      /* —— Cinematic intro: a living sound universe is born —— */
+      .stage,
+      .site-nav {
+        transition: opacity 1000ms ease;
+      }
+
+      body.intro-on .stage,
+      body.intro-on .site-nav {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .intro {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        background: radial-gradient(120% 90% at 50% 50%, #0a0a14, #050509 70%);
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        transition: opacity 1200ms ease;
+      }
+
+      .intro.gone {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      #introCanvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      .intro-caption {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        max-width: min(80%, 30ch);
+        pointer-events: none;
+      }
+
+      .intro-caption .zh {
+        display: block;
+        font-family: var(--font-display);
+        font-size: clamp(1.6rem, 4.4vw, 3.1rem);
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+        color: #ffffff;
+        opacity: 0;
+        transform: translateY(14px);
+        transition: opacity 1000ms ease, transform 1000ms ease;
+        text-shadow: 0 10px 50px rgba(124, 58, 237, 0.55);
+      }
+
+      .intro-caption .en {
+        display: block;
+        margin-top: 12px;
+        color: rgba(255, 255, 255, 0.55);
+        font-size: clamp(0.85rem, 1.7vw, 1.1rem);
+        font-weight: 400;
+        opacity: 0;
+        transform: translateY(14px);
+        transition: opacity 1000ms ease 140ms, transform 1000ms ease 140ms;
+      }
+
+      .intro-caption.show .zh,
+      .intro-caption.show .en {
+        opacity: 1;
+        transform: none;
+      }
+
+      .intro-enter {
+        position: absolute;
+        z-index: 2;
+        bottom: 15%;
+        left: 50%;
+        transform: translateX(-50%) translateY(12px);
+        min-height: 52px;
+        padding: 0 30px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        background: linear-gradient(135deg, #ffffff, var(--accent));
+        color: #05131c;
+        font-family: var(--font-display);
+        font-size: 1.04rem;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        opacity: 0;
+        pointer-events: none;
+        box-shadow: 0 12px 50px rgba(56, 189, 248, 0.4);
+        transition: opacity 800ms ease, transform 800ms ease, box-shadow 200ms ease;
+      }
+
+      .intro-enter.show {
+        opacity: 1;
+        transform: translateX(-50%);
+        pointer-events: auto;
+      }
+
+      .intro-enter:hover {
+        box-shadow: 0 18px 64px rgba(56, 189, 248, 0.6);
+      }
+
+      .intro-skip {
+        position: absolute;
+        z-index: 2;
+        top: 22px;
+        right: 24px;
+        padding: 7px 15px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        background: rgba(255, 255, 255, 0.04);
+        color: rgba(255, 255, 255, 0.66);
+        font-size: 0.8rem;
+        backdrop-filter: blur(10px);
+      }
+
+      .intro-skip:hover {
+        color: #ffffff;
+        border-color: rgba(255, 255, 255, 0.36);
+      }
+
       button,
       input {
         font: inherit;
@@ -1136,6 +1261,16 @@
     </style>
   </head>
   <body>
+    <div class="intro" id="intro" aria-label="开场">
+      <canvas id="introCanvas" aria-hidden="true"></canvas>
+      <div class="intro-caption" id="introCaption">
+        <span class="zh"></span>
+        <span class="en"></span>
+      </div>
+      <button class="intro-enter" id="introEnter" type="button">进入你的声音宇宙 · Enter</button>
+      <button class="intro-skip" id="introSkip" type="button">跳过 Skip ›</button>
+    </div>
+
     <div class="backdrop" aria-hidden="true"></div>
     <div class="aura" id="aura" aria-hidden="true"></div>
     <canvas id="particleCanvas" aria-hidden="true"></canvas>
@@ -2977,6 +3112,150 @@
         );
       }
 
+      // —— Cinematic intro: dark void → a grain of sound → a being gathers →
+      // it reacts and light expands → enter your sound universe. ——
+      function runIntro() {
+        const introEl = document.getElementById("intro");
+        if (!introEl) return;
+        const enterBtn = document.getElementById("introEnter");
+        const skipBtn = document.getElementById("introSkip");
+        const cap = document.getElementById("introCaption");
+        const capZh = cap.querySelector(".zh");
+        const capEn = cap.querySelector(".en");
+
+        const finish = () => {
+          if (introEl.classList.contains("gone")) return;
+          introEl.classList.add("gone");
+          document.body.classList.remove("intro-on");
+          window.setTimeout(() => {
+            introEl.style.display = "none";
+          }, 1300);
+        };
+        skipBtn.addEventListener("click", finish);
+        enterBtn.addEventListener("click", () => {
+          finish();
+          try {
+            if (!state.playing) startMusic();
+          } catch (e) {
+            /* noop */
+          }
+        });
+
+        // Reduced motion / second visit in this tab: skip the show.
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          introEl.style.display = "none";
+          return;
+        }
+
+        document.body.classList.add("intro-on");
+        const cv = document.getElementById("introCanvas");
+        const ic = cv.getContext("2d");
+        const size = () => {
+          const dpr = Math.min(window.devicePixelRatio || 1, 2);
+          cv.width = Math.floor(window.innerWidth * dpr);
+          cv.height = Math.floor(window.innerHeight * dpr);
+          ic.setTransform(dpr, 0, 0, dpr, 0, 0);
+        };
+        size();
+        window.addEventListener("resize", size);
+
+        const palette = ["#a78bfa", "#38bdf8", "#f9a8d4", "#ffffff"];
+        const N = 140;
+        const dots = [];
+        for (let i = 0; i < N; i += 1) {
+          const ang = Math.random() * Math.PI * 2;
+          const rad = Math.max(window.innerWidth, window.innerHeight) * (0.55 + Math.random() * 0.6);
+          dots.push({
+            sx: Math.cos(ang) * rad,
+            sy: Math.sin(ang) * rad,
+            orbit: 24 + Math.random() * 90,
+            oa: Math.random() * Math.PI * 2,
+            os: 0.4 + Math.random() * 0.8,
+            col: palette[Math.floor(Math.random() * palette.length)],
+            r: 1 + Math.random() * 1.8,
+          });
+        }
+        const captions = [
+          { zh: "起初，只有一粒声音。", en: "In the beginning, a single grain of sound." },
+          { zh: "它们聚拢，一个声音生命体醒来。", en: "They gather — a living sound being awakens." },
+          { zh: "当音乐响起，光，扩展成一个宇宙。", en: "With music, light expands into a universe." },
+          { zh: "这，是你的声音宇宙。", en: "This is your sound universe." },
+        ];
+        let phase = -1;
+        const showCaption = (i) => {
+          capZh.textContent = captions[i].zh;
+          capEn.textContent = captions[i].en;
+          cap.classList.remove("show");
+          void cap.offsetWidth;
+          cap.classList.add("show");
+        };
+        const glow = (x, y, r, col, al) => {
+          const g = ic.createRadialGradient(x, y, 0, x, y, r);
+          g.addColorStop(0, hexToRgba(col, al));
+          g.addColorStop(1, hexToRgba(col, 0));
+          ic.fillStyle = g;
+          ic.beginPath();
+          ic.arc(x, y, r, 0, Math.PI * 2);
+          ic.fill();
+        };
+
+        const start = performance.now();
+        const frame = (now) => {
+          if (introEl.classList.contains("gone")) return;
+          const t = now - start;
+          const w = window.innerWidth;
+          const h = window.innerHeight;
+          const cx = w / 2;
+          const cy = h / 2;
+          ic.clearRect(0, 0, w, h);
+          ic.globalCompositeOperation = "lighter";
+
+          const p = t < 2600 ? 0 : t < 6200 ? 1 : t < 9400 ? 2 : 3;
+          if (p !== phase) {
+            phase = p;
+            showCaption(p);
+            if (p === 3) enterBtn.classList.add("show");
+          }
+
+          if (p === 0) {
+            const a = clamp(t / 2600, 0, 1);
+            const e = 1 - Math.pow(1 - a, 3);
+            glow(cx, cy, 8 + 7 * Math.sin(t * 0.005) + e * 6, "#ffffff", 0.9 * e + 0.1);
+            glow(cx, cy, 70 * e, "#7c3aed", 0.12 * e);
+          } else {
+            const gather = clamp((t - 2600) / 3400, 0, 1);
+            const ge = 1 - Math.pow(1 - gather, 3);
+            const orbiting = clamp((t - 6200) / 1200, 0, 1);
+            for (const d of dots) {
+              const ox = cx + Math.cos(d.oa + t * 0.0012 * d.os) * d.orbit;
+              const oy = cy + Math.sin(d.oa + t * 0.0012 * d.os) * d.orbit * 0.7;
+              const gx = cx + d.sx * (1 - ge);
+              const gy = cy + d.sy * (1 - ge);
+              const x = gx + (ox - gx) * orbiting;
+              const y = gy + (oy - gy) * orbiting;
+              glow(x, y, d.r * 4, d.col, 0.7);
+            }
+            const grow = clamp((t - 3400) / 3200, 0, 1);
+            const R = 16 + grow * 64 + (p >= 2 ? 16 * Math.sin(t * 0.004) : 0);
+            glow(cx, cy, R, "#ffffff", 0.45);
+            glow(cx, cy, R * 2.4, "#7c3aed", 0.16);
+            glow(cx, cy, R * 0.5, "#ffffff", 0.7);
+            if (p >= 2) {
+              const ringT = ((t - 6200) % 2000) / 2000;
+              ic.strokeStyle = hexToRgba("#38bdf8", 0.4 * (1 - ringT));
+              ic.lineWidth = 2;
+              ic.beginPath();
+              ic.arc(cx, cy, R + ringT * Math.max(w, h) * 0.6, 0, Math.PI * 2);
+              ic.stroke();
+            }
+          }
+          requestAnimationFrame(frame);
+        };
+        requestAnimationFrame(frame);
+        // Safety auto-reveal if left idle.
+        window.setTimeout(() => enterBtn.classList.add("show"), 9600);
+      }
+
       function init() {
         setupPalettes();
         setupGenres();
@@ -2990,6 +3269,7 @@
         applyScene("night");
         for (let i = 0; i < 3; i += 1) spawnFigure(undefined, undefined, "lumen");
         for (let i = 0; i < 2; i += 1) spawnFigure(undefined, undefined, "voyager");
+        runIntro();
         requestAnimationFrame(drawParticles);
       }
 
