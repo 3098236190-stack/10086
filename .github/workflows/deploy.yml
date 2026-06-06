@@ -1,10 +1,12 @@
-name: Deploy universe to GitHub Pages
+name: Deploy site to GitHub Pages
 
 on:
   push:
     branches: [claude/awesome-carson-6ExS7]
     paths:
       - "universe/**"
+      - "index.html"
+      - "about.html"
       - ".github/workflows/deploy.yml"
   workflow_dispatch:
 
@@ -18,9 +20,6 @@ concurrency:
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: universe
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -28,12 +27,25 @@ jobs:
           node-version: 20
           cache: npm
           cache-dependency-path: universe/package-lock.json
-      - run: npm ci
-      - run: npm run build
-      # Publish the static export to the gh-pages branch (adds .nojekyll for _next).
-      - uses: peaceiris/actions-gh-pages@v4
+      - name: Build the 3D universe (Next.js static export)
+        working-directory: universe
+        run: |
+          npm ci
+          npm run build
+      - name: Assemble unified site ( / = base, /universe = 3D )
+        run: |
+          rm -rf site
+          mkdir -p site
+          cp index.html about.html site/ 2>/dev/null || true
+          mkdir -p site/universe
+          cp -r universe/out/* site/universe/
+          touch site/.nojekyll
+          ls -la site && echo "--- universe ---" && ls site/universe | head
+      - name: Publish to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./universe/out
+          publish_dir: ./site
           publish_branch: gh-pages
           force_orphan: true
+          enable_jekyll: false

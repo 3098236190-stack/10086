@@ -1,11 +1,12 @@
 /** @type {import('next').NextConfig} */
 const isProd = process.env.NODE_ENV === "production";
-const repo = "10086"; // GitHub Pages serves a project site at /<repo>/
+// Served at /<repo>/universe/ (base single-file site lives at /<repo>/).
+const base = "/10086/universe";
 
 const nextConfig = {
   output: "export", // fully static site (works on GitHub Pages / any static host)
-  basePath: isProd ? `/${repo}` : "",
-  assetPrefix: isProd ? `/${repo}/` : "",
+  basePath: isProd ? base : "",
+  assetPrefix: isProd ? `${base}/` : "",
   images: { unoptimized: true },
   trailingSlash: true,
   reactStrictMode: true,

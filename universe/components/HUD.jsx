@@ -33,6 +33,10 @@ export default function HUD({
         STORY ↗
       </Link>
 
+      <a className="story-link" href="../">
+        ← 轻量版
+      </a>
+
       <div className="hud-genres">
         {Object.entries(GENRES).map(([id, g]) => (
           <button

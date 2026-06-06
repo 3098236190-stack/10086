@@ -439,6 +439,27 @@
         margin-top: 36px;
       }
 
+      .nav-3d {
+        color: #05131c !important;
+        background: linear-gradient(135deg, #ffffff, var(--accent));
+        border-radius: 999px;
+        padding: 0 12px;
+        font-weight: 800;
+      }
+
+      .tier-hint {
+        margin: 16px 0 0;
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 0.82rem;
+        min-height: 1em;
+      }
+
+      .btn.disabled {
+        opacity: 0.4;
+        pointer-events: none;
+        filter: grayscale(0.4);
+      }
+
       .btn {
         display: inline-flex;
         align-items: center;
@@ -1171,30 +1192,22 @@
 
       @media (max-width: 900px) {
         .site-nav {
-          width: min(100% - 22px, 680px);
+          width: calc(100% - 22px);
         }
 
         .stage {
           width: min(100% - 22px, 680px);
-          grid-template-rows: auto auto auto;
           padding-top: 88px;
         }
 
         .hero {
-          min-height: 52vh;
-          align-items: flex-end;
-          flex-direction: column;
-          justify-content: flex-end;
+          min-height: 88svh;
+          padding: 84px 0 32px;
         }
 
         .hero-copy,
         .status-strip {
           width: 100%;
-        }
-
-        .status-strip {
-          justify-content: flex-start;
-          padding-bottom: 0;
         }
 
         .control-shell {
@@ -1204,31 +1217,58 @@
         .scene-strip {
           grid-template-columns: 1fr 1fr;
         }
+
+        /* Comfortable touch targets */
+        input[type="range"] {
+          height: 26px;
+        }
+
+        .chip,
+        .mode-button,
+        .genre-chip,
+        .scene-card,
+        .btn,
+        .full-action {
+          min-height: 44px;
+        }
       }
 
       @media (max-width: 520px) {
         .site-nav {
-          min-height: 48px;
-          width: calc(100% - 18px);
+          min-height: 46px;
+          width: calc(100% - 16px);
+          padding: 5px 6px 5px 12px;
+        }
+
+        .site-nav nav {
+          gap: 3px;
+          padding: 3px;
         }
 
         .site-nav nav a {
-          min-height: 32px;
+          min-height: 34px;
           padding: 0 9px;
+          font-size: 0.78rem;
         }
 
         .stage {
-          width: calc(100% - 18px);
-          padding-top: 82px;
-          padding-bottom: 18px;
+          width: calc(100% - 16px);
+          padding-top: 76px;
+          padding-bottom: 20px;
+          gap: 14px;
         }
 
         h1 {
-          font-size: clamp(3.15rem, 20vw, 5.4rem);
+          font-size: clamp(2.9rem, 17vw, 4.6rem);
+        }
+
+        .lede {
+          font-size: 1.02rem;
         }
 
         .panel {
           padding: 14px;
+          border-radius: 16px;
         }
 
         .button-row,
@@ -1237,11 +1277,29 @@
         }
 
         .swatch-grid {
-          grid-template-columns: repeat(5, minmax(28px, 1fr));
+          grid-template-columns: repeat(5, minmax(0, 1fr));
         }
 
         .scene-strip {
-          grid-template-columns: 1fr;
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .hero-cta {
+          gap: 10px;
+          width: 100%;
+        }
+
+        .btn {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+
+      /* Very small phones: keep the nav from overflowing. */
+      @media (max-width: 380px) {
+        .site-nav nav a[href="#studio"],
+        .site-nav nav a[href="#scenes"] {
+          display: none;
         }
       }
 
@@ -1284,6 +1342,7 @@
         <a href="#studio">Studio</a>
         <a href="#scenes">Scenes</a>
         <a href="./about.html">关于</a>
+        <a class="nav-3d" href="./universe/">宇宙 3D ↗</a>
       </nav>
     </header>
 
@@ -1295,8 +1354,9 @@
           <p class="lede">生成属于你的声音宇宙 —— Create living soundscapes with AI.</p>
           <div class="hero-cta">
             <button class="btn primary" id="heroStart" type="button">开始创作 · Start Creating</button>
-            <a class="btn ghost" href="#studio">看演示 · Watch Demo</a>
+            <a class="btn ghost" id="enter3d" href="./universe/">进入声音宇宙 3D ›</a>
           </div>
+          <p class="tier-hint" id="tierHint"></p>
           <div class="status-strip" aria-live="polite">
             <span id="moodChip">Nebula / C Major</span>
             <span id="tempoChip">92 BPM</span>
@@ -3274,6 +3334,39 @@
       }
 
       init();
+    </script>
+
+    <script>
+      // Tier routing: keep low-end / no-WebGL devices on this lightweight page,
+      // and surface the 3D "Sound Universe" entry only where it'll run well.
+      (function () {
+        function webglOK() {
+          try {
+            const c = document.createElement("canvas");
+            return !!(window.WebGLRenderingContext && (c.getContext("webgl") || c.getContext("experimental-webgl")));
+          } catch (e) {
+            return false;
+          }
+        }
+        const ok = webglOK();
+        const coarse = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
+        const lowMem = navigator.deviceMemory && navigator.deviceMemory <= 3;
+        const enter = document.getElementById("enter3d");
+        const nav3d = document.querySelector(".nav-3d");
+        const hint = document.getElementById("tierHint");
+        if (!ok) {
+          if (enter) {
+            enter.classList.add("disabled");
+            enter.removeAttribute("href");
+          }
+          if (nav3d) nav3d.style.display = "none";
+          if (hint) hint.textContent = "当前设备不支持 3D（WebGL）—— 已为你保留这一版轻量体验。";
+        } else if (coarse || lowMem) {
+          if (hint) hint.textContent = "手机 / 低配设备推荐先用本轻量版；也可进入 3D 宇宙（已做移动端优化）。";
+        } else {
+          if (hint) hint.textContent = "想要电影级体验？进入 3D 声音宇宙 →";
+        }
+      })();
     </script>
   </body>
 </html>
