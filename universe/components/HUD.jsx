@@ -1,9 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { GENRES } from "@/lib/audio";
 
-export default function HUD({ playing, genre, onToggle, onGenre }) {
+export default function HUD({ playing, genre, onToggle, onGenre, onSave, capturing }) {
   return (
     <motion.div
       className="hud"
@@ -15,6 +16,10 @@ export default function HUD({ playing, genre, onToggle, onGenre }) {
         <span className="dot" />
         流光 · Sound Universe
       </div>
+
+      <Link className="story-link" href="/story">
+        STORY ↗
+      </Link>
 
       <div className="hud-genres">
         {Object.entries(GENRES).map(([id, g]) => (
@@ -31,6 +36,10 @@ export default function HUD({ playing, genre, onToggle, onGenre }) {
 
       <button className={`play ${playing ? "on" : ""}`} type="button" onClick={onToggle}>
         {playing ? "❚❚ 暂停" : "▶ 让它苏醒"}
+      </button>
+
+      <button className={`save ${capturing ? "rec" : ""}`} type="button" onClick={onSave}>
+        {capturing ? "● 录制中 · 点此保存" : "↓ 保存音乐"}
       </button>
     </motion.div>
   );

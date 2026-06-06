@@ -45,6 +45,10 @@ export function createAudioEngine() {
   let step = 0;
   let genre = "lofi";
   let playing = false;
+  let streamDest = null;
+  let recorder = null;
+  let chunks = [];
+  let capturing = false;
 
   function ensure() {
     if (ctx) return;
@@ -61,6 +65,9 @@ export function createAudioEngine() {
     master.connect(filter);
     filter.connect(analyser);
     analyser.connect(ctx.destination);
+    // Tap for recording / export.
+    streamDest = ctx.createMediaStreamDestination();
+    filter.connect(streamDest);
     data = new Uint8Array(analyser.frequencyBinCount);
   }
 
@@ -158,6 +165,35 @@ export function createAudioEngine() {
       playing = false;
       if (timer) window.clearTimeout(timer);
       timer = null;
+    },
+    isCapturing: () => capturing,
+    // Record the live output; resolves on stopCapture with a downloadable Blob.
+    startCapture() {
+      ensure();
+      if (capturing) return;
+      const mime = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4"].find(
+        (m) => typeof MediaRecorder !== "undefined" && MediaRecorder.isTypeSupported(m),
+      );
+      chunks = [];
+      recorder = new MediaRecorder(streamDest.stream, mime ? { mimeType: mime } : undefined);
+      recorder.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) chunks.push(e.data);
+      };
+      recorder.start();
+      capturing = true;
+    },
+    stopCapture() {
+      return new Promise((resolve) => {
+        if (!recorder) {
+          resolve(null);
+          return;
+        }
+        recorder.onstop = () => {
+          capturing = false;
+          resolve(new Blob(chunks, { type: chunks[0] ? chunks[0].type : "audio/webm" }));
+        };
+        recorder.stop();
+      });
     },
     // Returns { level, bass, treble } in 0..1 for the current frame.
     sample() {
