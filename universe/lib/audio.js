@@ -10,12 +10,24 @@ const SCALES = {
   penta: [0, 2, 4, 7, 9, 12, 14, 16],
 };
 
+// Genres inspired by common AI-music styles (Suno-style tags). Each maps to
+// tempo / scale / timbre / drum feel, plus the lifeform's hue + spikiness.
 export const GENRES = {
   lofi: { zh: "Lo-Fi", tempo: 84, scale: "minor", wave: "triangle", kickEvery: 4, spikes: 0.35, hue: 0.72 },
   pop: { zh: "流行", tempo: 114, scale: "major", wave: "triangle", kickEvery: 4, spikes: 0.5, hue: 0.55 },
+  edm: { zh: "电子", tempo: 128, scale: "major", wave: "sawtooth", kickEvery: 4, spikes: 0.8, hue: 0.58 },
+  house: { zh: "浩室", tempo: 124, scale: "minor", wave: "sawtooth", kickEvery: 4, spikes: 0.62, hue: 0.52 },
+  synthwave: { zh: "合成波", tempo: 100, scale: "minor", wave: "sawtooth", kickEvery: 4, spikes: 0.66, hue: 0.83 },
+  hiphop: { zh: "嘻哈", tempo: 90, scale: "minor", wave: "triangle", kickEvery: 8, spikes: 0.45, hue: 0.08 },
+  trap: { zh: "Trap", tempo: 140, scale: "minor", wave: "sawtooth", kickEvery: 8, spikes: 0.72, hue: 0.78 },
+  rock: { zh: "摇滚", tempo: 132, scale: "minor", wave: "sawtooth", kickEvery: 4, spikes: 0.9, hue: 0.0 },
+  funk: { zh: "放克", tempo: 112, scale: "dorian", wave: "sawtooth", kickEvery: 4, spikes: 0.6, hue: 0.1 },
+  jazz: { zh: "爵士", tempo: 108, scale: "dorian", wave: "sine", kickEvery: 8, spikes: 0.32, hue: 0.13 },
+  folk: { zh: "民谣", tempo: 96, scale: "major", wave: "triangle", kickEvery: 8, spikes: 0.34, hue: 0.33 },
   epic: { zh: "史诗", tempo: 128, scale: "minor", wave: "sawtooth", kickEvery: 2, spikes: 1.0, hue: 0.86 },
-  healing: { zh: "治愈", tempo: 66, scale: "lydian", wave: "sine", kickEvery: 16, spikes: 0.18, hue: 0.5 },
   classical: { zh: "古典", tempo: 96, scale: "major", wave: "sine", kickEvery: 8, spikes: 0.4, hue: 0.62 },
+  ambient: { zh: "氛围", tempo: 60, scale: "lydian", wave: "sine", kickEvery: 16, spikes: 0.14, hue: 0.48 },
+  healing: { zh: "治愈", tempo: 66, scale: "lydian", wave: "sine", kickEvery: 16, spikes: 0.18, hue: 0.5 },
 };
 
 const KEY = 60; // middle C
