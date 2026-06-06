@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { OrbitControls, AdaptiveDpr } from "@react-three/drei";
 import { EffectComposer, Bloom, DepthOfField, Noise, Vignette } from "@react-three/postprocessing";
 import { BlendFunction } from "postprocessing";
 import gsap from "gsap";
@@ -25,11 +25,12 @@ function CameraIntro() {
 
 // Mouse-influenced parallax with inertia + lens breathing. The world tilts
 // gently toward the cursor; the camera never snaps. Frozen during the story.
-function CameraRig({ worldRef, journeyRef }) {
+function CameraRig({ worldRef, journeyRef, reduce }) {
   const { camera } = useThree();
   const baseFov = useRef(camera.fov);
   useFrame((state, dt) => {
     const onJourney = journeyRef.current && journeyRef.current.active;
+    if (reduce) return;
     const k = Math.min(1, dt * 1.6);
     if (worldRef.current && !onJourney) {
       worldRef.current.rotation.y += (state.pointer.x * 0.35 - worldRef.current.rotation.y) * k * 0.4;
@@ -151,18 +152,24 @@ export default function Experience({ audioRef, genre = "lofi", story = false }) 
       window.matchMedia("(max-width: 820px), (pointer: coarse)").matches,
     [],
   );
+  const reduce = useMemo(
+    () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    [],
+  );
 
   return (
     <Canvas
       dpr={isMobile ? [1, 1.5] : [1, 2]}
       gl={{ antialias: !isMobile, alpha: false, powerPreference: "high-performance" }}
       camera={{ position: [0, 0.8, 7.2], fov: isMobile ? 58 : 50 }}
+      performance={{ min: 0.5 }}
     >
+      <AdaptiveDpr pixelated={false} />
       {/* Ancient, hazy void — cinematic grade, not pure black. */}
       <color attach="background" args={["#0a0c12"]} />
       <fogExp2 attach="fog" args={["#0a0c12", 0.055]} />
       <CameraIntro />
-      <CameraRig worldRef={worldRef} journeyRef={journeyRef} />
+      <CameraRig worldRef={worldRef} journeyRef={journeyRef} reduce={reduce} />
       <StoryDirector story={story} journeyRef={journeyRef} controlsRef={controlsRef} />
 
       <ambientLight intensity={0.2} />
@@ -187,7 +194,7 @@ export default function Experience({ audioRef, genre = "lofi", story = false }) 
         dampingFactor={0.05}
         minDistance={4}
         maxDistance={16}
-        autoRotate
+        autoRotate={!reduce}
         autoRotateSpeed={0.18}
         rotateSpeed={0.5}
       />

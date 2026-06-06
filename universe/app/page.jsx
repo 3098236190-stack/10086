@@ -9,7 +9,15 @@ import HUD from "@/components/HUD";
 import StoryOverlay from "@/components/StoryOverlay";
 import { createAudioEngine } from "@/lib/audio";
 
-const Experience = dynamic(() => import("@/components/Experience"), { ssr: false });
+const Experience = dynamic(() => import("@/components/Experience"), {
+  ssr: false,
+  loading: () => (
+    <div className="loading">
+      <span className="loading-orb" />
+      <span className="loading-text">正在生成你的声音宇宙…</span>
+    </div>
+  ),
+});
 
 export default function Page() {
   const audioRef = useRef(null);
