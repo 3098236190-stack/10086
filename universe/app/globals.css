@@ -1,0 +1,230 @@
+:root {
+  --accent: #38bdf8;
+  --violet: #a78bfa;
+  --pink: #f9a8d4;
+  --ink: #f4f6fb;
+  --font:
+    "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Helvetica Neue",
+    "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: #06060c;
+  color: var(--ink);
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+.stage {
+  position: fixed;
+  inset: 0;
+}
+
+.stage canvas {
+  display: block;
+  touch-action: none;
+}
+
+/* —— Intro (Framer Motion) —— */
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(120% 90% at 50% 50%, rgba(8, 8, 16, 0.4), #05050a 75%);
+  backdrop-filter: blur(2px);
+}
+
+.intro-center {
+  text-align: center;
+  max-width: min(86%, 34ch);
+}
+
+.intro-line {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.intro-line .zh {
+  font-size: clamp(1.7rem, 4.6vw, 3.2rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  text-shadow: 0 12px 60px rgba(124, 58, 237, 0.6);
+}
+
+.intro-line .en {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: clamp(0.85rem, 1.7vw, 1.1rem);
+}
+
+.enter-btn {
+  margin-top: 28px;
+  min-height: 52px;
+  padding: 0 30px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: linear-gradient(135deg, #ffffff, var(--accent));
+  color: #05131c;
+  font-family: var(--font);
+  font-size: 1.04rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 14px 54px rgba(56, 189, 248, 0.45);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.enter-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 70px rgba(56, 189, 248, 0.62);
+}
+
+.skip-btn {
+  position: absolute;
+  top: 22px;
+  right: 24px;
+  padding: 7px 15px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.66);
+  font-family: var(--font);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.skip-btn:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.36);
+}
+
+/* —— HUD —— */
+.hud {
+  position: fixed;
+  z-index: 20;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(30px) saturate(150%);
+  box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.08) inset, 0 20px 60px rgba(0, 0, 0, 0.5);
+  max-width: calc(100% - 28px);
+}
+
+.hud-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.hud-brand .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 12px 1px var(--accent);
+}
+
+.hud-genres {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  min-height: 32px;
+  padding: 0 13px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(0, 0, 0, 0.25);
+  color: rgba(255, 255, 255, 0.75);
+  font-family: var(--font);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.chip:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 255, 255, 0.36);
+}
+
+.chip.active {
+  color: #05131c;
+  border-color: transparent;
+  background: linear-gradient(135deg, #fff, var(--accent));
+}
+
+.play {
+  min-height: 38px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: linear-gradient(135deg, #fff, var(--violet));
+  color: #160a2a;
+  font-family: var(--font);
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.play.on {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* —— Zone labels (drei Html) —— */
+.zone-label {
+  transform: translateY(-50%);
+  text-align: center;
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+  text-shadow: 0 6px 30px rgba(0, 0, 0, 0.6);
+}
+
+.zone-label strong {
+  display: block;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.zone-label span {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+  }
+}
