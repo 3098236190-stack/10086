@@ -78,6 +78,8 @@ const FRAG = /* glsl */ `
 uniform vec3 uColorA;
 uniform vec3 uColorB;
 uniform float uAudio;
+uniform float uAlpha;
+uniform float uGlow;
 varying vec3 vNormal;
 varying vec3 vWorld;
 varying float vDisp;
@@ -86,12 +88,13 @@ void main(){
   float fres = pow(1.0 - max(dot(normalize(vNormal), V), 0.0), 2.2);
   vec3 col = mix(uColorA, uColorB, fres);
   col += max(vDisp, 0.0) * 1.8 * uColorB;
-  float alpha = clamp(fres * 0.9 + 0.10 + uAudio * 0.25, 0.0, 1.0);
-  gl_FragColor = vec4(col, alpha);
+  col += uGlow * uColorB * 0.6;
+  float alpha = clamp(fres * 0.9 + 0.10 + uAudio * 0.25 + uGlow * 0.2, 0.0, 1.0);
+  gl_FragColor = vec4(col, alpha * uAlpha);
 }
 `;
 
-export default function Lifeform({ audioRef, hue = 0.72, spikes = 0.4 }) {
+export default function Lifeform({ audioRef, hue = 0.72, spikes = 0.4, journeyRef = null }) {
   const matRef = useRef();
   const coreRef = useRef();
   const groupRef = useRef();
@@ -104,6 +107,8 @@ export default function Lifeform({ audioRef, hue = 0.72, spikes = 0.4 }) {
       uSpikes: { value: spikes },
       uColorA: { value: new THREE.Color().setHSL(hue, 0.7, 0.55) },
       uColorB: { value: new THREE.Color().setHSL((hue + 0.12) % 1, 0.9, 0.75) },
+      uAlpha: { value: 1 },
+      uGlow: { value: 0 },
     }),
     [], // eslint-disable-line react-hooks/exhaustive-deps
   );
@@ -114,6 +119,10 @@ export default function Lifeform({ audioRef, hue = 0.72, spikes = 0.4 }) {
     // smooth the audio level
     target.current.audio += (s.level - target.current.audio) * Math.min(1, dt * 6);
     const lvl = target.current.audio;
+    const j = journeyRef && journeyRef.current ? journeyRef.current : null;
+    const jAlpha = j ? j.alpha : 1;
+    const jGlow = j ? j.glow : 0;
+    const jCollapse = j ? j.collapse : 0;
 
     if (matRef.current) {
       const u = matRef.current.uniforms;
@@ -122,18 +131,20 @@ export default function Lifeform({ audioRef, hue = 0.72, spikes = 0.4 }) {
       u.uSpikes.value += (spikes - u.uSpikes.value) * Math.min(1, dt * 3);
       u.uColorA.value.setHSL(hue, 0.7, 0.5 + lvl * 0.1);
       u.uColorB.value.setHSL((hue + 0.12) % 1, 0.9, 0.72);
+      u.uAlpha.value = jAlpha;
+      u.uGlow.value = jGlow;
     }
     if (coreRef.current) {
-      const sc = 0.5 + lvl * 0.5 + 0.05 * Math.sin(t * 1.6);
+      const sc = (0.5 + lvl * 0.5 + 0.05 * Math.sin(t * 1.6)) * (1 + jGlow * 0.6);
       coreRef.current.scale.setScalar(sc);
-      coreRef.current.material.opacity = 0.5 + lvl * 0.5;
+      coreRef.current.material.opacity = (0.5 + lvl * 0.5) * (0.3 + jAlpha * 0.7) + jGlow * 0.4;
       coreRef.current.material.color.setHSL((hue + 0.1) % 1, 0.6, 0.85);
     }
     if (groupRef.current) {
       groupRef.current.rotation.y += dt * (0.12 + lvl * 0.3);
       groupRef.current.rotation.x = Math.sin(t * 0.2) * 0.18;
-      // breathing idle float
       groupRef.current.position.y = Math.sin(t * 0.8) * 0.12;
+      groupRef.current.scale.setScalar(Math.max(0.06, 1 - jCollapse * 0.92));
     }
   });
 

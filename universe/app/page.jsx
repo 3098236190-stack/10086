@@ -6,6 +6,7 @@ import { AnimatePresence } from "framer-motion";
 import { Leva } from "leva";
 import Intro from "@/components/Intro";
 import HUD from "@/components/HUD";
+import StoryOverlay from "@/components/StoryOverlay";
 import { createAudioEngine } from "@/lib/audio";
 
 const Experience = dynamic(() => import("@/components/Experience"), { ssr: false });
@@ -18,6 +19,7 @@ export default function Page() {
   const [capturing, setCapturing] = useState(false);
   const [micOn, setMicOn] = useState(false);
   const [filming, setFilming] = useState(false);
+  const [story, setStory] = useState(false);
   const videoRec = useRef(null);
   const videoChunks = useRef([]);
 
@@ -82,6 +84,20 @@ export default function Page() {
     }
   }, [genre]);
 
+  // Enter the Story — the camera dives into the narrative (no page switch).
+  const enterStory = useCallback(async () => {
+    const e = ensureEngine();
+    if (!e.isPlaying()) {
+      try {
+        await e.start();
+        setPlaying(true);
+      } catch (err) {
+        /* noop */
+      }
+    }
+    setStory(true);
+  }, []);
+
   // Microphone: blend your own voice/sound into the universe.
   const toggleMic = useCallback(async () => {
     const e = ensureEngine();
@@ -135,10 +151,11 @@ export default function Page() {
 
   return (
     <main className="stage">
-      <Leva collapsed hidden={intro} />
-      <Experience audioRef={audioRef} genre={genre} />
+      <Leva collapsed hidden={intro || story} />
+      <Experience audioRef={audioRef} genre={genre} story={story} />
       <AnimatePresence>{intro && <Intro key="intro" onEnter={enter} />}</AnimatePresence>
-      {!intro && (
+      <StoryOverlay active={story} onArrive={() => setStory(false)} />
+      {!intro && !story && (
         <HUD
           playing={playing}
           genre={genre}
@@ -150,6 +167,7 @@ export default function Page() {
           micOn={micOn}
           onFilm={film}
           filming={filming}
+          onStory={enterStory}
         />
       )}
     </main>

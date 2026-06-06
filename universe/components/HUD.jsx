@@ -15,6 +15,7 @@ export default function HUD({
   micOn,
   onFilm,
   filming,
+  onStory,
 }) {
   return (
     <motion.div
@@ -59,6 +60,10 @@ export default function HUD({
 
       <button className={`save ${filming ? "rec" : ""}`} type="button" onClick={onFilm}>
         {filming ? "● 录像中 · 点此保存" : "🎬 录视频"}
+      </button>
+
+      <button className="story-enter-btn" type="button" onClick={onStory}>
+        进入故事 · Enter the Story →
       </button>
     </motion.div>
   );
