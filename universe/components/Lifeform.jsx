@@ -94,7 +94,7 @@ void main(){
 }
 `;
 
-export default function Lifeform({ audioRef, hue = 0.72, spikes = 0.4, journeyRef = null }) {
+export default function Lifeform({ audioRef, hue = 0.72, spikes = 0.4, journeyRef = null, detail = 48 }) {
   const matRef = useRef();
   const coreRef = useRef();
   const groupRef = useRef();
@@ -151,7 +151,7 @@ export default function Lifeform({ audioRef, hue = 0.72, spikes = 0.4, journeyRe
   return (
     <group ref={groupRef}>
       <mesh>
-        <icosahedronGeometry args={[1.35, 48]} />
+        <icosahedronGeometry args={[1.35, detail]} />
         <shaderMaterial
           ref={matRef}
           vertexShader={VERT}

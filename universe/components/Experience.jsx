@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { EffectComposer, Bloom, DepthOfField, Noise, Vignette } from "@react-three/postprocessing";
@@ -144,11 +144,19 @@ export default function Experience({ audioRef, genre = "lofi", story = false }) 
   const controlsRef = useRef();
   const journeyRef = useRef({ active: false, glow: 0, alpha: 1, collapse: 0 });
 
+  // Mobile / low-power detection -> lighter render path for 60fps on phones.
+  const isMobile = useMemo(
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia("(max-width: 820px), (pointer: coarse)").matches,
+    [],
+  );
+
   return (
     <Canvas
-      dpr={[1, 2]}
-      gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
-      camera={{ position: [0, 0.8, 7.2], fov: 50 }}
+      dpr={isMobile ? [1, 1.5] : [1, 2]}
+      gl={{ antialias: !isMobile, alpha: false, powerPreference: "high-performance" }}
+      camera={{ position: [0, 0.8, 7.2], fov: isMobile ? 58 : 50 }}
     >
       {/* Ancient, hazy void — cinematic grade, not pure black. */}
       <color attach="background" args={["#0a0c12"]} />
@@ -163,8 +171,8 @@ export default function Experience({ audioRef, genre = "lofi", story = false }) 
       <pointLight position={[9, 2, -2]} intensity={1.6} distance={18} color="#6a3a52" />
 
       <group ref={worldRef}>
-        <Lifeform audioRef={audioRef} hue={g.hue} spikes={g.spikes} journeyRef={journeyRef} />
-        <SoundParticles audioRef={audioRef} color={`#${accent.getHexString()}`} />
+        <Lifeform audioRef={audioRef} hue={g.hue} spikes={g.spikes} journeyRef={journeyRef} detail={isMobile ? 24 : 48} />
+        <SoundParticles audioRef={audioRef} color={`#${accent.getHexString()}`} count={isMobile ? 550 : 1400} />
         <MusicLab audioRef={audioRef} />
         <MemoryGarden audioRef={audioRef} />
         <SoundTemple audioRef={audioRef} />
@@ -184,11 +192,16 @@ export default function Experience({ audioRef, genre = "lofi", story = false }) 
         rotateSpeed={0.5}
       />
 
+      {/* Mobile: drop the expensive DepthOfField + film grain, keep bloom. */}
       <EffectComposer disableNormalPass>
-        <DepthOfField focusDistance={0.012} focalLength={0.045} bokehScale={3.2} height={480} />
-        <Bloom mipmapBlur intensity={0.85} luminanceThreshold={0.2} luminanceSmoothing={0.4} radius={0.85} />
+        {!isMobile ? (
+          <DepthOfField focusDistance={0.012} focalLength={0.045} bokehScale={3.2} height={480} />
+        ) : (
+          <></>
+        )}
+        <Bloom mipmapBlur intensity={isMobile ? 0.7 : 0.85} luminanceThreshold={0.2} luminanceSmoothing={0.4} radius={0.85} />
         <Vignette eskil={false} offset={0.2} darkness={0.92} />
-        <Noise premultiply blendFunction={BlendFunction.SOFT_LIGHT} opacity={0.42} />
+        {!isMobile ? <Noise premultiply blendFunction={BlendFunction.SOFT_LIGHT} opacity={0.42} /> : <></>}
       </EffectComposer>
     </Canvas>
   );

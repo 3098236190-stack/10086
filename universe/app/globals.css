@@ -492,6 +492,76 @@ body {
   color: #fff;
 }
 
+/* —— Mobile / touch —— */
+@media (max-width: 820px) {
+  .hud {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transform: none;
+    width: 100%;
+    max-width: 100%;
+    border-radius: 16px 16px 0 0;
+    gap: 8px 10px;
+    padding: 10px 12px calc(12px + env(safe-area-inset-bottom));
+    justify-content: center;
+  }
+
+  .hud-brand {
+    font-size: 0.8rem;
+  }
+
+  /* Genres become a single swipeable row instead of a giant wrap block. */
+  .hud-genres {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    order: 9;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    justify-content: flex-start;
+  }
+
+  .hud-genres::-webkit-scrollbar {
+    display: none;
+  }
+
+  .chip {
+    flex: 0 0 auto;
+    min-height: 34px;
+  }
+
+  .play,
+  .save,
+  .story-enter-btn {
+    min-height: 36px;
+    padding: 0 13px;
+    font-size: 0.8rem;
+  }
+
+  .story-enter-btn {
+    order: 10;
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .story-cap {
+    bottom: 24%;
+  }
+
+  .zone-label strong {
+    font-size: 0.95rem;
+  }
+
+  /* Leva is a desktop dev panel — hide it on phones. */
+  #leva__root {
+    display: none !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
