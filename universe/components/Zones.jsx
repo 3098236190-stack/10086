@@ -38,7 +38,7 @@ export function MusicLab({ audioRef, position = [-8, 0, 0] }) {
             <meshStandardMaterial
               color="#38bdf8"
               emissive="#38bdf8"
-              emissiveIntensity={2.2}
+              emissiveIntensity={1.05}
               toneMapped={false}
               transparent
               opacity={0.9}
@@ -84,7 +84,7 @@ export function MemoryGarden({ audioRef, position = [8, 0, 0] }) {
             <meshStandardMaterial
               color={new THREE.Color().setHSL(d.hue, 0.7, 0.7)}
               emissive={new THREE.Color().setHSL(d.hue, 0.8, 0.6)}
-              emissiveIntensity={2.4}
+              emissiveIntensity={1.15}
               toneMapped={false}
             />
           </mesh>
@@ -117,7 +117,7 @@ export function SoundTemple({ audioRef, position = [0, -1, -11] }) {
               <meshStandardMaterial
                 color="#c4b5fd"
                 emissive="#7c3aed"
-                emissiveIntensity={1.8}
+                emissiveIntensity={0.95}
                 toneMapped={false}
                 transparent
                 opacity={0.92}
