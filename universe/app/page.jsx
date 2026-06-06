@@ -66,9 +66,8 @@ export default function Page() {
       if (blob) {
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
-        const ext = blob.type.includes("mp4") ? "m4a" : "webm";
         a.href = url;
-        a.download = `liuguang-${genre}-${Date.now()}.${ext}`;
+        a.download = `liuguang-${genre}-${Date.now()}.wav`;
         document.body.appendChild(a);
         a.click();
         a.remove();

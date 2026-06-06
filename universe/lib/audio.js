@@ -45,9 +45,11 @@ export function createAudioEngine() {
   let step = 0;
   let genre = "lofi";
   let playing = false;
-  let streamDest = null;
-  let recorder = null;
-  let chunks = [];
+  let filterNode = null;
+  let recNode = null;
+  let recSink = null;
+  let recBuffers = [];
+  let recLen = 0;
   let capturing = false;
 
   function ensure() {
@@ -59,16 +61,43 @@ export function createAudioEngine() {
     const filter = ctx.createBiquadFilter();
     filter.type = "lowpass";
     filter.frequency.value = 6000;
+    filterNode = filter;
     analyser = ctx.createAnalyser();
     analyser.fftSize = 128;
     analyser.smoothingTimeConstant = 0.82;
     master.connect(filter);
     filter.connect(analyser);
     analyser.connect(ctx.destination);
-    // Tap for recording / export.
-    streamDest = ctx.createMediaStreamDestination();
-    filter.connect(streamDest);
     data = new Uint8Array(analyser.frequencyBinCount);
+  }
+
+  // Encode mono Float32 PCM -> a 16-bit WAV blob (opens on every device).
+  function encodeWav(samples, sampleRate) {
+    const buffer = new ArrayBuffer(44 + samples.length * 2);
+    const view = new DataView(buffer);
+    const writeStr = (off, s) => {
+      for (let i = 0; i < s.length; i += 1) view.setUint8(off + i, s.charCodeAt(i));
+    };
+    writeStr(0, "RIFF");
+    view.setUint32(4, 36 + samples.length * 2, true);
+    writeStr(8, "WAVE");
+    writeStr(12, "fmt ");
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    view.setUint16(22, 1, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * 2, true);
+    view.setUint16(32, 2, true);
+    view.setUint16(34, 16, true);
+    writeStr(36, "data");
+    view.setUint32(40, samples.length * 2, true);
+    let off = 44;
+    for (let i = 0; i < samples.length; i += 1) {
+      const s = Math.max(-1, Math.min(1, samples[i]));
+      view.setInt16(off, s < 0 ? s * 0x8000 : s * 0x7fff, true);
+      off += 2;
+    }
+    return new Blob([view], { type: "audio/wav" });
   }
 
   function env(gain, t, peak, a, d, s, r) {
@@ -167,32 +196,52 @@ export function createAudioEngine() {
       timer = null;
     },
     isCapturing: () => capturing,
-    // Record the live output; resolves on stopCapture with a downloadable Blob.
+    // Record the live output as raw PCM, exported as a universal .wav.
     startCapture() {
       ensure();
       if (capturing) return;
-      const mime = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4"].find(
-        (m) => typeof MediaRecorder !== "undefined" && MediaRecorder.isTypeSupported(m),
-      );
-      chunks = [];
-      recorder = new MediaRecorder(streamDest.stream, mime ? { mimeType: mime } : undefined);
-      recorder.ondataavailable = (e) => {
-        if (e.data && e.data.size > 0) chunks.push(e.data);
+      recBuffers = [];
+      recLen = 0;
+      recNode = ctx.createScriptProcessor(4096, 1, 1);
+      recNode.onaudioprocess = (e) => {
+        if (!capturing) return;
+        const ch = e.inputBuffer.getChannelData(0);
+        recBuffers.push(new Float32Array(ch));
+        recLen += ch.length;
       };
-      recorder.start();
+      // ScriptProcessor only runs while connected to the destination; route it
+      // through a silent gain so it doesn't double the audio.
+      recSink = ctx.createGain();
+      recSink.gain.value = 0;
+      filterNode.connect(recNode);
+      recNode.connect(recSink);
+      recSink.connect(ctx.destination);
       capturing = true;
     },
     stopCapture() {
       return new Promise((resolve) => {
-        if (!recorder) {
+        if (!recNode) {
           resolve(null);
           return;
         }
-        recorder.onstop = () => {
-          capturing = false;
-          resolve(new Blob(chunks, { type: chunks[0] ? chunks[0].type : "audio/webm" }));
-        };
-        recorder.stop();
+        capturing = false;
+        try {
+          filterNode.disconnect(recNode);
+          recNode.disconnect();
+          recSink.disconnect();
+        } catch (e) {
+          /* noop */
+        }
+        const merged = new Float32Array(recLen);
+        let off = 0;
+        for (const b of recBuffers) {
+          merged.set(b, off);
+          off += b.length;
+        }
+        recBuffers = [];
+        recNode = null;
+        recSink = null;
+        resolve(encodeWav(merged, ctx.sampleRate));
       });
     },
     // Returns { level, bass, treble } in 0..1 for the current frame.
