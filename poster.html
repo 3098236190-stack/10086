@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>社会防呆指南 · 直播海报</title>
+<style>
+  :root{
+    --ink:#161616;
+    --paper:#F1E9D6;
+    --paper2:#FBF6E9;
+    --yellow:#FFD400;
+    --red:#E1322B;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:#5a5a5a;font-family:"PingFang SC","Microsoft YaHei","Source Han Sans SC","Noto Sans CJK SC","Heiti SC",sans-serif;}
+  .poster{
+    width:1080px;height:1920px;margin:0 auto;background:var(--paper);
+    position:relative;overflow:hidden;color:var(--ink);
+    display:flex;flex-direction:column;border:9px solid var(--ink);
+  }
+  /* 顶部警示斜纹 + 编号条 */
+  .hazard{height:30px;flex:none;
+    background:repeating-linear-gradient(45deg,var(--ink) 0 24px,var(--yellow) 24px 48px);}
+  .topbar{flex:none;display:flex;justify-content:space-between;align-items:center;
+    padding:14px 38px 6px;font-weight:800;font-size:22px;letter-spacing:1px;}
+  .topbar .no{font-family:"Courier New",monospace;}
+  .topbar .warn{color:var(--red);}
+  .content{flex:1;display:flex;flex-direction:column;padding:6px 54px 0;}
+
+  /* HERO */
+  .kicker{font-size:30px;font-weight:800;letter-spacing:8px;text-align:center;margin-top:10px;}
+  .bigword{font-weight:900;text-align:center;line-height:.9;margin:2px 0 0;
+    display:flex;justify-content:center;align-items:flex-end;}
+  .bigword .w{font-size:350px;letter-spacing:8px;}
+  .bigword .tag{font-size:84px;font-weight:900;margin-left:18px;margin-bottom:34px;
+    border:7px solid var(--ink);border-radius:18px;padding:2px 14px;line-height:1;}
+  .anno{text-align:center;font-size:26px;font-weight:700;letter-spacing:1px;
+    color:#3a3a3a;margin-top:14px;}
+  .anno b{color:var(--red);}
+  .slogan{margin:22px auto 0;background:var(--yellow);border:5px solid var(--ink);
+    font-size:50px;font-weight:900;letter-spacing:3px;padding:14px 26px;
+    box-shadow:9px 9px 0 var(--ink);}
+
+  /* 虚线裁切 */
+  .cut{display:flex;align-items:center;gap:14px;margin:26px 2px 0;
+    font-size:20px;font-weight:800;color:#7a7158;letter-spacing:1px;}
+  .cut::before,.cut::after{content:"";flex:1;border-top:3px dashed #b6a886;}
+
+  /* 潜台词翻译器 */
+  .card{margin-top:18px;border:5px solid var(--ink);background:var(--paper2);}
+  .card-h{background:var(--ink);color:var(--yellow);font-size:30px;font-weight:900;
+    letter-spacing:2px;padding:10px 20px;display:flex;justify-content:space-between;}
+  .card-h span{color:var(--paper);font-weight:700;font-size:22px;}
+  .row{display:flex;align-items:center;font-size:30px;font-weight:800;
+    padding:13px 22px;border-bottom:2px dashed #cdbf9d;}
+  .row:last-child{border-bottom:none;}
+  .row .say{width:300px;}
+  .row .arrow{color:var(--red);font-weight:900;margin:0 18px;}
+  .row .mean{color:#444;}
+
+  /* 内容九宫格 */
+  .sec-title{margin-top:24px;font-size:28px;font-weight:900;letter-spacing:1px;
+    display:flex;align-items:center;gap:12px;}
+  .sec-title .dot{width:22px;height:22px;background:var(--red);display:inline-block;}
+  .sec-title small{font-weight:700;color:#7a7158;font-size:21px;letter-spacing:0;}
+  .grid{margin-top:14px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+  .cell{background:var(--paper2);border:4px solid var(--ink);padding:14px 8px 12px;
+    text-align:center;}
+  .cell .ico{font-size:46px;line-height:1;}
+  .cell .nm{font-size:30px;font-weight:900;margin-top:6px;}
+  .cell .cap{font-size:18px;font-weight:700;color:#6b6350;margin-top:4px;}
+
+  /* 命中率进度条 */
+  .hit{margin-top:24px;}
+  .hit .lbl{font-size:26px;font-weight:900;margin-bottom:8px;}
+  .hit .lbl b{color:var(--red);}
+  .bar{height:46px;border:5px solid var(--ink);background:repeating-linear-gradient(
+      90deg,#e9dcbd 0 18px,#ddcfa9 18px 20px);position:relative;}
+  .bar .fill{position:absolute;left:0;top:0;bottom:0;width:90%;
+    background:repeating-linear-gradient(45deg,var(--ink) 0 16px,var(--yellow) 16px 32px);}
+  .bar .m{position:absolute;top:-2px;bottom:-2px;width:4px;background:var(--red);}
+  .ticks{display:flex;justify-content:space-between;font-size:20px;font-weight:800;margin-top:6px;}
+
+  /* 页脚 */
+  .footer{margin-top:auto;display:flex;align-items:stretch;gap:18px;
+    border-top:5px solid var(--ink);padding:22px 2px 26px;position:relative;}
+  .meta{flex:1;display:flex;flex-direction:column;justify-content:center;gap:16px;}
+  .meta .line{font-size:34px;font-weight:900;}
+  .meta .line .k{background:var(--ink);color:var(--yellow);padding:2px 12px;margin-right:12px;}
+  .meta .ph{color:var(--red);}
+  .qr{width:188px;height:188px;border:5px solid var(--ink);background:#fff;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    font-size:24px;font-weight:900;text-align:center;line-height:1.3;}
+  .qr small{font-size:18px;color:var(--red);font-weight:800;margin-top:6px;}
+  .stamp{position:absolute;right:170px;top:6px;width:172px;height:172px;border-radius:50%;
+    border:6px double var(--red);color:var(--red);transform:rotate(-14deg);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    font-weight:900;text-align:center;line-height:1.25;opacity:.92;}
+  .stamp .big{font-size:30px;}
+  .stamp .sm{font-size:17px;letter-spacing:1px;}
+  .stamp .pass{font-size:21px;margin-top:2px;}
+</style>
+</head>
+<body>
+  <div class="poster">
+    <div class="hazard"></div>
+    <div class="topbar">
+      <div class="no">INSTRUCTION No.001</div>
+      <div class="warn">⚠ 使用社会前 请先阅读</div>
+    </div>
+
+    <div class="content">
+      <!-- HERO -->
+      <div class="kicker">社 会 生 存 · 操 作 手 册</div>
+      <div class="bigword"><span class="w">防呆</span><span class="tag">指南</span></div>
+      <div class="anno">fáng dāi · poka-yoke ｜ <b>让你在社会上不犯傻的设计</b></div>
+      <div class="slogan">提高命中率，看上去没那么呆</div>
+
+      <!-- 潜台词翻译器 -->
+      <div class="cut">✂ 沿虚线 学会人情世故</div>
+      <div class="card">
+        <div class="card-h">⚠ 社会潜台词 · 翻译器 <span>听懂这些，你就出师了</span></div>
+        <div class="row"><div class="say">"在吗？"</div><div class="arrow">→</div><div class="mean">八成要借钱或帮忙</div></div>
+        <div class="row"><div class="say">"我没事"</div><div class="arrow">→</div><div class="mean">有事，而且是大事</div></div>
+        <div class="row"><div class="say">"下次一定"</div><div class="arrow">→</div><div class="mean">没有下次</div></div>
+      </div>
+
+      <!-- 内容九宫格 -->
+      <div class="sec-title"><span class="dot"></span>本场内容 <small>内功:看听想说 ｜ 招式:饭酒人情职场</small></div>
+      <div class="grid">
+        <div class="cell"><div class="ico">👀</div><div class="nm">看</div><div class="cap">识人读场</div></div>
+        <div class="cell"><div class="ico">👂</div><div class="nm">听</div><div class="cap">听话听音</div></div>
+        <div class="cell"><div class="ico">🧠</div><div class="nm">想</div><div class="cap">拿捏分寸</div></div>
+        <div class="cell"><div class="ico">🗣️</div><div class="nm">说</div><div class="cap">开口加分</div></div>
+        <div class="cell"><div class="ico">🍚</div><div class="nm">饭</div><div class="cap">饭局门道</div></div>
+        <div class="cell"><div class="ico">🍷</div><div class="nm">酒</div><div class="cap">酒桌规矩</div></div>
+        <div class="cell"><div class="ico">🤝</div><div class="nm">人情</div><div class="cap">来往不亏</div></div>
+        <div class="cell"><div class="ico">💼</div><div class="nm">职场</div><div class="cap">不背黑锅</div></div>
+      </div>
+
+      <!-- 命中率进度条 -->
+      <div class="hit">
+        <div class="lbl">社会命中率：出厂 <b>30%</b> ——看完这场——> 通关 <b>90%</b></div>
+        <div class="bar"><div class="fill"></div><div class="m" style="left:30%"></div></div>
+        <div class="ticks"><span>新手村</span><span>← 你在这</span><span>老手</span></div>
+      </div>
+
+      <!-- 页脚 -->
+      <div class="footer">
+        <div class="meta">
+          <div class="line"><span class="k">时间</span><span class="ph">【填直播时间】</span></div>
+          <div class="line"><span class="k">平台</span><span class="ph">【填直播间/平台】</span></div>
+        </div>
+        <div class="qr">▣ 预约码<small>替换这里</small></div>
+        <div class="stamp">
+          <div class="sm">社 会 防 呆</div>
+          <div class="big">合 格</div>
+          <div class="pass">PASS ✔</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
