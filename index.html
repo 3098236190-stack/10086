@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Handbook · Loading</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- 倒数加载画面 -->
+  <div class="loader" id="loader">
+    <div class="loader__inner">
+      <div class="loader__brand">SHUCHENGLIN · HANDBOOK</div>
+
+      <div class="loader__counter">
+        <span id="percent">0</span><span class="loader__percent-sign">%</span>
+      </div>
+
+      <div class="loader__bar">
+        <div class="loader__bar-fill" id="barFill"></div>
+      </div>
+
+      <div class="loader__status" id="status">LOADING</div>
+    </div>
+
+    <div class="loader__footer">© <span id="year"></span> · all rights reserved</div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
