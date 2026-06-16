@@ -100,7 +100,7 @@
 
     articleView.innerHTML =
       '<div class="breadcrumb"><a href="#" id="backList">← 返回投教课堂</a> / ' + a.cat + '</div>' +
-      '<div class="grid" style="grid-template-columns:1fr 280px;gap:24px;align-items:start">' +
+      '<div class="grid reader">' +
         '<article class="card" style="padding:30px 34px">' +
           '<div style="margin-bottom:10px"><span class="aud ' + a.level + '">' + (a.level === "beginner" ? "🌱 小白入门" : "🚀 进阶提升") + '</span> ' +
             '<span class="tag gray">' + a.cat + '</span> <span class="small muted">约 ' + a.read + '阅读</span></div>' +

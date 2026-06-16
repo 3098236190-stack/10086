@@ -92,4 +92,27 @@ test.describe("全栈：前端 ← Django API ← SQLite", () => {
     await expect(page.getByText(/至少填写一种联系方式/)).toBeVisible();
     await expect(page.getByText("提交成功！")).toHaveCount(0);
   });
+
+  // 找茬：响应式横向溢出守卫。覆盖平板 768（导航塌缩临界区）与窄手机 360，
+  // 逐页校验不出现横向滚动条 —— 此前 fund-detail 重仓分栏与全站导航都曾在此溢出。
+  test("找茬：关键页面在平板/手机窄屏均无横向溢出", async ({ page }) => {
+    const routes = [
+      ["首页", "/"],
+      ["进阶筛选", "/#/screener?mode=pro"],
+      ["基金详情", "/#/fund/001234"],
+      ["投教文章", "/#/education?id=a01"],
+      ["策略文章", "/#/strategy?id=s09"],
+      ["联系咨询", "/#/contact"],
+    ];
+    for (const w of [768, 360]) {
+      await page.setViewportSize({ width: w, height: 900 });
+      for (const [name, path] of routes) {
+        await page.goto(path, { waitUntil: "networkidle" });
+        const overflow = await page.evaluate(
+          () => document.documentElement.scrollWidth - document.documentElement.clientWidth
+        );
+        expect(overflow, `${name} @${w}px 不应出现横向溢出`).toBeLessThanOrEqual(2);
+      }
+    }
+  });
 });

@@ -24,7 +24,7 @@ const related = computed(() => strategy.value ? all.value.filter((s) => s.level 
   <div class="wrap section">
     <div v-if="strategy">
       <div class="breadcrumb"><a href="#" @click.prevent="$router.push('/strategy')">← 返回策略专栏</a> / {{ levelLabel(strategy.level) }}</div>
-      <div class="grid" style="grid-template-columns:1fr 280px;gap:24px;align-items:start">
+      <div class="grid reader">
         <article class="card" style="padding:30px 34px">
           <span class="aud" :class="strategy.level">{{ levelLabel(strategy.level) }}</span>
           <h1 style="font-size:25px;line-height:1.4;margin:12px 0 18px">{{ strategy.title }}</h1>
@@ -41,7 +41,7 @@ const related = computed(() => strategy.value ? all.value.filter((s) => s.level 
         </article>
         <aside>
           <div class="card" style="padding:18px"><h3 style="font-size:15px;margin-bottom:10px">⚖️ 策略速览</h3>
-            <div class="kv-list" style="grid-template-columns:1fr">
+            <div class="kv-list kv-1">
               <div class="kv"><span class="k">类型</span><span class="v">{{ levelLabel(strategy.level) }}</span></div>
               <div class="kv"><span class="k">核心步骤</span><span class="v">{{ strategy.framework.length }} 步</span></div></div></div>
           <div class="card" style="padding:18px;margin-top:16px"><h3 style="font-size:15px;margin-bottom:10px">🔗 同类策略</h3>

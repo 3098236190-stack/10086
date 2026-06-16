@@ -28,7 +28,7 @@ function reset() { done.value = false; Object.assign(form, { name: "", phone: ""
     <p>有任何关于基金入门、产品或策略的疑问，填写下方表单，我们会尽快与你联系。本表单仅作演示，请勿填写敏感信息。</p></div></section>
 
   <div class="wrap section">
-    <div class="grid" style="grid-template-columns:1.3fr 1fr;gap:24px;align-items:start">
+    <div class="grid split-form">
       <div class="card" style="padding:28px 30px">
         <template v-if="!done">
           <h2 style="font-size:20px;margin-bottom:18px">填写咨询信息</h2>
@@ -59,7 +59,7 @@ function reset() { done.value = false; Object.assign(form, { name: "", phone: ""
 
       <aside>
         <div class="card" style="padding:22px"><h3 style="font-size:16px;margin-bottom:12px">🕘 服务说明</h3>
-          <div class="kv-list" style="grid-template-columns:1fr">
+          <div class="kv-list kv-1">
             <div class="kv"><span class="k">在线时段</span><span class="v">工作日 9:00–18:00</span></div>
             <div class="kv"><span class="k">响应时效</span><span class="v">1 个工作日内</span></div>
             <div class="kv"><span class="k">客服邮箱</span><span class="v">demo@jizhihui.example</span></div>

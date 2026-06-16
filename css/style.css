@@ -215,6 +215,11 @@ h1,h2,h3,h4 { margin: 0; font-weight: 700; color: var(--ink-900); }
 .cols-2 { grid-template-columns: repeat(2,1fr); }
 .cols-3 { grid-template-columns: repeat(3,1fr); }
 .cols-4 { grid-template-columns: repeat(4,1fr); }
+/* 两列分栏布局：桌面保留主次比例，窄屏统一塌成单列（响应式收敛见媒体查询）。
+   用 .grid 同时附加，避免把列定义写进内联 style 而无法被断点覆盖。 */
+.split-feature { grid-template-columns: 1.5fr 1fr; }   /* 榜单 + 侧栏 */
+.split-detail  { grid-template-columns: 1fr 1.2fr; }   /* 配置 + 重仓 */
+.reader        { grid-template-columns: 1fr 280px; gap: 24px; align-items: start; } /* 正文 + 侧边栏 */
 
 /* ============================ 首页 Banner ============================ */
 .hero { padding: 30px 0 8px; }
@@ -393,6 +398,9 @@ input[type=range] { width: 100%; accent-color: var(--blue-600); }
 .chart-tools button.on { background: var(--blue-600); color: #fff; border-color: var(--blue-600); }
 
 .kv-list { display: grid; grid-template-columns: repeat(2,1fr); gap: 1px; background: var(--line); border-radius: var(--r-sm); overflow: hidden; }
+.kv-1 { grid-template-columns: 1fr; }
+.kv-3 { grid-template-columns: repeat(3,1fr); }
+.kv-4 { grid-template-columns: repeat(4,1fr); }
 .kv { background: var(--card); padding: 12px 14px; display: flex; justify-content: space-between; }
 .kv .k { color: var(--ink-600); font-size: 13px; }
 .kv .v { font-weight: 600; font-size: 13px; }
@@ -517,6 +525,14 @@ input[type=range] { width: 100%; accent-color: var(--blue-600); }
 
 /* ============================ 响应式 ============================ */
 @media (max-width: 980px){
+  /* 平板及以下：横向导航放不下，收进汉堡菜单（避免 681–980 区间溢出） */
+  .nav-menu{
+    position: absolute; top: 62px; left: 0; right: 0; flex-direction: column;
+    background: var(--blue-800); padding: 10px; gap: 2px; display: none; box-shadow: var(--sh-md);
+  }
+  .nav-menu.open{display:flex}
+  .nav-menu a{padding:12px}
+  .nav-toggle{display:block}
   .hero-grid{grid-template-columns:1fr}
   .tools-grid{grid-template-columns:repeat(3,1fr)}
   .edu-grid{grid-template-columns:1fr}
@@ -527,20 +543,14 @@ input[type=range] { width: 100%; accent-color: var(--blue-600); }
   .cols-3,.cols-4{grid-template-columns:repeat(2,1fr)}
 }
 @media (max-width: 680px){
-  .nav-menu{
-    position: absolute; top: 62px; left: 0; right: 0; flex-direction: column;
-    background: var(--blue-800); padding: 10px; gap: 2px; display: none; box-shadow: var(--sh-md);
-  }
   .rank-table .min-hide{display:none}
-  .nav-menu.open{display:flex}
-  .nav-toggle{display:block}
   .nav{gap:10px}
   .brand{font-size:16px}
   .brand small{display:none}
   .nav-search{flex:1;min-width:0;max-width:none}
-  .nav-menu a{padding:12px}
   .tools-grid{grid-template-columns:repeat(2,1fr)}
   .cols-2,.cols-3,.cols-4{grid-template-columns:1fr}
+  .split-feature,.split-detail,.reader{grid-template-columns:1fr}
   .perf-grid{grid-template-columns:repeat(2,1fr)}
   .opt-grid{grid-template-columns:1fr}
   .hero-left h1{font-size:25px}

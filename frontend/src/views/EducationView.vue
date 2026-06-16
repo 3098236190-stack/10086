@@ -113,7 +113,7 @@ const quizResult = computed(() => {
     <!-- 文章 -->
     <div v-if="article">
       <div class="breadcrumb"><a href="#" @click.prevent="$router.push('/education')">← 返回投教课堂</a> / {{ article.category }}</div>
-      <div class="grid" style="grid-template-columns:1fr 280px;gap:24px;align-items:start">
+      <div class="grid reader">
         <article class="card" style="padding:30px 34px">
           <div style="margin-bottom:10px"><span class="aud" :class="article.level">{{ article.level === "beginner" ? "🌱 小白入门" : "🚀 进阶提升" }}</span>
             <span class="tag gray">{{ article.category }}</span> <span class="small muted">约 {{ article.read_time }}阅读</span></div>

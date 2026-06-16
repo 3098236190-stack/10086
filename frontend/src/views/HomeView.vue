@@ -107,7 +107,7 @@ const maxSector = computed(() => 4);
     <!-- 行情 -->
     <section class="section"><div class="wrap">
       <div class="section-head"><h2>市场行情</h2><span class="sub">行情与榜单均为演示数据 · 历史业绩不代表未来</span></div>
-      <div class="grid" style="grid-template-columns:1.5fr 1fr">
+      <div class="grid split-feature">
         <div class="card" style="padding:0;overflow:hidden">
           <div class="flex between items-center" style="padding:14px 16px;border-bottom:1px solid var(--line)">
             <h3 style="font-size:15px">🔥 今日基金涨幅 TOP10</h3><router-link class="more" to="/screener">去筛选 →</router-link></div>

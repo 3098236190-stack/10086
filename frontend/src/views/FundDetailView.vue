@@ -128,7 +128,7 @@ const allocList = () => { const a = f.value.allocation; return [{ name: "股票"
       <div class="risk-note" style="margin-top:8px">对比线以区间期初净值为基点等比缩放，仅用于走势示意。历史走势不代表未来。</div>
     </div>
 
-    <div class="grid" style="grid-template-columns:1fr 1.2fr;gap:16px;margin-top:16px">
+    <div class="grid split-detail" style="margin-top:16px">
       <div class="card" style="padding:18px 20px">
         <h2 style="font-size:18px;margin-bottom:14px">资产配置</h2>
         <div style="display:flex;gap:18px;align-items:center">
@@ -156,7 +156,7 @@ const allocList = () => { const a = f.value.allocation; return [{ name: "股票"
       <div class="mgr-avatar">{{ f.manager.name.charAt(0) }}</div>
       <div style="flex:1">
         <div class="flex between items-center" style="flex-wrap:wrap"><h3 style="font-size:17px">{{ f.manager.name }} <span class="tag green" style="vertical-align:middle">基金经理</span></h3></div>
-        <div class="kv-list" style="margin-top:10px;grid-template-columns:repeat(4,1fr)">
+        <div class="kv-list kv-4" style="margin-top:10px">
           <div class="kv"><span class="k">从业年限</span><span class="v">{{ f.manager.years }} 年</span></div>
           <div class="kv"><span class="k">任职年化</span><span class="v" :class="cls(f.manager.annual_return)">{{ fmtPct(f.manager.annual_return) }}</span></div>
           <div class="kv"><span class="k">在管基金</span><span class="v">{{ f.manager.funds_count }} 只</span></div>
@@ -171,7 +171,7 @@ const allocList = () => { const a = f.value.allocation; return [{ name: "股票"
         <span class="ar">▼ 展开查看风险指标 / 业绩归因 / 持有人结构</span></div>
       <div class="collapse-body" v-show="advOpen">
         <h3 style="font-size:15px;margin-bottom:10px">风险指标（近1年，演示）</h3>
-        <div class="kv-list" style="grid-template-columns:repeat(3,1fr)">
+        <div class="kv-list kv-3">
           <div class="kv"><span class="k">最大回撤</span><span class="v">{{ f.metrics.mdd }}%</span></div>
           <div class="kv"><span class="k">夏普比率</span><span class="v">{{ f.metrics.sharpe.toFixed(2) }}</span></div>
           <div class="kv"><span class="k">年化波动率</span><span class="v">{{ f.metrics.vol }}%</span></div>
@@ -188,7 +188,7 @@ const allocList = () => { const a = f.value.allocation; return [{ name: "股票"
 
     <div class="card" style="padding:18px 20px;margin-top:16px">
       <h2 style="font-size:18px;margin-bottom:14px">交易规则与费率</h2>
-      <div class="kv-list" style="grid-template-columns:repeat(3,1fr)">
+      <div class="kv-list kv-3">
         <div class="kv"><span class="k">申购费率</span><span class="v">{{ f.fees.sub }}</span></div>
         <div class="kv"><span class="k">赎回费率</span><span class="v">{{ f.fees.red }}</span></div>
         <div class="kv"><span class="k">管理费</span><span class="v">{{ f.fees.manage }}</span></div>
