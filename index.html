@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>人生副本 · 短视频工作流</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="description" content="可复制的「人生副本」短视频赛道 AI 工业化生产工作流：为什么能爆 + 怎么做。" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css" />
+  <style>
+    :root {
+      --bg: #0d1117;
+      --bg-soft: #0a0e14;
+      --panel: #111722;
+      --text: #c9d1d9;
+      --text-dim: #8b949e;
+      --accent: #39d98a;     /* 打卡机绿 / 通关绿 */
+      --accent-2: #00e5ff;   /* 赛博青 */
+      --border: #21262d;
+    }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Segoe UI", Roboto, sans-serif; }
+    .app-name-link, .app-name-link span { color: var(--accent) !important; }
+    /* 侧边栏 */
+    .sidebar { background: var(--bg-soft); border-right: 1px solid var(--border); }
+    .sidebar > h1 a { color: var(--accent); font-weight: 700; letter-spacing: .5px; }
+    .sidebar ul li a { color: var(--text-dim); border-radius: 6px; padding: 2px 6px; }
+    .sidebar ul li a:hover { color: var(--accent); }
+    .sidebar ul li.active > a { color: var(--accent) !important; border-left: 2px solid var(--accent); font-weight: 600; }
+    .sidebar-toggle { background: transparent; }
+    .sidebar-toggle .sidebar-toggle-button .icon-toggle { }
+    /* 正文 */
+    .markdown-section { max-width: 880px; }
+    .markdown-section h1, .markdown-section h2 { color: #f0f6fc; border-bottom: 1px solid var(--border); padding-bottom: .3em; }
+    .markdown-section h2 { color: var(--accent); }
+    .markdown-section h3 { color: var(--accent-2); }
+    .markdown-section a { color: var(--accent); }
+    .markdown-section strong { color: #fff; }
+    .markdown-section blockquote { border-left: 4px solid var(--accent); background: rgba(57,217,138,.06); color: var(--text-dim); border-radius: 0 6px 6px 0; }
+    .markdown-section code { color: var(--accent-2); background: #161b22; }
+    .markdown-section pre { background: #0a0e14 !important; border: 1px solid var(--border); border-radius: 8px; }
+    .markdown-section pre > code { color: #d7e1ea; }
+    .markdown-section tr { background: transparent; border-top: 1px solid var(--border); }
+    .markdown-section tr:nth-child(2n) { background: rgba(255,255,255,.02); }
+    .markdown-section th, .markdown-section td { border: 1px solid var(--border); }
+    .markdown-section th { background: var(--panel); color: var(--accent); }
+    /* 搜索 */
+    .search input { background: var(--panel); color: var(--text); border: 1px solid var(--border); }
+    .search .results-panel { background: var(--panel); }
+    .search .matching-post { border-bottom: 1px solid var(--border); }
+    .search p { color: var(--text-dim); }
+    /* 封面 */
+    section.cover { background: radial-gradient(1200px 600px at 50% -10%, rgba(57,217,138,.15), transparent), var(--bg) !important; }
+    section.cover .cover-main > p a { background: var(--accent); border-color: var(--accent); color: #0d1117; border-radius: 8px; }
+    section.cover .cover-main > p a:last-child { background: transparent; color: var(--accent); }
+    section.cover h1, section.cover blockquote p { color: #f0f6fc; }
+    /* 滚动条 */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div id="app">加载中……请稍候。若长时间空白，请检查网络（CDN 资源需联网加载）。</div>
+  <script>
+    window.$docsify = {
+      name: '人生副本 · 工作流',
+      repo: '3098236190-stack/10086',
+      basePath: '人生副本短视频工作流/',
+      homepage: 'README.md',
+      loadSidebar: true,
+      loadNavbar: false,
+      coverpage: true,
+      onlyCover: false,
+      subMaxLevel: 2,
+      relativePath: true,
+      auto2top: true,
+      maxLevel: 3,
+      search: {
+        placeholder: '搜索工作流……',
+        noData: '没找到结果',
+        depth: 3
+      }
+    };
+  </script>
+  <script src="//cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify-copy-code@2"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify@4/lib/plugins/zoom-image.min.js"></script>
+</body>
+</html>
