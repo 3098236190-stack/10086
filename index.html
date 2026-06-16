@@ -1,89 +1,2387 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <title>人生副本 · 短视频工作流</title>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-  <meta name="description" content="可复制的「人生副本」短视频赛道 AI 工业化生产工作流：为什么能爆 + 怎么做。" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css" />
-  <style>
-    :root {
-      --bg: #0d1117;
-      --bg-soft: #0a0e14;
-      --panel: #111722;
-      --text: #c9d1d9;
-      --text-dim: #8b949e;
-      --accent: #39d98a;     /* 打卡机绿 / 通关绿 */
-      --accent-2: #00e5ff;   /* 赛博青 */
-      --border: #21262d;
-    }
-    body { background: var(--bg); color: var(--text); font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Segoe UI", Roboto, sans-serif; }
-    .app-name-link, .app-name-link span { color: var(--accent) !important; }
-    /* 侧边栏 */
-    .sidebar { background: var(--bg-soft); border-right: 1px solid var(--border); }
-    .sidebar > h1 a { color: var(--accent); font-weight: 700; letter-spacing: .5px; }
-    .sidebar ul li a { color: var(--text-dim); border-radius: 6px; padding: 2px 6px; }
-    .sidebar ul li a:hover { color: var(--accent); }
-    .sidebar ul li.active > a { color: var(--accent) !important; border-left: 2px solid var(--accent); font-weight: 600; }
-    .sidebar-toggle { background: transparent; }
-    .sidebar-toggle .sidebar-toggle-button .icon-toggle { }
-    /* 正文 */
-    .markdown-section { max-width: 880px; }
-    .markdown-section h1, .markdown-section h2 { color: #f0f6fc; border-bottom: 1px solid var(--border); padding-bottom: .3em; }
-    .markdown-section h2 { color: var(--accent); }
-    .markdown-section h3 { color: var(--accent-2); }
-    .markdown-section a { color: var(--accent); }
-    .markdown-section strong { color: #fff; }
-    .markdown-section blockquote { border-left: 4px solid var(--accent); background: rgba(57,217,138,.06); color: var(--text-dim); border-radius: 0 6px 6px 0; }
-    .markdown-section code { color: var(--accent-2); background: #161b22; }
-    .markdown-section pre { background: #0a0e14 !important; border: 1px solid var(--border); border-radius: 8px; }
-    .markdown-section pre > code { color: #d7e1ea; }
-    .markdown-section tr { background: transparent; border-top: 1px solid var(--border); }
-    .markdown-section tr:nth-child(2n) { background: rgba(255,255,255,.02); }
-    .markdown-section th, .markdown-section td { border: 1px solid var(--border); }
-    .markdown-section th { background: var(--panel); color: var(--accent); }
-    /* 搜索 */
-    .search input { background: var(--panel); color: var(--text); border: 1px solid var(--border); }
-    .search .results-panel { background: var(--panel); }
-    .search .matching-post { border-bottom: 1px solid var(--border); }
-    .search p { color: var(--text-dim); }
-    /* 封面 */
-    section.cover { background: radial-gradient(1200px 600px at 50% -10%, rgba(57,217,138,.15), transparent), var(--bg) !important; }
-    section.cover .cover-main > p a { background: var(--accent); border-color: var(--accent); color: #0d1117; border-radius: 8px; }
-    section.cover .cover-main > p a:last-child { background: transparent; color: var(--accent); }
-    section.cover h1, section.cover blockquote p { color: #f0f6fc; }
-    /* 滚动条 */
-    ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>人生副本 · 短视频工作流</title>
+<meta name="description" content="可复制的「人生副本」短视频赛道 AI 工业化生产工作流。" />
+<style>
+:root{--bg:#0d1117;--bg-soft:#0a0e14;--panel:#111722;--text:#c9d1d9;--dim:#8b949e;--accent:#39d98a;--accent2:#00e5ff;--border:#21262d;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,"PingFang SC","Microsoft YaHei","Segoe UI",Roboto,sans-serif;line-height:1.7;}
+a{color:var(--accent);text-decoration:none;}
+a:hover{text-decoration:underline;}
+#layout{display:flex;min-height:100vh;}
+/* 侧边栏 */
+#sidebar{width:300px;flex:0 0 300px;background:var(--bg-soft);border-right:1px solid var(--border);height:100vh;overflow-y:auto;position:sticky;top:0;padding:18px 14px;}
+#brand{font-size:18px;font-weight:800;color:var(--accent);letter-spacing:.5px;margin:4px 6px 14px;}
+#brand small{display:block;color:var(--dim);font-weight:400;font-size:12px;margin-top:4px;letter-spacing:0;}
+#search{width:100%;padding:8px 10px;margin:0 0 12px;background:var(--panel);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;}
+.nav-group{color:var(--dim);font-size:12px;font-weight:700;margin:14px 6px 6px;text-transform:none;letter-spacing:.5px;}
+#sidebar a{display:block;color:var(--dim);padding:6px 10px;border-radius:6px;font-size:14px;margin:1px 0;}
+#sidebar a:hover{color:var(--accent);background:rgba(57,217,138,.06);text-decoration:none;}
+#sidebar a.active{color:var(--accent);background:rgba(57,217,138,.10);border-left:2px solid var(--accent);font-weight:600;}
+/* 内容区 */
+#content{flex:1;min-width:0;padding:32px 48px 96px;max-width:920px;}
+.doc{display:none;}
+.doc.active{display:block;animation:fade .2s ease;}
+@keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+h1,h2,h3,h4{color:#f0f6fc;line-height:1.35;}
+h1{font-size:28px;border-bottom:1px solid var(--border);padding-bottom:.3em;}
+h2{font-size:22px;color:var(--accent);border-bottom:1px solid var(--border);padding-bottom:.3em;margin-top:1.8em;}
+h3{font-size:17px;color:var(--accent2);}
+strong{color:#fff;}
+blockquote{border-left:4px solid var(--accent);background:rgba(57,217,138,.06);color:var(--dim);margin:1em 0;padding:.6em 1em;border-radius:0 6px 6px 0;}
+code{color:var(--accent2);background:#161b22;padding:.15em .4em;border-radius:4px;font-size:.9em;font-family:"SFMono-Regular",Consolas,Monaco,monospace;}
+pre{background:#0a0e14;border:1px solid var(--border);border-radius:8px;padding:14px 16px;overflow:auto;}
+pre code{color:#d7e1ea;background:none;padding:0;font-size:13px;line-height:1.6;}
+table{border-collapse:collapse;width:100%;margin:1em 0;font-size:14px;display:block;overflow-x:auto;}
+th,td{border:1px solid var(--border);padding:8px 10px;text-align:left;}
+th{background:var(--panel);color:var(--accent);}
+tr:nth-child(2n){background:rgba(255,255,255,.02);}
+hr{border:none;border-top:1px solid var(--border);margin:2em 0;}
+ul,ol{padding-left:1.4em;}
+li{margin:.25em 0;}
+#topbar{display:none;}
+::-webkit-scrollbar{width:8px;height:8px;}
+::-webkit-scrollbar-thumb{background:#30363d;border-radius:4px;}
+/* 移动端 */
+@media(max-width:800px){
+  #layout{flex-direction:column;}
+  #sidebar{width:100%;flex:none;height:auto;position:static;border-right:none;border-bottom:1px solid var(--border);}
+  #content{padding:20px 18px 80px;}
+}
+</style>
 </head>
 <body>
-  <div id="app">加载中……请稍候。若长时间空白，请检查网络（CDN 资源需联网加载）。</div>
-  <script>
-    window.$docsify = {
-      name: '人生副本 · 工作流',
-      repo: '3098236190-stack/10086',
-      basePath: '人生副本短视频工作流/',
-      homepage: 'README.md',
-      loadSidebar: true,
-      loadNavbar: false,
-      coverpage: true,
-      onlyCover: false,
-      subMaxLevel: 2,
-      relativePath: true,
-      auto2top: true,
-      maxLevel: 3,
-      search: {
-        placeholder: '搜索工作流……',
-        noData: '没找到结果',
-        depth: 3
-      }
-    };
-  </script>
-  <script src="//cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/docsify-copy-code@2"></script>
-  <script src="//cdn.jsdelivr.net/npm/docsify@4/lib/plugins/zoom-image.min.js"></script>
+<div id="layout">
+  <nav id="sidebar">
+    <div id="brand">人生副本 · 工作流<small>AI 工业化版 · 单页离线文档</small></div>
+    <input id="search" type="text" placeholder="搜索章节标题…" autocomplete="off" />
+    <div id="navlist">
+<div class="nav-group">开始</div>
+<a href="#overview" data-id="overview">📖 总览 / 如何使用</a>
+<div class="nav-group">策略 · 为什么能爆</div>
+<a href="#ch00" data-id="ch00">00 为什么能爆</a>
+<a href="#ch01" data-id="ch01">01 赛道分析与账号定位</a>
+<div class="nav-group">生产 · 怎么做</div>
+<a href="#ch02" data-id="ch02">02 选题库 · 副本数据库</a>
+<a href="#ch03" data-id="ch03">03 视频公式与五幕剧本</a>
+<a href="#ch04" data-id="ch04">04 AI 制作流水线与 Prompt</a>
+<a href="#ch05" data-id="ch05">05 固定包装与视听规范</a>
+<div class="nav-group">运营 · 怎么放大</div>
+<a href="#ch06" data-id="ch06">06 发布运营与 SEO</a>
+<a href="#ch07" data-id="ch07">07 账号矩阵与变现</a>
+<a href="#ch08" data-id="ch08">08 人生副本 Universe</a>
+<a href="#ch09" data-id="ch09">09 7 天上手 SOP 与批量排期</a>
+<div class="nav-group">实战样例 · 打工人号</div>
+<a href="#case-main" data-id="case-main">🎬 打工人职业副本</a>
+<a href="#case-series" data-id="case-series">📺 系列追更《35岁被优化》</a>
+<a href="#case-vote" data-id="case-vote">🗳️ 投票多结局《考公vs大厂》</a>
+<div class="nav-group">模板 · 拿来即填</div>
+<a href="#tpl-topic" data-id="tpl-topic">选题卡</a>
+<a href="#tpl-script" data-id="tpl-script">五幕剧本模板</a>
+<a href="#tpl-shot" data-id="tpl-shot">分镜脚本与 Prompt 模板</a>
+<a href="#tpl-checklist" data-id="tpl-checklist">发布检查清单</a>
+    </div>
+  </nav>
+  <main id="content">
+<section class="doc" id="overview"><h1>人生副本 · 短视频工作流（AI 工业化版）</h1>
+<blockquote>
+<p>一套可复制、可批量、可长期运营的「人生副本」赛道短视频生产 SOP。
+核心回答两个问题：<strong>它为什么能爆</strong> + <strong>怎么搭一套可复制的工作流</strong>。</p>
+</blockquote>
+<hr />
+<h2>一句话讲清这个赛道</h2>
+<p>把<strong>一段人生</strong>当成一个<strong>游戏副本</strong>来通关解说——
+出身是「开局」，职业是「职业副本」，高考/求职/婚姻是「关卡」，裁员/疾病/机遇是「随机事件」，
+最后给出「人生评分」。用第一人称沉浸式叙事 + 游戏化 UI 包装，让观众在 60 秒里<strong>体验另一种人生</strong>。</p>
+<p>它能爆的根本：<strong>模拟人生是顶级母题</strong>（《人生重开模拟器》曾 3 天 20 亿访问量），
+而 AI 把"做一条这样的视频"的成本从几千元降到几块钱——<strong>需求一直在，供给端刚被 AI 打开</strong>。
+完整分析见 👉 <a href="#ch00"><code>00-为什么能爆.md</code></a>（这是本工作流的灵魂章节）。</p>
+<p>赛道时间窗：2026 年 6 月，抖音搜【人生副本】已出现大量模仿号，<strong>红利期开始但远未饱和</strong>，且大多数模仿号停留在"AI 配图 + 第一人称念稿"的初级形态——<strong>升级空间巨大</strong>（见 <a href="#ch08"><code>08</code></a>）。</p>
+<hr />
+<h2>8 步工作流地图（你的框架 → 本文档）</h2>
+<table>
+<thead>
+<tr>
+<th>STEP</th>
+<th>你的框架</th>
+<th>对应文档</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>—</td>
+<td>为什么能爆</td>
+<td><a href="#ch00"><code>00-为什么能爆.md</code></a></td>
+<td>算法 + 心理 + 成本三重逻辑</td>
+</tr>
+<tr>
+<td>—</td>
+<td>对标与定位</td>
+<td><a href="#ch01"><code>01-赛道分析与账号定位.md</code></a></td>
+<td>拆 5 个对标号 + 你怎么差异化</td>
+</tr>
+<tr>
+<td><strong>STEP 1</strong></td>
+<td>选题库（1000 副本）</td>
+<td><a href="#ch02"><code>02-选题库-副本数据库.md</code></a></td>
+<td>5 大类 + 扩库到 1000 的方法</td>
+</tr>
+<tr>
+<td><strong>STEP 2+3</strong></td>
+<td>统一公式 + 剧本模板</td>
+<td><a href="#ch03"><code>03-视频公式与五幕剧本.md</code></a></td>
+<td>九段式公式 + 五幕剧本 + 范例</td>
+</tr>
+<tr>
+<td><strong>STEP 4+5</strong></td>
+<td>AI 制作 + Prompt 流水线</td>
+<td><a href="#ch04"><code>04-AI制作流水线与Prompt.md</code></a></td>
+<td>工具链 + 分镜 Prompt 模板</td>
+</tr>
+<tr>
+<td><strong>STEP 6</strong></td>
+<td>固定包装</td>
+<td><a href="#ch05"><code>05-固定包装与视听规范.md</code></a></td>
+<td>UI 元素库 + 视觉音频规范</td>
+</tr>
+<tr>
+<td>—</td>
+<td>发布运营</td>
+<td><a href="#ch06"><code>06-发布运营与SEO.md</code></a></td>
+<td>SEO 埋词 + 冷启动 + 评论区</td>
+</tr>
+<tr>
+<td><strong>STEP 7</strong></td>
+<td>账号矩阵 + 变现</td>
+<td><a href="#ch07"><code>07-账号矩阵与变现.md</code></a></td>
+<td>矩阵世界观 + 6 条变现路径</td>
+</tr>
+<tr>
+<td><strong>STEP 8</strong></td>
+<td>升级为 Universe</td>
+<td><a href="#ch08"><code>08-人生副本Universe.md</code></a></td>
+<td>技能树/随机事件/多结局/互动</td>
+</tr>
+<tr>
+<td>—</td>
+<td>落地执行</td>
+<td><a href="#ch09"><code>09-7天上手SOP与批量排期.md</code></a></td>
+<td>7 天发首条 → 转批量</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>标准生产流水线（一条视频）</h2>
+<pre><code>①选题        ②写剧本       ③配音        ④出画面          ⑤合成        ⑥发布
+副本数据库 → 套五幕模板 → AI 配音 → 文生图→图生视频 → 剪映+UI包装 → SEO埋词
+（STEP1）    （STEP2+3）   （STEP4）   （STEP4+5）      （STEP6）     （发布运营）
+</code></pre>
+<p>熟练后单条 <strong>30–60 分钟</strong>；批量模式可「一天产一周的量」（见 <a href="#ch09"><code>09</code></a>）。</p>
+<hr />
+<h2>怎么用这套文档</h2>
+<ul>
+<li><strong>第一次</strong>：按 <code>00 → 01 → 02 → 03 → 04 → 05 → 06 → 07 → 08 → 09</code> 读一遍，先定<strong>人设 + 差异化</strong>，再做第一条。</li>
+<li><strong>想看完整样例（打工人号）</strong>：</li>
+<li><a href="#case-main"><code>实战样例-打工人职业副本.md</code></a> —— 账号定位 → 10 选题 → 第 1 条可念脚本 → 分镜 Prompt → 发布信息。</li>
+<li><a href="#case-series"><code>系列脚本-打工人35岁被优化.md</code></a> —— 把一个选题做成 5 集<strong>系列追更</strong>。</li>
+<li><a href="#case-vote"><code>互动多结局-考公vs大厂.md</code></a> —— <strong>观众投票 + 多结局</strong>，<a href="#ch08"><code>08</code></a> 互动机制的落地范例。</li>
+<li><strong>日常生产</strong>：用 <a href="模板/"><code>模板/</code></a> 里的四件套——<a href="#tpl-topic">选题卡</a>、<a href="#tpl-script">五幕剧本模板</a>、<a href="#tpl-shot">分镜与 Prompt 模板</a>、<a href="#tpl-checklist">发布检查清单</a>。</li>
+<li><strong>想做大</strong>：直接看 <a href="#ch08"><code>08-人生副本Universe.md</code></a>，这是把"热门模板"升级成"可追更内容宇宙"的关键。</li>
+</ul>
+<hr />
+<h2>核心心法（先记住这 6 条）</h2>
+<ol>
+<li><strong>形式 &gt; 数量</strong>：好形式能让 9 条视频做到几万粉（参考"人生体验服"），别一上来追日更。</li>
+<li><strong>前 3 秒定生死</strong>：钩子勾不住人，后面全白搭。每条先磨"载入提示"和第一句。</li>
+<li><strong>认知爽感 + 情绪共鸣，二选一必须有</strong>：观众点赞要么"被说中"，要么"原来如此"。</li>
+<li><strong>包装一致 = 品牌</strong>：固定 UI（Loading / Lv / HP / 评分面板）+ 固定开场，让人一眼认出你。</li>
+<li><strong>别做纯模仿</strong>：选一个<strong>细分人群/独特副本类型</strong>切入，差异化在 <a href="#ch01"><code>01</code></a>。</li>
+<li><strong>合规第一</strong>：黑暗类副本（赌徒、诈骗园区等）一律以<strong>警示/反诈/剧情体验</strong>角度做，不教方法、不美化（见 <a href="#ch02"><code>02</code></a> 合规红线）。</li>
+</ol>
+<hr />
+<blockquote>
+<p>本工作流为内容生产 SOP。工具与平台为 2026 年 6 月中国大陆主流方案，可按实际替换。
+数据来源：用户提供的对标账号数据 + 公开赛道观察。</p>
+</blockquote></section>
+<section class="doc" id="ch00"><h1>00 · 为什么能爆（赛道底层逻辑）</h1>
+<blockquote>
+<p>这是整套工作流最重要的一章。看懂"为什么爆"，你才能在套模板时知道<strong>哪里不能省、哪里可以变</strong>。
+一句话：<strong>顶级母题（模拟人生）× AI 让供给成本暴跌 × 抖音算法奖励高情绪高完播</strong>——三股力叠加。</p>
+</blockquote>
+<hr />
+<h2>一、需求侧：「模拟人生」是人类的顶级母题</h2>
+<ul>
+<li>《人生重开模拟器》上线时曾创下 <strong>3 天约 20 亿访问量</strong>的纪录——一个纯文字小游戏，证明"换一种活法、看别人/自己的一生"是<strong>最大公约数级别的需求</strong>。</li>
+<li>人为什么爱看？因为现实里人生<strong>不可重来、不可预览、不可对比</strong>。而"人生副本"用 60 秒满足了三件现实做不到的事：
+  1. <strong>重开</strong>——"如果我当初选了 B 会怎样"
+  2. <strong>预览</strong>——"当程序员/交易员/外卖员到底是什么体验"
+  3. <strong>上帝视角</strong>——旁观一整段人生的起落，获得掌控感</li>
+<li>所以这类内容的情绪是<strong>确定会被触发</strong>的：好奇、代入、唏嘘、共鸣、警醒。不是"可能有人喜欢"，而是"几乎所有人都会停下来看一眼"。</li>
+</ul>
+<p><strong>结论</strong>：选题选得对，爆款概率有保障——这也是你说的"选题占 80% 爆款概率"的根因。</p>
+<hr />
+<h2>二、算法侧：抖音的推荐机制天然偏爱这种内容</h2>
+<p>抖音的初始推荐 = 把视频丢进小流量池，看几个核心指标决定要不要加推。这套内容恰好<strong>每个指标都占便宜</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>算法指标</th>
+<th>权重</th>
+<th>「人生副本」为什么占优</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>完播率 / 平均播放时长</strong></td>
+<td>最高</td>
+<td>第一人称叙事 + "结局未揭晓"=强追看欲，60 秒一口气看完</td>
+</tr>
+<tr>
+<td><strong>5 秒完播率</strong></td>
+<td>高</td>
+<td>"正在载入人生副本：XXX"的开场=天然钩子，5 秒留人</td>
+</tr>
+<tr>
+<td><strong>复播率</strong></td>
+<td>高</td>
+<td>信息密度高、UI 元素多，很多人会回看细节</td>
+</tr>
+<tr>
+<td><strong>互动率（评论）</strong></td>
+<td>高</td>
+<td>"你会选 A 还是 B""我这条命算几分"=天然引导评论</td>
+</tr>
+<tr>
+<td><strong>转发率</strong></td>
+<td>很高</td>
+<td>"这说的不就是我吗"→转给特定的人（打工人转给打工人）</td>
+</tr>
+<tr>
+<td><strong>关注转化</strong></td>
+<td>高</td>
+<td>系列化 + 固定人设 → "想看下一集"→关注</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>关键：算法本质在做<strong>情绪识别 + 时长统计</strong>。这套内容是<strong>高情绪密度 + 高完播</strong>的组合，等于把算法想要的全给了。</p>
+</blockquote>
+<p><strong>对工作流的指令</strong>：
+- 钩子（5 秒）和结局（最后 5 秒）是命门，<strong>永远多花时间打磨</strong>。
+- 结尾必须留<strong>互动钩子</strong>（投票 / 提问 / 求评分），把评论率拉起来。</p>
+<hr />
+<h2>三、供给侧：AI 让"工业化生产"成为可能（这才是 2026 的新变量）</h2>
+<p>为什么这个赛道是<strong>现在</strong>爆，而不是三年前？因为以前做一条"模拟一生"的视频要实拍/找演员/做特效，成本几千上万；现在：</p>
+<ul>
+<li><strong>剧本</strong>：大模型 1 分钟生成一版五幕剧本（STEP 2+3）。</li>
+<li><strong>画面</strong>：文生图（Flux / 即梦 / Midjourney）+ 图生视频（可灵 Kling / Runway / Veo）几块钱一镜。</li>
+<li><strong>配音</strong>：TTS / 剪映朗读几秒钟搞定，音色统一。</li>
+<li><strong>包装</strong>：UI 模板一次做好，永久复用（STEP 6）。</li>
+</ul>
+<p><strong>单条成本从"几千元"降到"几元 + 半小时"</strong>，于是一个人就能日产多条、做矩阵。这就是"AI 工业化版"的底气——
+<strong>门槛被 AI 拉平了，红利期就是拉平之后、大众反应过来之前的这段时间。</strong></p>
+<hr />
+<h2>四、内容侧：它精准命中了三种"爽"</h2>
+<p>观众愿意看完 + 点赞 + 转发，是因为同时拿到了三种心理回报：</p>
+<ol>
+<li><strong>代入爽（沉浸）</strong>：第一人称"你出生在……你获得了……"——观众是主角，不是旁观者。</li>
+<li><strong>认知爽（顿悟）</strong>：把人生道理翻译成游戏机制——"原来内耗是同时开了太多支线""信息差是隐藏机制"。被"重新解释了一遍世界"的快感。</li>
+<li><strong>情绪爽（共鸣/宣泄）</strong>：唏嘘、心疼、不服、警醒——尤其"黑暗副本"和"小人物副本"，让人替角色（也替自己）出一口气或捏一把汗。</li>
+</ol>
+<p><strong>做内容时自检</strong>：这条视频，三种爽里至少占一种吗？一种都不占，大概率不会爆。</p>
+<hr />
+<h2>五、它的"天花板"和"护城河"在哪</h2>
+<p>诚实地说，目前大多数账号的护城河<strong>很浅</strong>——形态高度同质（AI 配图 + 第一人称念稿），谁都能模仿（包括你）。这既是机会也是风险：</p>
+<ul>
+<li><strong>机会</strong>：你现在进场，技术门槛已被 AI 抹平，<strong>靠选题质量 + 包装辨识度 + 更新频率</strong>就能挤进去。</li>
+<li><strong>风险</strong>：如果你也只做"AI 配图 + 念稿"，三个月后会淹没在模仿号里。</li>
+</ul>
+<p><strong>真正的护城河有三层</strong>（越往后越难被抄）：</p>
+<ol>
+<li><strong>辨识度</strong>：固定 UI / 固定开场音 / 固定人设——让人划到就知道是你（STEP 6）。</li>
+<li><strong>系列化世界观</strong>：不是零散选题，而是"人生副本宇宙"，可追更、有期待（STEP 8）。</li>
+<li><strong>互动机制</strong>：观众投票决定下一集走向——把"看客"变成"玩家"，别人抄不走你的社区（STEP 8）。</li>
+</ol>
+<blockquote>
+<p>所以本工作流的目标不是教你做"一条爆款"，而是教你做"一个能持续爆、且越做越难被替代的账号"。</p>
+</blockquote>
+<hr />
+<h2>六、一页纸总结（贴在工位上）</h2>
+<pre><code>为什么能爆 = 顶级母题 × AI 降本 × 算法偏爱
+            （模拟人生）  （工业化）  （高完播高情绪高转发）
+
+做每条视频前问自己 4 句：
+  1. 钩子能在 5 秒内让人想看下去吗？
+  2. 它命中&quot;代入/认知/情绪&quot;三种爽里的哪一种？
+  3. 结尾留互动钩子了吗？（投票/提问/求评分）
+  4. 一眼能认出是我的号吗？（固定 UI / 开场 / 人设）
+
+4 句都 yes → 发；有 no → 改。
+</code></pre>
+<hr />
+<p>下一步 👉 <a href="#ch01"><code>01-赛道分析与账号定位.md</code></a>：拆解 5 个对标号，确定你的差异化人设。</p></section>
+<section class="doc" id="ch01"><h1>01 · 赛道分析与账号定位</h1>
+<blockquote>
+<p>目标：拆透 5 个对标号的"可复制点"，然后帮你定一个<strong>不会淹死在模仿号里</strong>的差异化人设。</p>
+</blockquote>
+<hr />
+<h2>一、5 个对标账号深度拆解</h2>
+<table>
+<thead>
+<tr>
+<th>账号</th>
+<th>作品量</th>
+<th>粉丝</th>
+<th>内容形态</th>
+<th>单条逻辑</th>
+<th>最值得你抄的点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>赛博夫子</strong></td>
+<td>~190</td>
+<td>42.9 万</td>
+<td>夫子/智者人设，AI 旁白讲人生攻略</td>
+<td>用"过来人/高人"口吻给人生关卡指路</td>
+<td>人设强、产量高、金句密集 → 适合做"日更走量"</td>
+</tr>
+<tr>
+<td><strong>剧本人生</strong></td>
+<td>~33</td>
+<td>16.6 万</td>
+<td>把人生当"剧本"演绎</td>
+<td>强调"你以为是自由，其实是写好的剧本"</td>
+<td>用 33 条做到 16 万粉 → 选题精准 &gt; 数量</td>
+</tr>
+<tr>
+<td><strong>人生模拟员</strong></td>
+<td>~33</td>
+<td>13.3 万</td>
+<td>"模拟一个 XX 的人生"</td>
+<td>第一/第三人称模拟某类人一生</td>
+<td>模拟器框架最通用，最好上手</td>
+</tr>
+<tr>
+<td><strong>赛博观察员</strong></td>
+<td>~24</td>
+<td>9.6 万</td>
+<td>冷静第三方旁观视角</td>
+<td>"观察员"中立解说一段人生</td>
+<td>旁观人设差异化，克制反而高级</td>
+</tr>
+<tr>
+<td><strong>人生体验服</strong></td>
+<td>9</td>
+<td>3.7 万</td>
+<td>把人生当"测试服/体验服"</td>
+<td>"欢迎进入人生体验服"游戏感最强</td>
+<td><strong>9 条 3.7 万粉</strong>——证明形式对了就能起号</td>
+</tr>
+</tbody>
+</table>
+<h3>三个关键洞察</h3>
+<ol>
+<li><strong>形式 &gt; 数量</strong>：人生体验服 9 条 3.7 万粉、剧本人生 33 条 16 万粉。说明<strong>起号靠"形式 + 选题"，不靠日更堆量</strong>。先把一个好形式打磨出来，再考虑产量。</li>
+<li><strong>人设是辨识度的核心</strong>：夫子、模拟员、观察员、体验服——每个号都把自己<strong>角色化</strong>了。你也必须有一个"它是谁"的角色。</li>
+<li><strong>同质化已经开始</strong>：5 个号的底层都是"AI 画面 + 旁白叙事 + 游戏化包装"。谁先建立<strong>更强的辨识度和系列感</strong>，谁就能从模仿潮里浮上来。</li>
+</ol>
+<hr />
+<h2>二、把"人设"拆成 4 个可设计的变量</h2>
+<p>别凭感觉起人设，按这 4 个变量组合，就能造出一个独特角色：</p>
+<table>
+<thead>
+<tr>
+<th>变量</th>
+<th>选项举例</th>
+<th>决定了什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>叙事视角</strong></td>
+<td>第一人称"你"／第二人称代入／第三方旁观／系统播报</td>
+<td>沉浸感 vs 客观感</td>
+</tr>
+<tr>
+<td><strong>角色身份</strong></td>
+<td>系统 AI／夫子智者／冷峻观察员／游戏 GM／时间管理局／轮回管理员</td>
+<td>口吻、立场、金句风格</td>
+</tr>
+<tr>
+<td><strong>情绪基调</strong></td>
+<td>治愈温暖／犀利毒舌／冷静克制／热血燃／悬疑暗黑</td>
+<td>吸引哪类人群</td>
+</tr>
+<tr>
+<td><strong>声音/语速</strong></td>
+<td>沉稳男声／知性女声／机械电子音／少年音</td>
+<td>听感记忆点</td>
+</tr>
+</tbody>
+</table>
+<p><strong>举例组合（直接可用）</strong>：
+- 「<strong>轮回管理局</strong>」：系统 AI 视角 + 机械电子音 + 冷静克制 → 适合做职业副本、历史副本。
+- 「<strong>人生劝退师</strong>」：第二人称 + 犀利毒舌 + 知性女声 → 适合做黑暗副本、避坑警示。
+- 「<strong>副本通关师</strong>」：夫子视角 + 热血燃 + 沉稳男声 → 适合做逆袭、攻略类。</p>
+<hr />
+<h2>三、差异化定位：怎么不做"纯模仿号"</h2>
+<p>模仿号会死在同质化里。用下面<strong>任意一条</strong>做出区隔，就能活下来；用两条以上，就能跑出来。</p>
+<h3>路线 A：切<strong>细分人群</strong>（最稳）</h3>
+<p>不做"所有人的人生"，只做某一类人的副本，做深做透：
+- 打工人副本宇宙 / 宝妈副本 / 小镇青年副本 / 35+ 中年副本 / 考研考公副本 / 县城体制内副本
+- 好处：人群精准 → 转发率高（"这说的就是我"）→ 涨粉快 → 后期变现路径清晰。</p>
+<h3>路线 B：切<strong>独特副本类型</strong></h3>
+<p>别人都做职业副本，你做别人没系统做的：
+- 历史副本（科举考生/锦衣卫/御医）、未来副本（火星移民/数字永生）、关系副本（婚姻/原生家庭）。</p>
+<h3>路线 C：切<strong>独特包装/视觉</strong></h3>
+<p>同样的内容，换一套没人用过的视觉语言就能区隔：
+- 水墨国风 UI、像素游戏风、极简黑金终端风、监控/档案风（见 <a href="#ch05"><code>05</code></a>）。</p>
+<h3>路线 D：切<strong>互动机制</strong>（最强护城河）</h3>
+<p>做"观众投票决定下一集"的可追更剧情——这是别人最难抄的（见 <a href="#ch08"><code>08</code></a>）。</p>
+<blockquote>
+<p><strong>建议组合</strong>：路线 A（细分人群）+ 路线 C（独特视觉）打底，跑顺后上路线 D（互动）。</p>
+</blockquote>
+<hr />
+<h2>四、起号前的定位四件套（填完再开工）</h2>
+<p>把下面四行填满，就是你的账号定位书：</p>
+<pre><code>1. 我的角色是谁：____________（如：轮回管理局的 AI 管理员）
+2. 我专做哪类副本：__________（如：打工人 / 职业副本，主攻 22-35 岁职场人）
+3. 我的视觉记忆点：__________（如：黑金终端风 UI + 蓝色全息血条）
+4. 我的固定开场白：__________（如：&quot;欢迎登录人生副本，本次随机到的身份是……&quot;）
+</code></pre>
+<blockquote>
+<p>这四件套一旦定下，<strong>不要轻易改</strong>——辨识度来自重复。</p>
+</blockquote>
+<hr />
+<p>下一步 👉 <a href="#ch02"><code>02-选题库-副本数据库.md</code></a>：建你的副本数据库（STEP 1）。</p></section>
+<section class="doc" id="ch02"><h1>02 · 选题库 · 副本数据库（STEP 1）</h1>
+<blockquote>
+<p><strong>选题占 80% 的爆款概率。不要随机想题，建数据库、按需取用。</strong>
+本章给你：① 五大类现成副本清单（200+ 条）② 把库扩到 1000 的组合公式 ③ 选题打分筛选法 ④ 黑暗类合规红线。</p>
+</blockquote>
+<hr />
+<h2>一、五大类副本清单（直接抄）</h2>
+<h3>第 1 类：职业副本（最好起量，新手从这里开始）</h3>
+<blockquote>
+<p>逻辑：人人都对"别人的职业到底什么体验"好奇，代入感最强，且永远做不完。</p>
+</blockquote>
+<pre><code>外卖员 / 快递员 / 网约车司机 / 程序员 / 产品经理 / 交易员 / 投行分析师
+医生 / 护士 / 律师 / 老师 / 公务员 / 警察 / 消防员 / 军人
+主播 / 网红 / 演员 / 明星 / 经纪人 / 编剧 / 自由职业者
+保安 / 保洁 / 工厂流水线工人 / 建筑工 / 矿工 / 农民 / 渔民
+老板 / 创业者 / 销售 / 中介 / 个体户 / 富二代 / 拆迁户
+厨师 / 理发师 / 健身教练 / 殡葬师 / 宠物医生 / 飞行员 / 船员
+</code></pre>
+<h3>第 2 类：黑暗副本（传播最高 ⚠️ 务必合规，见文末红线）</h3>
+<blockquote>
+<p>逻辑：禁忌感 + 警示性带来高转发。<strong>只做警示/反诈/剧情体验，绝不教方法、不美化、不引流。</strong></p>
+</blockquote>
+<pre><code>赌徒（戒赌警示）/ 网贷上岸者 / 高利贷受害者 / 被传销洗脑者（脱困）
+诈骗园区幸存者（反诈）/ 电信诈骗受害者视角 / 杀猪盘受害者（反诈）
+黑中介踩坑者 / 碰瓷者的下场 / 刷单兼职受骗者 / 虚拟币爆仓者
+</code></pre>
+<blockquote>
+<p>全部以"我差点……幸好……"或"系统警告：此路线 99% 通向 BAD END"的<strong>警示框架</strong>呈现。</p>
+</blockquote>
+<h3>第 3 类：时代副本（情怀 + 共鸣，中老年也爱看）</h3>
+<blockquote>
+<p>逻辑：每个时代都有"如果我生在那时会怎样"的遐想，自带怀旧与时代红利讨论。</p>
+</blockquote>
+<pre><code>90 年代国营工厂 / 下海经商潮 / 第一批个体户 / 第一代农民工
+2000 年代网吧少年 / 第一批淘宝店主 / 山寨机时代 / 城中村房东
+2010 年代互联网创业 / 房地产黄金时代 / 比特币早期玩家 / 微商时代
+公众号红利期 / 短视频元年博主 / 直播电商爆发期
+AI 时代（2023 后）的创业者 / 第一批 AI 副业玩家
+</code></pre>
+<h3>第 4 类：历史副本（差异化强，竞争少，文化感高级）</h3>
+<blockquote>
+<p>逻辑：把历史身份当副本，新鲜感强、容易做出"独一份"的辨识度。</p>
+</blockquote>
+<pre><code>秦朝戍边士兵 / 汉代戍卒 / 科举考生（寒窗到金榜）/ 落第秀才
+锦衣卫 / 太监 / 御医 / 翰林 / 县令 / 师爷 / 镖师
+古代海商 / 晋商徽商 / 茶马古道马帮 / 海盗 / 倭乱年代的渔民
+战国说客 / 三国谋士 / 唐代胡商 / 宋代汴京商贩 / 明代倭患沿海百姓
+末代皇族 / 民国报童 / 民国大学生 / 抗战时期的普通人
+</code></pre>
+<h3>第 5 类：未来副本（科幻爽 + 话题性，吸引年轻人）</h3>
+<blockquote>
+<p>逻辑：满足对未来的想象与焦虑，天然引发评论（"这是好事还是坏事"）。</p>
+</blockquote>
+<pre><code>AI 公司的人类老板 / 被 AI 取代的白领 / 人机协作的打工人
+家用机器人（以机器人视角过一生）/ 仿生人 / 觉醒的 AI
+火星第一代移民 / 太空矿工 / 月球基地居民 / 星际难民
+数字永生者（意识上传）/ 脑机接口玩家 / 记忆可买卖的世界
+克隆人 / 基因定制婴儿 / 赛博格 / 元宇宙原住民 / 末日幸存者
+</code></pre>
+<hr />
+<h2>二、把库扩到 1000 的组合公式（工业化关键）</h2>
+<p>不要靠灵感，用<strong>乘法</strong>批量生成。一个副本 = 四个变量相乘：</p>
+<pre><code>副本选题 =  ①身份  ×  ②时代/地点  ×  ③核心变量(难度/转折)  ×  ④视角
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>①身份</th>
+<th>②时代/地点</th>
+<th>③核心变量</th>
+<th>④视角</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>程序员</td>
+<td>90 年代 / 现在 / 2050</td>
+<td>出身贫寒 / 含金钥匙 / 天降横祸</td>
+<td>第一人称</td>
+</tr>
+<tr>
+<td>外卖员</td>
+<td>一线城市 / 县城 / 火星</td>
+<td>中途转行 / 一条路走到黑</td>
+<td>系统播报</td>
+</tr>
+<tr>
+<td>科举考生</td>
+<td>大唐 / 大明 / 架空</td>
+<td>屡败屡战 / 一举成名</td>
+<td>旁观者</td>
+</tr>
+<tr>
+<td>医生</td>
+<td>战乱年代 / AI 时代</td>
+<td>救人无数自己崩溃 / 医闹</td>
+<td>上帝视角</td>
+</tr>
+</tbody>
+</table>
+<p><strong>示例</strong>：<code>程序员 × 2050 AI 时代 × 被自己写的 AI 取代 × 第一人称</code> → 《我是 2050 年最后一个程序员》。
+<strong>示例</strong>：<code>科举考生 × 大明 × 考到 50 岁才中 × 旁观者</code> → 《他考了 30 年，中举那天却……》。</p>
+<blockquote>
+<p>4 个变量各列 10–30 个选项，相乘就是成百上千个选题。<strong>每周花 30 分钟扩库，永远不缺题。</strong></p>
+</blockquote>
+<h3>选题灵感的 5 个挖掘渠道</h3>
+<ol>
+<li><strong>评论区</strong>：自己和对标号视频下，观众喊"求做 XX"的，直接做。</li>
+<li><strong>热搜/热点</strong>：把当下热点人物/事件包装成副本（如某职业上热搜 → 做该职业副本）。</li>
+<li><strong>百度/知乎搜"XX 是一种怎样的体验"</strong>：高赞回答就是现成剧本素材。</li>
+<li><strong>对标号反推</strong>：把对标号的爆款选题，换一个人群/时代/视角重做（合规改编，非搬运）。</li>
+<li><strong>自己的人生</strong>：你或身边人真实经历过的副本，细节最真、最容易爆。</li>
+</ol>
+<hr />
+<h2>三、选题打分筛选法（决定先做哪条）</h2>
+<p>每个选题按下面 5 项各打 1–2 分，<strong>总分 ≥ 7 分</strong>的优先做：</p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>问自己</th>
+<th>满分</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>代入感</td>
+<td>观众容易把自己代入吗？</td>
+<td>2</td>
+</tr>
+<tr>
+<td>情绪强度</td>
+<td>能激起强情绪（唏嘘/不服/警醒/爽）吗？</td>
+<td>2</td>
+</tr>
+<tr>
+<td>转发动机</td>
+<td>观众会想转给某个特定的人吗？</td>
+<td>2</td>
+</tr>
+<tr>
+<td>反差/转折</td>
+<td>有没有意料之外的转折或结局？</td>
+<td>2</td>
+</tr>
+<tr>
+<td>合规安全</td>
+<td>不踩红线、不擦边、不教坏吗？</td>
+<td>2（一票否决）</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>合规这项是<strong>一票否决</strong>：打 0 分直接弃用，不管其他多高。</p>
+</blockquote>
+<hr />
+<h2>四、⚠️ 黑暗副本合规红线（必读，保号保命）</h2>
+<p>黑暗类传播最高，但<strong>也最容易被限流、封号甚至违法</strong>。死守以下红线：</p>
+<p><strong>绝对不做</strong>：
+- ❌ 教任何违法/灰产的<strong>具体方法、话术、流程</strong>（赌、骗、贷、传销等）。
+- ❌ 美化、炫耀违法所得，或暗示"来钱快值得"。
+- ❌ 为任何违法平台/项目<strong>引流、导流、留联系方式</strong>。
+- ❌ 渲染血腥、暴力、自残、极端负面诱导。</p>
+<p><strong>正确姿势</strong>：
+- ✅ 以<strong>受害者视角 + 警示结局</strong>呈现："我以为能赚快钱，结果家破人亡"。
+- ✅ 落点放在<strong>反诈、避坑、上岸</strong>："系统警告：此副本 99% 通向 BAD END，建议立即退出。"
+- ✅ 结尾给<strong>求助/正规出路</strong>信息（如反诈提示），传递正向价值。</p>
+<blockquote>
+<p>一句话：黑暗副本做的是"<strong>劝退片</strong>"，不是"教学片"。平台规则和法律都站在劝退这边。</p>
+</blockquote>
+<hr />
+<h2>五、把选题存进数据库（用 <a href="#tpl-topic">选题卡</a>）</h2>
+<p>每想到/筛出一个选题，用 <a href="#tpl-topic"><code>模板/选题卡.md</code></a> 存一行，标注：副本类型、人群、核心转折、预估分数、是否已做。
+建议用一张飞书/Notion 表格管理，列：<code>编号 | 副本名 | 类型 | 视角 | 核心转折 | 评分 | 状态</code>。</p>
+<hr />
+<p>下一步 👉 <a href="#ch03"><code>03-视频公式与五幕剧本.md</code></a>：把选题写成能拍的剧本（STEP 2+3）。</p></section>
+<section class="doc" id="ch03"><h1>03 · 视频公式与五幕剧本（STEP 2+3）</h1>
+<blockquote>
+<p>几乎所有爆款都遵循同一条公式。<strong>把公式背下来，选题填进去，就是一条视频。</strong></p>
+</blockquote>
+<hr />
+<h2>一、统一视频公式（九段式 · 背下来）</h2>
+<pre><code>① Hook（钩子，0–3s）         → 载入提示 + 抛出最大悬念
+② 身份介绍（3–8s）           → &quot;本次随机到的身份是……&quot;
+③ 出生 / 开局（8–15s）       → 出身、家境、天赋（定基调）
+④ 成长（15–25s）             → 求学/入行，铺垫第一次分叉
+⑤ 第一次选择（25–35s）       → A/B 抉择，命运第一次分叉
+⑥ 第二次选择 / 转折（35–45s） → 加码，赌注变大
+⑦ 重大事件（45–55s）         → 随机事件引爆高潮（机遇/灾难）
+⑧ 人生结局（55–65s）         → 给出 ENDING + 评分面板
+⑨ 总结 / 互动（65–70s）      → 一句金句落点 + 互动钩子
+</code></pre>
+<p><strong>时长建议</strong>：30–70 秒为主。新手先做 45–60 秒；想冲完播率就压到 35–45 秒。
+<strong>节奏铁律</strong>：每段对应一两个画面，<strong>画面跟着旁白走、不留废镜头</strong>；越往后节奏越快，结局前 0.5 秒可留一个"停顿+黑屏"制造期待。</p>
+<hr />
+<h2>二、五幕剧本结构（STEP 3 的可填空模板）</h2>
+<p>把九段式归并成五幕，方便写作和分镜：</p>
+<h3>第一幕 · 副本开启（对应①②）</h3>
+<pre><code>【副本载入中…… ▓▓▓▓░░ 67%】
+人生副本：《______ 的一生》
+本次随机身份：______
+开局难度：★★★☆☆
+</code></pre>
+<h3>第二幕 · 出生与成长（对应③④）</h3>
+<pre><code>你出生在 ______（年代/地点/家境）。
+父母 ______。你获得初始天赋：______。
+你一路 ______（求学/打工/入行），终于站在了第一个岔路口。
+</code></pre>
+<h3>第三幕 · 第一个选择（对应⑤）</h3>
+<pre><code>【选择 1】
+A. ______（稳妥但平庸）
+B. ______（冒险但有上限）
+你选了 ____。命运的齿轮开始转动。
+</code></pre>
+<h3>第四幕 · 随机事件与第二次选择（对应⑥⑦）</h3>
+<pre><code>【随机事件触发！】
+______（失业 / 暴富 / 重病 / 遇贵人 / 被骗 / 风口）
+【选择 2】A. ______  B. ______
+你选了 ____。这一次，没有回头路。
+</code></pre>
+<h3>第五幕 · 结局与评分（对应⑧⑨）</h3>
+<pre><code>【人生结算】
+财富 ★★☆☆☆   健康 ★★★★☆
+家庭 ★★★☆☆   快乐 ★★★★★   成就 ★★☆☆☆
+ENDING：______（普通结局 / 隐藏结局 / BAD END / 真结局）
+
+旁白金句：______
+互动钩子：如果是你，第一步会选 A 还是 B？评论区告诉我。
+</code></pre>
+<blockquote>
+<p>空白版见 👉 <a href="#tpl-script"><code>模板/五幕剧本模板.md</code></a>，每条视频复制一份来填。</p>
+</blockquote>
+<hr />
+<h2>三、完整范例脚本（可直接念）</h2>
+<h3>范例 1：《AI 创业者的一生》（未来/创业副本）</h3>
+<pre><code>（①Hook）正在载入人生副本……本次身份：一个在 AI 时代孤注一掷的普通人。
+（②身份）系统提示：你没有背景，没有资源，只有一台电脑和一个不甘心。
+（③出生）你出生在 2000 年，小城市，父母是普通工人，初始天赋：学得快、脸皮薄。
+（④成长）2022 年大学毕业，行业寒冬，投了 100 份简历，回音 3 个。
+（⑤选择1）岔路口出现——A：考公，安稳一生；B：All in 刚出现的 AI。你点了 B。
+（⑥转折）第一次创业，做了个没人用的产品，赔光积蓄，女朋友也走了。
+（⑦重大事件）【随机事件】你没删项目，把它改成了一个 AI Agent，半夜发到网上——第二天，服务器挤爆了。
+（⑧结局）28 岁，公司估值过亿。【结算】财富★★★★☆ 健康★★☆☆☆ 快乐★★★☆☆。ENDING：逆袭结局（达成率 3%）。
+（⑨金句+互动）系统总结：你没有赢在选择多，你赢在选了 B 之后，再也没回头。
+如果是你，会选 A 考公，还是 B 押注？评论区见。
+</code></pre>
+<h3>范例 2：《外卖员的一生》（职业副本 · 小人物共鸣向）</h3>
+<pre><code>（①Hook）人生副本载入中……本次随机身份：一名外卖骑手，开局难度，地狱级。
+（②身份）系统提示：你的对手不是别的骑手，是红灯、暴雨，和系统派给你的时间。
+（③出生）你 19 岁，初中毕业，从老家来到这座吞人的城市。
+（④成长）你学会了在 3 分钟内爬完没有电梯的 6 楼，也学会了对差评说对不起。
+（⑤选择1）A：忍着，多接单多赚钱；B：辞职，回老家。雨季里，你选了 A。
+（⑦重大事件）【随机事件】一次闯红灯，你为了一单 4 块钱的超时，差点没能回家。那天你在医院想通了一件事。
+（⑥选择2）A：继续跑；B：用攒下的钱学一门手艺。这次，你选了 B。
+（⑧结局）三年后，你有了自己的小修车铺。【结算】财富★★★☆☆ 健康★★★★☆ 快乐★★★★☆。ENDING：上岸结局。
+（⑨金句+互动）系统总结：这个副本没有捷径，但永远有第二个选择。
+你身边有没有这样拼命的人？把这条转给他。
+</code></pre>
+<blockquote>
+<p>注意两条范例的差别：范例 1 走"爽/逆袭"，范例 2 走"共鸣/心疼"——对应 <a href="#ch00"><code>00</code></a> 说的三种爽。<strong>每条至少占一种。</strong></p>
+</blockquote>
+<hr />
+<h2>四、钩子库（前 3 秒，直接套）</h2>
+<p>钩子决定 5 秒完播率，是命门。挑一个套：</p>
+<pre><code>· 正在载入人生副本……本次随机身份：______，开局难度，地狱级。
+· 警告：你即将体验一段 99% 的人会后悔的人生。
+· 如果人生可以重开，这一次，你抽到的是 ______。
+· 系统检测到你想知道&quot;当 ______ 是什么体验&quot;，已为你生成模拟。
+· 这是一个普通人能拿到的最差开局，但他打出了隐藏结局。
+· 模拟开始：一个 ______，从出生到死亡，只需要 60 秒。
+· 倒计时 60 秒，体验完一个 ______ 的一生，你还敢抱怨现在吗？
+</code></pre>
+<blockquote>
+<p>公式：<strong>"载入/警告/如果" + 身份 + 一个反差或悬念</strong>。</p>
+</blockquote>
+<hr />
+<h2>五、金句库（结尾落点，直接套）</h2>
+<p>结尾一句话决定点赞和转发。按情绪基调挑：</p>
+<p><strong>认知/顿悟向</strong></p>
+<pre><code>· 这局没有最优解，只有&quot;选了就别回头&quot;。
+· 你不是输在选择少，是输在每个选择都想要。
+· 人生最大的隐藏机制，叫&quot;信息差&quot;。
+· 难的从来不是选择，是承担选择的后果。
+</code></pre>
+<p><strong>共鸣/治愈向</strong></p>
+<pre><code>· 这个副本没有捷径，但永远有第二个选择。
+· 你已经打得很好了，只是这关本来就难。
+· 有人开局地狱级，却把它打成了通关示范。
+</code></pre>
+<p><strong>警示向（黑暗副本专用）</strong></p>
+<pre><code>· 系统警告：此路线 99% 通向 BAD END，建议立即退出。
+· 来钱最快的路，往往写在刑法里。
+· 你以为是机会，系统标注的是&quot;陷阱&quot;。
+</code></pre>
+<hr />
+<h2>六、互动钩子库（拉评论率，结尾必加）</h2>
+<pre><code>· 如果是你，第一步会选 A 还是 B？
+· 这一局，你给自己打几分？（满分 100）
+· 你想看下一个副本是什么？评论区点单。
+· 你身边有这样的人吗？把这条转给 TA。
+· 下一集的结局，由你们投票决定：A 继续 / B 收手。
+</code></pre>
+<blockquote>
+<p>最后这条（投票决定下一集）是通往 <a href="#ch08"><code>08-Universe</code></a> 的钥匙。</p>
+</blockquote>
+<hr />
+<p>下一步 👉 <a href="#ch04"><code>04-AI制作流水线与Prompt.md</code></a>：把剧本变成画面（STEP 4+5）。</p></section>
+<section class="doc" id="ch04"><h1>04 · AI 制作流水线与 Prompt（STEP 4+5）</h1>
+<blockquote>
+<p>目标：把"选题 + 剧本"变成成片。这一章给你<strong>完整工具链</strong>、<strong>一键生成剧本+分镜+图片Prompt 的大模型提示词</strong>，和<strong>可复制的分镜 Prompt 流水线</strong>。</p>
+</blockquote>
+<hr />
+<h2>一、制作流水线总图</h2>
+<pre><code>大模型(豆包/Kimi/DeepSeek/GPT)
+        │  ← 一键生成：剧本 + 分镜 + 每镜图片Prompt
+        ▼
+文生图(即梦 / Flux / Midjourney)  ──→  固定主角形象（角色一致性）
+        ▼
+图生视频(可灵Kling / 即梦 / Runway / Veo)  ──→  让画面动起来
+        ▼
+配音(剪映朗读 / TTS)  +  字幕(剪映自动字幕)
+        ▼
+剪映合成：套 UI 包装(STEP6) + BGM + 音效 + 卡点
+        ▼
+封面(醒图/Canva) → 发布
+</code></pre>
+<h3>两档预算配置</h3>
+<table>
+<thead>
+<tr>
+<th>环节</th>
+<th>经济档（够用，国内直连）</th>
+<th>高质档（更电影感）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>剧本</td>
+<td>豆包 / Kimi / DeepSeek</td>
+<td>GPT-4 类 / Claude</td>
+</tr>
+<tr>
+<td>文生图</td>
+<td>即梦 / Flux</td>
+<td>Midjourney</td>
+</tr>
+<tr>
+<td>图生视频</td>
+<td>可灵 Kling / 即梦</td>
+<td>Runway / Veo</td>
+</tr>
+<tr>
+<td>配音</td>
+<td>剪映自带朗读</td>
+<td>魔音工坊 / 专业 TTS</td>
+</tr>
+<tr>
+<td>剪辑</td>
+<td>剪映专业版</td>
+<td>剪映 / 达芬奇</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>新手强烈建议先用<strong>经济档全国内工具</strong>跑通整条流水线，再按需升级单点。</p>
+</blockquote>
+<hr />
+<h2>二、核心提示词：一键生成"剧本 + 分镜 + 图片 Prompt"</h2>
+<p>这是工业化的关键——<strong>让大模型一次产出能直接用的全套素材</strong>。复制下面整段，把【】里替换掉：</p>
+<pre><code>你是「人生副本」短视频的资深编导。请按以下要求，为我生成一条 60 秒短视频的完整制作包。
+
+【副本主题】：______（如：AI 创业者 / 外卖员 / 科举考生）
+【人群/基调】：______（如：打工人共鸣向 / 逆袭爽向 / 警示向）
+【账号人设】：______（如：冷静的轮回管理局 AI）
+
+请严格按&quot;九段式公式&quot;输出，分三部分：
+
+# 一、口播文案（第一人称&quot;你&quot;，总时长约 60 秒，口语化、有节奏、每段一句话）
+①Hook ②身份 ③出生 ④成长 ⑤第一次选择 ⑥转折/第二次选择 ⑦重大随机事件 ⑧结局+评分面板 ⑨金句+互动钩子
+
+# 二、分镜表（每段对应 1 个镜头，列出：镜号 | 画面内容 | 景别 | 时长(秒) | 字幕关键词）
+
+# 三、每个镜头的文生图 Prompt（英文，统一风格，便于直接粘贴到即梦/Flux/MJ）
+风格统一为：【cinematic, first-person POV, 电影感打光, 高细节, 8K】
+主角形象保持一致：______（如：25 岁亚洲男性，短发，灰色卫衣）
+
+要求：情绪强、有反差、结尾留互动钩子；规避任何违法/敏感内容；金句要能当标题。
+</code></pre>
+<blockquote>
+<p>产出后人工再润色（尤其 Hook 和金句），不要直接全盘用。</p>
+</blockquote>
+<hr />
+<h2>三、分镜 Prompt 流水线（STEP 5）</h2>
+<h3>图片 Prompt 通用公式</h3>
+<pre><code>[主体/角色] + [场景/环境] + [动作/情绪] + [光线/氛围] + [镜头/视角] + [画质风格词]
+</code></pre>
+<h3>固定画质风格词（每个 Prompt 都带，保证统一感）</h3>
+<pre><code>cinematic, ultra detailed, 8K, dramatic lighting, film grain,
+first-person POV（需要代入时）, depth of field
+</code></pre>
+<blockquote>
+<p>选一套<strong>专属风格词</strong>长期固定（如全部加 <code>cyberpunk, blue holographic HUD</code>），这就是你的视觉签名。</p>
+</blockquote>
+<h3>分镜 Prompt 范例（扩展你给的三镜，并补全一整条）</h3>
+<p><strong>镜头 1 · 副本载入界面（Hook）</strong></p>
+<pre><code>futuristic game UI loading screen, first-person POV, cyberpunk style,
+blue holographic HUD, &quot;LIFE INSTANCE LOADING&quot; text, glowing progress bar,
+dark background, cinematic, ultra detailed, 8K
+</code></pre>
+<p><strong>镜头 2 · 出生/出身（昏暗出租屋）</strong></p>
+<pre><code>small shabby rented room, a young Asian man, dim warm light, old computer,
+late night, lonely atmosphere, first-person POV, cinematic, ultra detailed, 8K
+</code></pre>
+<p><strong>镜头 3 · 职场压迫（会议室）</strong></p>
+<pre><code>modern corporate meeting room, a stern boss across the table, oppressive mood,
+cold blue lighting, low angle, cinematic lighting, ultra detailed, 8K
+</code></pre>
+<p><strong>镜头 4 · 第一次选择（岔路）</strong></p>
+<pre><code>a symbolic fork in the road at dusk, two glowing paths labeled A and B,
+hesitant figure standing at the junction, cinematic, dramatic sky, 8K
+</code></pre>
+<p><strong>镜头 5 · 重大事件/高潮（爆发）</strong></p>
+<pre><code>explosive turning point, screens lighting up with notifications, server room glowing,
+intense dramatic lighting, sense of breakthrough, cinematic, ultra detailed, 8K
+</code></pre>
+<p><strong>镜头 6 · 结局评分面板</strong></p>
+<pre><code>game result screen, holographic score panel showing stars for
+WEALTH HEALTH FAMILY HAPPINESS, &quot;ENDING&quot; title, blue UI glow,
+clean futuristic interface, cinematic, 8K
+</code></pre>
+<hr />
+<h2>四、一致性技巧（让"同一个主角"贯穿全片）</h2>
+<p>AI 最大的坑是每张图人脸/风格都不一样。三招解决：</p>
+<ol>
+<li><strong>角色锚定</strong>：在每个镜头 Prompt 里写死主角特征（"25 yo Asian man, short black hair, grey hoodie"），或用工具的"角色参考/垫图"功能固定同一张脸。</li>
+<li><strong>风格锁定</strong>：所有图共用同一组风格词 + 同一色调（见 STEP 6）。可在即梦/MJ 用同一个风格参考图。</li>
+<li><strong>少切画面</strong>：能用"图生视频"让一张图动起来，就别频繁换图——<strong>少切换 = 强沉浸</strong>（这也是算法偏爱的，见 <a href="#ch00"><code>00</code></a>）。</li>
+</ol>
+<hr />
+<h2>五、图生视频与配音要点</h2>
+<ul>
+<li><strong>图生视频</strong>：给静态图加"轻微运镜"（推/拉/摇）和元素动效（HUD 闪烁、进度条走动、人物微动），单镜 2–4 秒即可。不追求大动作，<strong>稳、有氛围</strong>比炫技重要。</li>
+<li><strong>配音</strong>：选一个<strong>固定音色</strong>（如沉稳男声/电子机械音）长期用，它是你的听觉签名。语速适中、关键句留停顿。剪映"朗读"可一键生成，免费够用。</li>
+<li><strong>字幕</strong>：剪映自动识别字幕 → 统一字体/描边/位置，<strong>关键词高亮变色</strong>（见 STEP 6）。</li>
+</ul>
+<hr />
+<h2>六、批量化技巧（一次做一周）</h2>
+<p>把流程拆成"同类工序集中干"，效率翻几倍：</p>
+<ol>
+<li><strong>集中写</strong>：一次让大模型出 7 条剧本（同一人设、不同副本）。</li>
+<li><strong>集中画</strong>：把 7 条的所有图片 Prompt 排成一批，一次性出图。</li>
+<li><strong>集中配</strong>：同一音色，一次配完 7 条旁白。</li>
+<li><strong>集中剪</strong>：第一条剪好存成<strong>剪映草稿模板</strong>，后面 6 条<strong>替换素材</strong>即可，UI 包装一次复用。</li>
+<li><strong>错峰发</strong>：7 条排进一周的发布计划（见 <a href="#ch09"><code>09</code></a>）。</li>
+</ol>
+<blockquote>
+<p>关键心法：<strong>把"做一条"变成"做一套"</strong>。模板做一次，复用一辈子。</p>
+</blockquote>
+<hr />
+<p>下一步 👉 <a href="#ch05"><code>05-固定包装与视听规范.md</code></a>：让每条视频"一眼是你"（STEP 6）。</p></section>
+<section class="doc" id="ch05"><h1>05 · 固定包装与视听规范（STEP 6）</h1>
+<blockquote>
+<p><strong>所有视频保持一致的包装 = 品牌认知。</strong> 观众划到第 3 秒还没看脸，光看 UI 就知道"是这个号"。
+这是护城河的第一层（见 <a href="#ch00"><code>00</code></a> 第五节）。包装做一次，复用一辈子。</p>
+</blockquote>
+<hr />
+<h2>一、固定 UI 元素库（每条都用，位置固定）</h2>
+<p>把下面这套游戏化 UI 做成<strong>剪映/PS 模板</strong>，每条视频直接套：</p>
+<table>
+<thead>
+<tr>
+<th>元素</th>
+<th>文案/形态</th>
+<th>出现时机</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>载入条</strong></td>
+<td><code>人生副本 · 正在载入…… LOADING ▓▓▓░ 70%</code></td>
+<td>开场 0–2s</td>
+<td>钩子 + 仪式感</td>
+</tr>
+<tr>
+<td><strong>副本标题</strong></td>
+<td><code>《______ 的一生》</code></td>
+<td>开场</td>
+<td>点题</td>
+</tr>
+<tr>
+<td><strong>身份卡</strong></td>
+<td><code>身份：______  开局难度：★★★☆☆</code></td>
+<td>身份介绍段</td>
+<td>信息 + 代入</td>
+</tr>
+<tr>
+<td><strong>等级条</strong></td>
+<td><code>Lv.1 → Lv.2 → Lv.3 …</code></td>
+<td>成长段</td>
+<td>表现成长</td>
+</tr>
+<tr>
+<td><strong>属性面板</strong></td>
+<td><code>HP 生命 / Money 财富 / Age 年龄 / Skill 技能</code></td>
+<td>全程角标</td>
+<td>游戏感</td>
+</tr>
+<tr>
+<td><strong>任务提示</strong></td>
+<td><code>Mission：______</code>（主线/支线）</td>
+<td>选择段</td>
+<td>推进剧情</td>
+</tr>
+<tr>
+<td><strong>选择弹窗</strong></td>
+<td><code>【选择】A. ____  B. ____</code></td>
+<td>抉择点</td>
+<td>互动 + 悬念</td>
+</tr>
+<tr>
+<td><strong>随机事件</strong></td>
+<td><code>⚠ 随机事件触发！______</code></td>
+<td>高潮段</td>
+<td>制造意外</td>
+</tr>
+<tr>
+<td><strong>结算面板</strong></td>
+<td><code>ENDING + 五维评分（财富/健康/家庭/快乐/成就）</code></td>
+<td>结尾</td>
+<td>收束 + 讨论</td>
+</tr>
+</tbody>
+</table>
+<p><strong>统一英文标签（视觉签名）</strong>：<code>LIFE INSTANCE / LOADING / Lv / HP / MONEY / AGE / SKILL / MISSION / ENDING</code>。</p>
+<blockquote>
+<p>这套标签英文化，是为了游戏感和辨识度——长期固定不变，就是你的"视觉签名档"。</p>
+</blockquote>
+<hr />
+<h2>二、选一套视觉风格（差异化关键，长期固定一套）</h2>
+<p>别人都用"赛博蓝光 HUD"，你可以选一套<strong>没人用的</strong>来区隔（见 <a href="#ch01"><code>01</code></a> 路线 C）：</p>
+<table>
+<thead>
+<tr>
+<th>风格包</th>
+<th>配色</th>
+<th>适合副本类型</th>
+<th>记忆点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>赛博终端风</strong>（默认）</td>
+<td>黑底 + 蓝/青全息光</td>
+<td>职业、未来、AI</td>
+<td>科技 HUD、扫描线</td>
+</tr>
+<tr>
+<td><strong>黑金高级风</strong></td>
+<td>纯黑 + 金色描边</td>
+<td>财富、逆袭、商战</td>
+<td>极简、高级、有钱感</td>
+</tr>
+<tr>
+<td><strong>水墨国风</strong></td>
+<td>宣纸米色 + 墨黑朱红</td>
+<td>历史、科举、古代</td>
+<td>卷轴、印章、毛笔字</td>
+</tr>
+<tr>
+<td><strong>像素游戏风</strong></td>
+<td>8-bit 彩色</td>
+<td>校园、怀旧、时代</td>
+<td>复古游戏机感</td>
+</tr>
+<tr>
+<td><strong>档案监控风</strong></td>
+<td>暗灰 + 警示红/绿</td>
+<td>黑暗、警示、悬疑</td>
+<td>监控框、档案袋、打码</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>选定一套就<strong>别换</strong>。同一套配色 + 同一组风格词（见 <a href="#ch04"><code>04</code></a>）贯穿所有视频。</p>
+</blockquote>
+<hr />
+<h2>三、字幕规范（直接吃完播率）</h2>
+<p>字幕是观众的"第二条旁白"，60% 的人静音看，字幕没做好等于白做：</p>
+<pre><code>字体：粗黑体 / 思源黑体 Bold（清晰、有力）
+字号：大（占屏宽 ~80%），手机上一眼能读
+位置：屏幕下方 1/4 处，固定不动
+描边：黑色描边 + 轻微阴影（保证任何背景都看清）
+高亮：关键词变色（如主色调蓝/金），每句突出 1–2 个词
+节奏：一句一行，跟着配音逐句出，不要整段堆上去
+</code></pre>
+<blockquote>
+<p>关键词高亮 = 引导视线 + 强化记忆点，是这套内容的"标配动作"。</p>
+</blockquote>
+<hr />
+<h2>四、音频规范（听觉签名）</h2>
+<p>声音的一致性和画面一样重要：</p>
+<table>
+<thead>
+<tr>
+<th>音频层</th>
+<th>选择</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>配音音色</strong></td>
+<td>固定 1 个（沉稳男声 / 电子机械音 / 知性女声）</td>
+<td>你的听觉签名，长期不换</td>
+</tr>
+<tr>
+<td><strong>开场音效</strong></td>
+<td>固定 1 个"系统启动/载入"音</td>
+<td>听到就知道是你（强记忆点）</td>
+</tr>
+<tr>
+<td><strong>BGM</strong></td>
+<td>按基调备 3 类：史诗燃 / 悬疑暗 / 治愈暖</td>
+<td>音量压在人声下方，别盖住旁白</td>
+</tr>
+<tr>
+<td><strong>节点音效</strong></td>
+<td>升级"叮"、选择"滴"、结算"通关音"</td>
+<td>给 UI 元素配音效，游戏感拉满</td>
+</tr>
+<tr>
+<td><strong>结尾留白</strong></td>
+<td>结局前 0.5s 停顿 / 黑屏</td>
+<td>制造期待，提升结尾完播</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>开场音效 + 固定音色 = 听觉签名</strong>。很多人是"听到那个音"才认出账号的。</p>
+</blockquote>
+<hr />
+<h2>五、封面规范（影响推荐页点击率）</h2>
+<pre><code>· 主图：最有冲击力的一帧（结局/高潮画面）
+· 大字标题：4–8 字，埋词&quot;人生副本/XX的一生&quot;（见 SEO，06）
+· 统一模板：固定字体、固定位置、固定角标（如左上角永远是&quot;人生副本 EP.xx&quot;）
+· 系列编号：标上&quot;EP.01 / 第3局&quot;，强化&quot;可追更&quot;暗示
+</code></pre>
+<hr />
+<h2>六、"固定包装"检查清单（每条发布前过一遍）</h2>
+<pre><code>□ 开场有载入条 + 副本标题了吗？
+□ 属性面板/等级条出现了吗？
+□ 用的是我固定的那套配色和风格词吗？
+□ 字幕字体/位置/高亮统一了吗？
+□ 开场音效 + 配音音色是固定那一套吗？
+□ 结尾有结算面板 + ENDING 了吗？
+□ 封面是统一模板 + 系列编号吗？
+</code></pre>
+<blockquote>
+<p>全部打勾 → 这条视频"一眼是你"。这就是把"模板"做成"品牌"的全部秘密。</p>
+</blockquote>
+<hr />
+<p>下一步 👉 <a href="#ch06"><code>06-发布运营与SEO.md</code></a>：让做好的视频被更多人刷到。</p></section>
+<section class="doc" id="ch06"><h1>06 · 发布运营与 SEO</h1>
+<blockquote>
+<p>视频做得好只是一半，发得对是另一半。这一章解决：<strong>怎么被搜到、被推到、被互动起来。</strong></p>
+</blockquote>
+<hr />
+<h2>一、抖音 SEO：让"搜人生副本"的人搜到你</h2>
+<p>赛道有大量搜索流量（用户主动搜【人生副本】），<strong>把关键词埋进 4 个位置</strong>：</p>
+<pre><code>1. 标题/文案：必含&quot;人生副本&quot; + 副本名（如&quot;人生副本：外卖员的一生&quot;）
+2. 话题标签：#人生副本 #人生模拟器 + 垂直词
+3. 封面文字：大字直接写&quot;人生副本 · ____的一生&quot;
+4. 视频口播/字幕：开场就说出&quot;人生副本&quot;四个字（语音也会被识别为搜索词）
+</code></pre>
+<blockquote>
+<p>搜索流量是"长尾复利"——一条视频能被搜半年。<strong>每条都埋词，不要嫌烦。</strong></p>
+</blockquote>
+<h3>话题标签矩阵（每条选 5–8 个）</h3>
+<pre><code>核心词：#人生副本 #人生模拟器 #人生重开
+形式词：#AI视频 #第一人称 #沉浸式体验
+情绪词：#人生感悟 #扎心 #治愈 #逆袭
+人群词：#打工人 #职场 #小镇青年（按你的人群定位选）
+蹭热词：当下相关热点话题（谨慎、相关才用）
+</code></pre>
+<hr />
+<h2>二、发布时间与频率</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>建议</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>黄金时段</strong></td>
+<td>中午 11:30–13:00、晚上 18:00–22:00（晚高峰最佳）</td>
+</tr>
+<tr>
+<td><strong>频率</strong></td>
+<td>起号期日更或隔日更（喂数据）；稳定后保证"系列可追更"的节奏</td>
+</tr>
+<tr>
+<td><strong>测试</strong></td>
+<td>同一选题不同钩子/封面，发不同时段做 A/B 对比</td>
+</tr>
+<tr>
+<td><strong>删低质</strong></td>
+<td>起号期一条数据极差（完播&lt;10%）可删除重发，避免拉低账号权重</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>但记住 <a href="#ch01"><code>01</code></a> 的洞察：<strong>形式 &gt; 数量</strong>。宁可少而精，不要为日更牺牲质量。</p>
+</blockquote>
+<hr />
+<h2>三、冷启动：前 5 条 + 前 500 粉怎么破</h2>
+<p>新号没权重，靠这几招过初始流量池：</p>
+<ol>
+<li><strong>前 5 条是"定位锚"</strong>：必须同一人设、同一包装、同一类副本——让系统给你打准标签，也让进来的人知道"关注你能持续看到什么"。</li>
+<li><strong>死磕 5 秒完播</strong>：前 5 条把钩子打磨到极致，5 秒完播率 &gt; 50% 才有加推。</li>
+<li><strong>发布后 1 小时是黄金期</strong>：发完盯着评论区，<strong>第一时间回复每条评论</strong>（拉互动权重）。</li>
+<li><strong>自己埋第一条神评论</strong>：发布后用小号/自己置顶一条引导性评论（见下）。</li>
+<li><strong>不要买量、不要互赞群</strong>：会污染账号标签，得不偿失。</li>
+</ol>
+<hr />
+<h2>四、评论区运营（被严重低估的涨粉/完播杠杆）</h2>
+<p>评论区是第二个内容场，运营好能二次拉升推荐：</p>
+<ul>
+<li><strong>置顶引导评论</strong>：每条发完，自己置顶一条钩子评论，例：
+  <code>· "选 A 的扣 1，选 B 的扣 2，看看大家都怎么选👇"
+  · "想看下一个副本是什么？点赞最高的我下条就做。"
+  · "这局我给打 60 分，你们呢？"</code></li>
+<li><strong>回复即追问</strong>：别人评论后，用反问把话题续下去（提升评论层数和停留）。</li>
+<li><strong>从评论里挖选题</strong>：观众喊"求做 XX"——直接做，并 @ 他，形成"你点单我来做"的社区感。</li>
+<li><strong>挑动良性站队</strong>：A/B 选择、不同结局，天然引发讨论，别怕有分歧（有争论=有互动）。</li>
+</ul>
+<blockquote>
+<p>评论区里"点单—产出—@回应"的循环，是把看客变粉丝的关键，也是通往 <a href="#ch08"><code>08</code></a> 互动机制的起点。</p>
+</blockquote>
+<hr />
+<h2>五、完播率优化清单（算法的命门指标）</h2>
+<pre><code>□ 前 3 秒有钩子（载入条 + 悬念句）
+□ 没有&quot;大家好我是……&quot;这种废开场
+□ 节奏紧、无废镜头，越往后越快
+□ 结局前留悬念/停顿，吊住最后 5 秒
+□ 时长别贪长（先做 45–60s，完播不行就压短）
+□ 字幕清晰、关键词高亮（静音也能看懂）
+</code></pre>
+<hr />
+<h2>六、数据不好时的排查顺序</h2>
+<p>按这个顺序找问题，<strong>从前往后查</strong>（越靠前影响越大）：</p>
+<pre><code>完播率低（&lt;15%）   → 钩子/节奏问题 → 改前 3 秒、压时长
+完播高但点赞低     → 缺情绪/认知爽点 → 改结尾金句和高潮
+点赞高但转发低     → 缺&quot;转给某人&quot;的动机 → 加人群指向性
+互动低（评论少）   → 没留互动钩子 → 结尾加投票/提问
+涨粉低（数据都还行）→ 缺系列感/人设 → 强化固定包装 + 可追更（08）
+</code></pre>
+<hr />
+<p>下一步 👉 <a href="#ch07"><code>07-账号矩阵与变现.md</code></a>：做大 + 把流量变成钱（STEP 7）。</p></section>
+<section class="doc" id="ch07"><h1>07 · 账号矩阵与变现（STEP 7）</h1>
+<blockquote>
+<p>一个号能起，一套号能赚。这一章解决：<strong>怎么用一套世界观扩成矩阵 + 怎么把流量变成钱。</strong></p>
+</blockquote>
+<hr />
+<h2>一、账号矩阵：一套世界观，无限扩展</h2>
+<p>不要只做一个"人生副本"号。把它当成一个<strong>世界观母品牌</strong>，裂变出垂直子账号：</p>
+<pre><code>                    【人生副本】（母号/总 IP）
+                          │
+   ┌──────────┬──────────┼──────────┬──────────┐
+ 职业副本   历史副本   黑暗副本   AI副本    财富副本
+   │          │          │          │          │
+ 创业副本   爱情副本   家庭副本   校园副本   ……（按需扩）
+</code></pre>
+<h3>矩阵的 4 个好处</h3>
+<ol>
+<li><strong>测赛道</strong>：哪个子号数据好，就重点投入哪个，等于多次下注。</li>
+<li><strong>抗风险</strong>：一个号被限流，其他号还在跑。</li>
+<li><strong>流量内循环</strong>：子号互相 @、引流、合拍，放大整体曝光。</li>
+<li><strong>批量复用</strong>：同一套 UI 包装、同一条流水线（<a href="#ch04"><code>04</code></a>/<a href="#ch05"><code>05</code></a>），开新号边际成本极低。</li>
+</ol>
+<h3>矩阵落地节奏</h3>
+<ul>
+<li><strong>第 1 个月</strong>：只做 1 个号，跑通流水线、验证人设。<strong>别一上来铺矩阵</strong>。</li>
+<li><strong>数据验证后</strong>：复制流水线，每 2–4 周开 1 个垂直子号，各绑定一个细分人群（见 <a href="#ch01"><code>01</code></a>）。</li>
+<li><strong>统一品牌</strong>：所有子号共用 UI 风格 + 命名规则（如都叫"XX副本 by 人生副本"），强化母 IP。</li>
+</ul>
+<blockquote>
+<p>⚠️ 多账号运营注意平台规则：避免同一设备/IP 批量操作触发风控，内容<strong>不要完全复制粘贴</strong>（同质化会被降权）。</p>
+</blockquote>
+<hr />
+<h2>二、6 条变现路径（从易到难）</h2>
+<table>
+<thead>
+<tr>
+<th>路径</th>
+<th>起量门槛</th>
+<th>收益</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1. 平台创作激励</strong></td>
+<td>1 万粉/中视频计划</td>
+<td>低但稳</td>
+<td>播放分成，起步现金流，养号</td>
+</tr>
+<tr>
+<td><strong>2. 星图广告/品牌植入</strong></td>
+<td>几万粉</td>
+<td>中高</td>
+<td>把品牌"植入"成副本里的道具/事件</td>
+</tr>
+<tr>
+<td><strong>3. 知识付费</strong></td>
+<td>几万粉 + 信任</td>
+<td>高</td>
+<td>卖"人生规划/认知/AI副业"课、社群</td>
+</tr>
+<tr>
+<td><strong>4. 私域引流</strong></td>
+<td>任意</td>
+<td>高（长期）</td>
+<td>导流到公众号/微信，做复购和深度变现</td>
+</tr>
+<tr>
+<td><strong>5. 带货/挂车</strong></td>
+<td>几万粉</td>
+<td>中</td>
+<td>书单（认知/成长类）、课程、相关好物</td>
+</tr>
+<tr>
+<td><strong>6. 账号/IP 变现</strong></td>
+<td>矩阵成型</td>
+<td>一次性高</td>
+<td>成熟号转让、IP 授权、接代运营</td>
+</tr>
+</tbody>
+</table>
+<h3>各路径要点</h3>
+<p><strong>① 创作激励</strong>：先开通中视频/创作者计划，把它当"水电费"，不指望发财，但能覆盖工具成本。</p>
+<p><strong>② 星图广告</strong>：这套内容植入广告极自然——把品牌做成副本里的"装备/贵人/转折道具"。例："这一关，他用了【某 App】，命运开始反转。" 不破坏沉浸感，转化反而高。</p>
+<p><strong>③ 知识付费（最匹配）</strong>：你的人设是"看透人生规则的人"，天然适合卖：
+- 人生/职业规划课、认知思维课、AI 副业/AI 做视频课（教别人做这个赛道本身就是卖点）。
+- 付费社群（"副本攻略局"），持续输出 + 答疑。</p>
+<p><strong>④ 私域引流（最该做）</strong>：抖音流量是租来的，私域才是自己的。
+- 主页/评论区/视频结尾，合规引导加微信/公众号（注意平台对外链的规则，用"昵称/拼音"等软引导）。
+- 私域里做课程、咨询、社群复购，客单价和复购远高于公域。</p>
+<p><strong>⑤ 带货</strong>：认知成长类<strong>书单</strong>和这套内容最搭（看完"人生副本"的人，想"提升自己"）。挂相关书、课、好物。</p>
+<p><strong>⑥ IP/账号变现</strong>：矩阵跑出来后，单个成熟号可转让，或接"代运营/陪跑"，或做 IP 授权周边。</p>
+<hr />
+<h2>三、变现的底层顺序（别做反了）</h2>
+<pre><code>先做信任和人设  →  再做私域沉淀  →  最后才重度变现
+（前 30 条立人设）（持续引流私域）（课程/咨询/带货）
+</code></pre>
+<blockquote>
+<p>新号别急着挂车带货——<strong>信任没建立就变现，会掉粉、掉权重</strong>。先用 <a href="#ch00"><code>00</code></a> 的"三种爽"把人设和信任立住，变现是水到渠成的事。</p>
+</blockquote>
+<hr />
+<h2>四、合规变现红线</h2>
+<pre><code>□ 不卖&quot;快速暴富/搞钱&quot;等违规承诺类课程
+□ 黑暗副本绝不接灰产/赌博/网贷类广告（违法且封号）
+□ 引流遵守平台外链规则，不硬留违规联系方式
+□ 带货选正规渠道、真实好物，不夸大
+</code></pre>
+<hr />
+<p>下一步 👉 <a href="#ch08"><code>08-人生副本Universe.md</code></a>：把账号从"模板"升级成"可追更宇宙"——你真正的护城河（STEP 8）。</p></section>
+<section class="doc" id="ch08"><h1>08 · 人生副本 Universe（可追更内容宇宙）（STEP 8）</h1>
+<blockquote>
+<p><strong>大多数账号停在"AI 配图 + 第一人称念稿"，谁都能抄。</strong>
+这一章是把账号从"热门模板"升级成"可持续更新、越做越难被替代的内容宇宙"的关键——也是你真正的护城河。</p>
+</blockquote>
+<hr />
+<h2>为什么要做 Universe？</h2>
+<p>回顾 <a href="#ch00"><code>00</code></a> 第五节：当前赛道护城河很浅，三个月后纯模仿号会互相淹没。
+护城河有三层，<strong>越往后越难抄</strong>：辨识度（<a href="#ch05"><code>05</code></a>）→ 系列化世界观 → <strong>互动机制</strong>。
+本章做的就是后两层：把零散选题变成<strong>一个有规则、有成长、有观众参与的世界</strong>。</p>
+<p>核心思路一句话：<strong>不做"一条爆款"，做"一个停不下来的连续剧 + 养成游戏"。</strong></p>
+<hr />
+<h2>五大系统（逐个落地）</h2>
+<h3>系统 ①：技能树系统（让账号有"成长线"）</h3>
+<p><strong>做法</strong>：主角每通关一个副本/做对一个选择，就<strong>解锁一项技能</strong>，并在 UI 上永久点亮。</p>
+<pre><code>技能树示例：沟通力 / 赚钱力 / 英语 / AI / 情绪管理 / 人脉 / 健康
+表现：每集结尾弹出 &quot;🔓 解锁新技能：AI（Lv.1→Lv.2）&quot;
+</code></pre>
+<p><strong>价值</strong>：
+- 观众产生"陪养成"的黏性——想看主角技能点满。
+- 技能本身就是<strong>选题发生器</strong>（"解锁英语"那集 = 一个新副本）。
+- 天然适配知识付费（<a href="#ch07"><code>07</code></a>）："想点亮‘赚钱力’？攻略在主页。"</p>
+<hr />
+<h3>系统 ②：随机事件系统（让剧情有"不确定性爽感"）</h3>
+<p><strong>做法</strong>：每集插入一个<strong>概率事件</strong>，用"骰子/转盘/系统抽取"的形式呈现。</p>
+<pre><code>事件池：贵人相助 / 突然裁员 / 创业风口 / 重病 / 中奖 / 被骗 / 遇见对的人
+表现：&quot;🎲 随机事件触发：裁员（概率 23%）&quot;，再接主角应对
+</code></pre>
+<p><strong>价值</strong>：
+- "不知道会抽到什么"= 强追看欲，直接拉完播（<a href="#ch00"><code>00</code></a> 算法逻辑）。
+- 同一个身份，因随机事件不同 → <strong>同一选题可重做多版</strong>，内容量翻倍。
+- 真实感：人生本就充满随机，观众共鸣"这就是命"。</p>
+<hr />
+<h3>系统 ③：多结局系统（让一个副本能拍好几集）</h3>
+<p><strong>做法</strong>：每个副本设计 <strong>普通结局 / 隐藏结局 / BAD END / 真结局</strong> 多个分支。</p>
+<pre><code>表现：结尾标注 &quot;ENDING：普通结局（达成率 61%）｜还有 2 个隐藏结局未解锁&quot;
+玩法：先发普通结局 → 下集发隐藏结局 → 高潮放真结局
+</code></pre>
+<p><strong>价值</strong>：
+- "还有隐藏结局没看到"= 强力追更钩子，提升完播 + 关注。
+- 一个选题拆成 3–4 集 → <strong>极大降低选题消耗</strong>，对工业化生产是关键。
+- "达成率 3%"这种稀有度标注，激发"我也想要隐藏结局"的转发欲。</p>
+<hr />
+<h3>系统 ④：观众互动系统（最强护城河，别人抄不走）</h3>
+<p><strong>做法</strong>：每集结尾抛出 A/B 选择，<strong>下一集按评论/点赞投票结果推进剧情</strong>。</p>
+<pre><code>结尾：&quot;这一步，A 辞职创业 / B 留下熬资历——评论区投票，点赞最高的，下集就走那条路。&quot;
+下集开头：&quot;上集你们选了 B，于是……&quot;
+</code></pre>
+<p><strong>价值</strong>：
+- 把"看客"变成"玩家/编剧"——<strong>这是 UI 和文案抄不走的东西</strong>，因为护城河是你的<strong>社区</strong>。
+- 评论率、互动率爆炸（算法最爱），还制造"必须看下一集"的强追更。
+- 形成"我们共同养出来的人生"的归属感 → 铁粉。</p>
+<blockquote>
+<p>这是从 <a href="#ch06"><code>06</code></a> 评论区运营自然长出来的机制，建议账号稳定后<strong>第一优先上线</strong>。</p>
+</blockquote>
+<hr />
+<h3>系统 ⑤：统一 UI 品牌（贯穿全宇宙的视觉宪法）</h3>
+<p><strong>做法</strong>：固定 HUD、等级、属性面板、评分界面、技能树界面——<strong>所有子账号、所有副本通用</strong>。
+（具体元素库见 <a href="#ch05"><code>05-固定包装与视听规范.md</code></a>。）</p>
+<pre><code>固定不变：LIFE INSTANCE 载入界面 / Lv 等级条 / HP·Money·Age·Skill 面板 /
+          技能树界面 / ENDING 五维评分面板 / 开场音效 + 配音音色
+</code></pre>
+<p><strong>价值</strong>：一眼认出 + 跨账号统一 = 母 IP 资产。这是矩阵（<a href="#ch07"><code>07</code></a>）能"像一个品牌"的前提。</p>
+<hr />
+<h2>把五大系统串成"一集"的样子</h2>
+<p>一集"Universe 版"视频 = 在 <a href="#ch03"><code>03</code></a> 九段式基础上，叠加四个系统的"挂件"：</p>
+<pre><code>①Hook（载入）
+②身份卡  + 显示当前【技能树】进度
+③出生成长（Lv 上升）
+⑤第一次选择  ← 接上集【观众投票】结果
+⑦🎲【随机事件】触发
+⑧【多结局】之一 + 五维评分 + 🔓解锁新技能
+⑨金句 + 【投票钩子】：&quot;下一步 A 还是 B？决定下集走向&quot;
+</code></pre>
+<blockquote>
+<p>看出来了吗：<strong>同一个身份，靠"随机事件 × 多结局 × 观众投票"，能持续产出几十集</strong>——这才是"工业化 + 可持续"的终极形态。</p>
+</blockquote>
+<hr />
+<h2>升级路线图（别一步到位，按这个顺序加）</h2>
+<pre><code>阶段 1（第 1 月）：跑通基础版（00–06 章），先验证人设和流水线
+阶段 2（数据稳后）：加【统一 UI 品牌】+【多结局】→ 提升完播和追更
+阶段 3（有铁粉后）：上【观众互动投票】→ 建立社区护城河
+阶段 4（做大）：加【技能树】+【随机事件】+【矩阵】→ 形成完整宇宙
+</code></pre>
+<blockquote>
+<p>不要在第一条视频就堆满所有系统——<strong>先让一个号能爆，再逐步加养成机制</strong>。每个阶段的目的，都是把上一阶段的流量"锁"得更深。</p>
+</blockquote>
+<hr />
+<h2>一句话总结 STEP 8</h2>
+<blockquote>
+<p>别人在做"人生副本"这个<strong>模板</strong>；你要做"人生副本"这个<strong>世界</strong>——
+有成长（技能树）、有意外（随机事件）、有分支（多结局）、有玩家（观众投票）、有品牌（统一 UI）。
+模板会被抄烂，世界不会。</p>
+</blockquote>
+<hr />
+<p>下一步 👉 <a href="#ch09"><code>09-7天上手SOP与批量排期.md</code></a>：现在就开始做第一条。</p></section>
+<section class="doc" id="ch09"><h1>09 · 7 天上手 SOP 与批量排期</h1>
+<blockquote>
+<p>看完前面 8 章，这一章让你<strong>7 天内发出第一条</strong>，再转入"一天产一周量"的批量模式。照着打勾做即可。</p>
+</blockquote>
+<hr />
+<h2>一、7 天上手计划（从 0 到第一条）</h2>
+<h3>Day 1 · 定位（只做这一件，别贪快）</h3>
+<pre><code>□ 读完 00、01 两章
+□ 用 01 的&quot;定位四件套&quot;填出：角色 / 副本类型 / 视觉记忆点 / 固定开场白
+□ 选定一套视觉风格（05）+ 一个固定配音音色
+产出：一页《账号定位书》
+</code></pre>
+<h3>Day 2 · 建库（攒够弹药）</h3>
+<pre><code>□ 读 02，从五大类里挑 20 个选题存进选题卡
+□ 用&quot;四变量组合公式&quot;再扩 10 个
+□ 按打分法选出最想做的 Top 3
+产出：30 条选题 + Top 3
+</code></pre>
+<h3>Day 3 · 写剧本（打磨形式）</h3>
+<pre><code>□ 读 03，用&quot;一键生成提示词&quot;（04）让大模型出 Top 3 的剧本
+□ 人工精修：死磕 Hook（5s）和结尾金句
+□ 用五幕模板定稿第 1 条
+产出：第 1 条完整剧本 + 分镜表 + 图片 Prompt
+</code></pre>
+<h3>Day 4 · 做包装模板（一次做，永久用）</h3>
+<pre><code>□ 读 05，在剪映/PS 里做好固定 UI 模板（载入条/属性面板/结算面板）
+□ 确定字幕样式、开场音效、BGM 三件套
+产出：可复用的《包装模板》（这是一次性投入，最值）
+</code></pre>
+<h3>Day 5 · 产出第 1 条</h3>
+<pre><code>□ 按 04 流水线：出图 → 图生视频 → 配音 → 套包装模板 → 剪映合成
+□ 做封面（05 规范）
+产出：第 1 条成片 + 封面
+</code></pre>
+<h3>Day 6 · 发布 + 复盘</h3>
+<pre><code>□ 读 06，埋好 SEO 关键词 + 话题标签
+□ 黄金时段发布，置顶引导评论，1 小时内回复所有评论
+□ 记录初始数据（5s 完播、完播率）
+产出：第 1 条发布 + 数据基线
+</code></pre>
+<h3>Day 7 · 迭代 + 备货</h3>
+<pre><code>□ 用 06 的&quot;数据排查顺序&quot;诊断第 1 条
+□ 据此修正，产出第 2、3 条
+□ 规划下周批量
+产出：第 2-3 条 + 下周计划
+</code></pre>
+<hr />
+<h2>二、批量生产 SOP（稳定期 · 一天产一周量）</h2>
+<p>跑顺后，<strong>别再一条一条做</strong>，改成"同工序集中干"（详见 <a href="#ch04"><code>04</code></a> 第六节）：</p>
+<pre><code>集中写：大模型一次出 7 条剧本（同人设、不同副本）          约 60 分钟
+集中画：7 条所有图片 Prompt 排批，一次性出图               约 90 分钟
+集中配：同一音色，一次配完 7 条旁白                        约 30 分钟
+集中剪：第 1 条做成剪映草稿模板，其余 6 条替换素材          约 120 分钟
+排期发：7 条排进一周，错峰发布                            约 15 分钟
+                                              合计 ≈ 半天产出一周内容
+</code></pre>
+<blockquote>
+<p>核心：<strong>模板化 + 工序化</strong>。第一条慢没关系，它是你后面所有视频的"母版"。</p>
+</blockquote>
+<hr />
+<h2>三、周度排期表（直接套）</h2>
+<table>
+<thead>
+<tr>
+<th>周几</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>周一</td>
+<td>集中写本周 7 条剧本 + 扩选题库 30 分钟</td>
+</tr>
+<tr>
+<td>周二</td>
+<td>集中出图 + 图生视频</td>
+</tr>
+<tr>
+<td>周三</td>
+<td>集中配音 + 集中剪辑（套模板）</td>
+</tr>
+<tr>
+<td>周四</td>
+<td>做封面 + 埋词 + 排好发布计划</td>
+</tr>
+<tr>
+<td>周五–周日</td>
+<td>系统按计划发布；每天花 30 分钟运营评论区 + 记数据</td>
+</tr>
+<tr>
+<td>（周日晚）</td>
+<td>周复盘：看哪条最好，下周加大同类型</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>四、关键指标看板（每周复盘填）</h2>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>健康线</th>
+<th>不达标怎么办</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5 秒完播率</td>
+<td>&gt; 45%</td>
+<td>改钩子（03 钩子库）</td>
+</tr>
+<tr>
+<td>完播率</td>
+<td>&gt; 20%</td>
+<td>压时长、提节奏</td>
+</tr>
+<tr>
+<td>点赞率</td>
+<td>&gt; 3%</td>
+<td>强化金句/情绪（03）</td>
+</tr>
+<tr>
+<td>评论率</td>
+<td>越高越好</td>
+<td>加投票/提问钩子（08）</td>
+</tr>
+<tr>
+<td>转发率</td>
+<td>越高越好</td>
+<td>加人群指向性</td>
+</tr>
+<tr>
+<td>周涨粉</td>
+<td>持续为正</td>
+<td>强化系列感 + 人设（08）</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>复盘只问一句：<strong>这周哪条最好、为什么？下周把"为什么"复制到更多条。</strong></p>
+</blockquote>
+<hr />
+<h2>五、常见坑（避雷）</h2>
+<pre><code>× 第一条就追求完美 → 拖到不发。先发，再迭代。
+× 一上来日更堆量 → 牺牲质量。形式 &gt; 数量（参考 9 条 3.7 万粉）。
+× 每条人设/包装都换 → 没辨识度。固定下来别动（05）。
+× 黑暗副本擦边 → 限流封号。守红线（02），只做警示。
+× 信任没建立就猛带货 → 掉粉掉权重。先立人设再变现（07）。
+× 单打独斗不复盘 → 凭感觉。用数据看板（本章四）。
+</code></pre>
+<hr />
+<h2>全流程闭环回顾</h2>
+<pre><code>00 为什么爆 → 01 定位 → 02 选题 → 03 剧本 → 04 制作 → 05 包装
+→ 06 发布 → 07 矩阵变现 → 08 升级 Universe → 09 批量执行 → 回到 02 扩库
+</code></pre>
+<blockquote>
+<p>这是一个<strong>可以无限转下去的飞轮</strong>。现在，回到 Day 1，开始做你的第一条。</p>
+</blockquote>
+<hr />
+<p>配套模板 👉 <a href="#tpl-topic"><code>模板/选题卡.md</code></a> · <a href="#tpl-script"><code>模板/五幕剧本模板.md</code></a> · <a href="#tpl-shot"><code>模板/分镜脚本与Prompt模板.md</code></a> · <a href="#tpl-checklist"><code>模板/发布检查清单.md</code></a></p></section>
+<section class="doc" id="case-main"><h1>实战样例 · 打工人职业副本</h1>
+<blockquote>
+<p>这是用本工作流做出来的一个<strong>完整细分号样例</strong>，从定位到第一条成片素材，全部"拿来即用"。
+走的是 <a href="#ch01"><code>01</code></a> 的「路线 A 细分人群 + 路线 C 独特视觉」组合。</p>
+</blockquote>
+<hr />
+<h2>一、账号定位书（01 章四件套）</h2>
+<pre><code>1. 我的角色是谁：职场副本 · 系统（第一人称&quot;你&quot; + 冷静系统播报，
+                 基调：共鸣 + 略带心疼，偶尔一句毒舌金句）
+2. 我专做哪类副本：打工人 / 职场副本，主攻 22–38 岁一二线城市上班族
+                 （程序员、运营、销售、行政、设计、客服、销售……）
+3. 我的视觉记忆点：OA/考勤系统终端风——工位灰底 + 打卡机绿 / 考勤红高亮，
+                 身份卡做成&quot;工牌&quot;样式（挂绳 + 照片 + 工号）
+4. 我的固定开场白：&quot;欢迎登录《职场副本》，正在为你分配工位…… ▓▓▓░ 70%&quot;
+   固定配音：沉稳中性男声 / 轻电子感   固定开场音效：打卡机&quot;嘀——&quot;
+</code></pre>
+<h3>这个号的差异化（怎么不淹死在模仿号里）</h3>
+<ul>
+<li><strong>视觉差异</strong>：别人用赛博蓝光，这个号用"打卡机/工牌/OA 系统"办公终端美学——一眼区隔。</li>
+<li><strong>人群差异</strong>：不做"所有人的人生"，只做打工人，转发动机极强（"这说的不就是我"）。</li>
+<li><strong>签名梗</strong>：属性面板固定有一项 <strong>「发际线」</strong> 作为彩蛋统计（程序员/打工人脱发梗），强辨识度 + 高传播。</li>
+</ul>
+<hr />
+<h2>二、前 10 条选题（02 章方法 + 打分，均 ≥7 分）</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>副本名</th>
+<th>核心转折</th>
+<th>基调</th>
+<th>评分</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>《一个普通打工人的一生》</td>
+<td>把"别人的主线"当成了自己的人生</td>
+<td>共鸣（<strong>首条锚定</strong>）</td>
+<td>10</td>
+</tr>
+<tr>
+<td>2</td>
+<td>《加班到凌晨的程序员》</td>
+<td>用命换钱，体检单敲响警钟，开始反内卷</td>
+<td>共鸣+警示</td>
+<td>9</td>
+</tr>
+<tr>
+<td>3</td>
+<td>《35 岁被优化的中层》</td>
+<td>兢兢业业却被裁，靠积累的技能/人脉上岸</td>
+<td>焦虑+逆袭</td>
+<td>10</td>
+</tr>
+<tr>
+<td>4</td>
+<td>《一直被 PUA 的老实人》</td>
+<td>看清老板话术，学会拒绝，跳槽涨薪</td>
+<td>爽+认知</td>
+<td>9</td>
+</tr>
+<tr>
+<td>5</td>
+<td>《摸鱼摸出隐藏技能的运营》</td>
+<td>上班偷学剪辑，副业变主业，裸辞自由</td>
+<td>爽+逆袭</td>
+<td>8</td>
+</tr>
+<tr>
+<td>6</td>
+<td>《考公上岸 vs 留在大厂》</td>
+<td>围城：稳定与高薪的双线多结局</td>
+<td>认知（<strong>多结局</strong>）</td>
+<td>8</td>
+</tr>
+<tr>
+<td>7</td>
+<td>《被房贷困住的人》</td>
+<td>不敢离职→降负债→重新拿回选择权</td>
+<td>共鸣+认知</td>
+<td>8</td>
+</tr>
+<tr>
+<td>8</td>
+<td>《销售冠军的崩溃与重生》</td>
+<td>业绩神话下的情绪崩溃，重新定义成功</td>
+<td>共鸣+治愈</td>
+<td>8</td>
+</tr>
+<tr>
+<td>9</td>
+<td>《裸辞去大理的人，后来怎样了》</td>
+<td>逃离北上广的真相：逃离≠解决问题</td>
+<td>认知+反转</td>
+<td>8</td>
+</tr>
+<tr>
+<td>10</td>
+<td>《十年没涨过薪的老员工》</td>
+<td>忠诚不如新人，醒悟"市场价值"逻辑</td>
+<td>共鸣+认知</td>
+<td>9</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>发布建议顺序：先发 <strong>#1（锚定形式）</strong>，再 #3、#2（高共鸣高转发），其余按周排期（见 <a href="#ch09"><code>09</code></a>）。
+这 10 条里，#6 适合做成 <a href="#ch08"><code>08</code></a> 的<strong>观众投票多结局</strong>，#3 适合开<strong>系列追更</strong>。</p>
+</blockquote>
+<hr />
+<h2>三、第 1 条完整可念脚本：《一个普通打工人的一生》</h2>
+<blockquote>
+<p>时长约 60 秒。括号内是 UI/画面提示，正文是配音逐句念的文案。</p>
+</blockquote>
+<pre><code>（①Hook · 载入界面 + 打卡机&quot;嘀&quot;）
+正在载入人生副本……本次随机身份：一个最普通的打工人。
+开局难度：看似简单，通关极难。
+
+（②身份 · 工牌身份卡弹出）
+系统提示：你没有背景，没有存款。
+你唯一的初始装备，是一张地铁通勤卡，和一身&quot;还能扛&quot;。
+
+（③出生 · 老家/行李箱进城）
+你出生在一个普通家庭，父母拼尽全力把你送进大学。
+22 岁，你拖着行李箱进城，以为人生的主线，就要开始了。
+
+（④成长 · 工位/早高峰，Lv.1→Lv.2）
+第一份工作，到手工资刚够房租和泡面。
+你学会了三件事：挤早高峰、改第 8 版方案、对老板说&quot;好的，没问题&quot;。
+
+（⑤选择 1 · 选择弹窗）
+【选择】A. 忍着，熬资历等升职；  B. 裸辞，去追那个不靠谱的梦。
+深夜的出租屋里，你选了 A。
+
+（⑦随机事件 · 体检单↑↑↑ + 加班计时器）
+⚠ 随机事件触发：28 岁，你升了职，也胖了 20 斤，体检单上多了三个向上的箭头。
+那天加班到凌晨，你盯着黑掉的电脑屏幕，问了自己一个问题——
+我，到底在为谁的副本打工？
+
+（⑥选择 2 · 选择弹窗）
+【选择】A. 继续当好这台机器；  B. 下班后，每天留 1 小时给自己。
+这一次，你选了 B。
+
+（⑧结局 · 结算面板）
+三年后，你没有暴富。
+但你有了一项能带走的技能，和一个不只靠工资的底气。
+【人生结算】财富★★☆☆☆  健康★★★☆☆  家庭★★★☆☆  快乐★★★★☆  成就★★★☆☆
+（彩蛋：发际线 ★★☆☆☆）
+ENDING：清醒结局（达成率 12%）
+
+（⑨金句 + 互动 · 黑底字）
+系统总结：这个副本最大的陷阱，是把&quot;别人的主线&quot;，当成了自己的人生。
+你给现在的自己打几分？评论区告诉我——
+点赞最高的那条，下一局我就模拟《35 岁被优化的中层》。
+</code></pre>
+<p><strong>为什么选它当第 1 条</strong>：最广的代入（人人都是打工人）+ 强情绪共鸣 + 强转发动机（转给同样在拼的人）+ 认知金句收尾。三种爽全占（见 <a href="#ch00"><code>00</code></a>）。</p>
+<hr />
+<h2>四、分镜表 + 图片 Prompt（04 章）</h2>
+<p><strong>专属风格词</strong>（每镜都加）：<code>cinematic, ultra detailed, 8K, cold office fluorescent light, muted grey-blue tone, film grain, first-person POV</code>
+<strong>主角锚定</strong>：<code>a 28 yo Asian office worker, tired eyes, white shirt or grey hoodie, lanyard badge</code></p>
+<table>
+<thead>
+<tr>
+<th>镜号</th>
+<th>段落</th>
+<th>画面</th>
+<th>图片 Prompt（接风格词+主角）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>①Hook</td>
+<td>OA 系统载入界面</td>
+<td><code>office attendance system loading screen, "JOB INSTANCE LOADING" green progress bar, punch-clock UI, grey interface</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>②身份</td>
+<td>工牌身份卡特写</td>
+<td><code>close-up of an employee ID badge on a lanyard, photo and staff number, office background bokeh</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td>③出生</td>
+<td>拖行李箱进城</td>
+<td><code>young person dragging a suitcase out of a crowded train station into a big city at dawn, hopeful but small</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td>④成长</td>
+<td>早高峰挤地铁/工位</td>
+<td><code>packed subway morning rush, exhausted commuters, then a cramped cubicle with stacked documents</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td>⑤选择1</td>
+<td>深夜出租屋抉择</td>
+<td><code>a young man alone in a small dim rented room at night, glowing laptop, two faint glowing paths A and B</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td>⑦事件</td>
+<td>体检单 + 加班</td>
+<td><code>a medical report with three red upward arrows on a desk, late-night office, single lit cubicle, dark windows</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td>⑥选择2</td>
+<td>黑屏前的自问</td>
+<td><code>reflection of a tired face on a black computer screen at 1 AM, empty office, melancholic</code></td>
+</tr>
+<tr>
+<td>8</td>
+<td>⑧结局</td>
+<td>结算评分面板</td>
+<td><code>holographic result screen, star ratings for WEALTH HEALTH FAMILY HAPPINESS, green office UI, "ENDING: CLEAR-MINDED"</code></td>
+</tr>
+<tr>
+<td>9</td>
+<td>⑨金句</td>
+<td>黑底金句字幕</td>
+<td><code>minimal black screen, single glowing line of text, cinematic</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>制作流程照 <a href="#ch04"><code>04</code></a>：出图→图生视频(轻运镜)→固定音色配音→剪映套"工牌/考勤"UI 包装→自动字幕高亮关键词。</p>
+</blockquote>
+<hr />
+<h2>五、发布信息（06 章）</h2>
+<pre><code>标题：人生副本 · 一个普通打工人的一生｜你给现在的自己打几分？
+话题：#人生副本 #打工人 #职场 #人生模拟器 #第一人称 #扎心 #内耗
+封面：主图用&quot;深夜单独亮着的工位&quot;那帧；大字&quot;打工人的一生&quot;，左上角角标&quot;职场副本 EP.01&quot;
+口播第一句即说出&quot;人生副本&quot;四个字（吃搜索流量）
+置顶引导评论：&quot;选 A 熬资历的扣 1，选 B 留 1 小时给自己的扣 2，看看大家都怎么选👇&quot;
+发布时段：晚 18:00–22:00（打工人下班刷抖音高峰）
+</code></pre>
+<hr />
+<h2>六、这个号的固定包装清单（05 章 · 一次做好永久复用）</h2>
+<pre><code>□ 载入界面：&quot;欢迎登录《职场副本》&quot; + 打卡机绿进度条 + &quot;嘀&quot;音效
+□ 身份卡：工牌样式（挂绳+照片+工号）
+□ 属性面板：财富 / 健康 / 家庭 / 快乐 / 成就 +（签名彩蛋）发际线
+□ 配色：工位灰底 + 打卡机绿 / 考勤红 高亮
+□ 字幕：粗黑体，关键词标绿
+□ 结算面板：五维评分 + ENDING + 达成率
+□ 封面模板：左上角&quot;职场副本 EP.xx&quot;系列编号
+</code></pre>
+<hr />
+<blockquote>
+<p>下一步：按 <a href="#ch09"><code>09</code></a> 的批量法，用这套定位一次性产出 #1–#3，先发首条测数据。
+想做大就给 #3 开系列追更、给 #6 上观众投票多结局（见 <a href="#ch08"><code>08</code></a>）。</p>
+</blockquote></section>
+<section class="doc" id="case-series"><h1>系列脚本 · 打工人《35 岁被优化的中层》（5 集追更）</h1>
+<blockquote>
+<p>这是把 <a href="#case-main"><code>实战样例</code></a> 选题 #3 做成<strong>系列追更</strong>的范例——用 <a href="#ch08"><code>08</code></a> 的"系列化世界观"机制，把一个选题拆成 5 集，集集留钩子，逼出"想看下一集 → 关注"。
+人设沿用「职场副本·系统」，包装沿用工牌/考勤终端风（见 <a href="#case-main"><code>实战样例</code></a> 第六节）。</p>
+</blockquote>
+<hr />
+<h2>系列设定</h2>
+<ul>
+<li><strong>主角</strong>：你，37 岁，某公司中层，工龄 12 年，房贷 + 二胎 + 房车皆有。</li>
+<li><strong>主线</strong>：被优化 → 求职碰壁 → 自我重估 → 转机 → 上岸（但不是回到原点）。</li>
+<li><strong>追更逻辑</strong>：每集是独立 60 秒短视频，但结尾留"下一集"悬念；开头用一句"上集说到……"接续，方便新观众入坑、老观众追更。</li>
+<li><strong>发布节奏</strong>：隔日更，5 集打完一个完整弧光；数据好就给主角开"新副本"（如《37 岁转行的人》）。</li>
+</ul>
+<hr />
+<h2>EP.01 · 被优化那天</h2>
+<pre><code>（①Hook）人生副本·职场篇，第 37 关。本关名称：被优化。开局提示——你以为最稳的一关，往往最致命。
+（②身份）系统提示：你工龄 12 年，职级 P8，是同事眼里&quot;熬出头&quot;的人。你的负债栏写着：房贷、车贷、两个孩子。
+（③成长回放）你把最好的 12 年点满在了这家公司：救过项目、带过新人、加过无数个班。你以为忠诚是一种装备。
+（⑦随机事件）⚠ 随机事件触发：周一上午，HR 约你&quot;聊一聊&quot;。一份《协议解除》推到你面前，理由是&quot;组织优化&quot;。
+（情绪）你没吵，签了字。走出大楼那一刻，阳光很好，你却第一次发现——这座城市，没有一个工位是真正属于你的。
+（⑨钩子）系统提示：主线任务已失效，你被强制丢回&quot;自由市场&quot;。
+下一关，比被裁更难：一个 37 岁的人，重新找工作。你觉得他几个月能上岸？评论区押一押，下集揭晓第一道坎。
+</code></pre>
+<hr />
+<h2>EP.02 · 投出去的简历，石沉大海</h2>
+<pre><code>（①Hook 接续）上集说到，37 岁的你被优化了。你以为凭 12 年经验，找工作不难——这一关，啪啪打脸。
+（④过程）你更新了简历，投了 80 份。前 50 份，已读不回。你第一次知道，有些公司的筛选第一条是&quot;年龄≤35&quot;。
+（⑤选择）【选择】A. 降薪求稳，什么都接；B. 死扛，只投对口的好岗位。供着房贷的你，选了 A。
+（⑦事件）⚠ 你去面试一个比原来低两级的岗位，面试官比你小 8 岁，问你：&quot;你这个年纪，还能加班吗？还带得动吗？&quot;
+（情绪）回家路上你坐在车里，没有开车库的灯，坐了很久。你不是不能扛，你是第一次怀疑：是不是我真的没用了？
+（⑨钩子）系统提示：你的&quot;自信值&quot;跌到谷底，触发隐藏剧情——&quot;自我重估&quot;。
+下集，你会发现自己手里其实握着一张一直没打出去的牌。是什么？下集见。
+</code></pre>
+<hr />
+<h2>EP.03 · 最难的一关：给自己重新估值</h2>
+<pre><code>（①Hook 接续）上集你跌到谷底。这一集，是整个副本的转折点——你终于做对了一件事。
+（④顿悟）你不再海投，而是拿出一张纸，写下三栏：我真正会的、我认识的人、市场缺的。
+（认知）你发现：你以为的资产是&quot;职级&quot;，其实早就清零了；你真正的资产，是 12 年攒下的**行业经验、人脉和解决问题的能力**——这些没人能优化掉。
+（⑤选择）【选择】A. 继续找一份&quot;打工&quot;；B. 把自己当成一个&quot;产品&quot;重新定位。这次，你选了 B。
+（行动）你删掉了&quot;求一份工作&quot;的心态，开始主动约老同事、老客户喝茶，不为求职，只为&quot;让对的人知道我现在有空&quot;。
+（⑨钩子）系统提示：你点亮了新技能——&quot;把人脉变成机会&quot;。
+三天后，一个你几乎忘了的旧同事，给你打了一个电话。下集，转机来了。
+</code></pre>
+<hr />
+<h2>EP.04 · 一个旧同事的电话</h2>
+<pre><code>（①Hook 接续）上集你开始重新经营人脉。这一集，那张牌打出去了。
+（⑦随机事件）⚠ 随机事件：五年前你帮过的一个下属，如今自己创业，缺一个懂行的&quot;老法师&quot;压阵。他第一个想到了你。
+（⑤选择）【选择】A. 要一份稳定高薪，做回打工人；B. 要一点股份 + 基础工资，赌一把。
+（权衡）37 岁、上有老下有小的你，本该选 A。但你想起前两关学到的事：最稳的一关，往往最致命。
+（决定）你和他谈了三个晚上，选了 B——但你给自己留了 6 个月生活费的&quot;复活甲&quot;，没有 all in。
+（⑨钩子）系统提示：你做出了 12 年来第一个&quot;为自己&quot;的选择。
+这个选择，3 年后会给你什么样的结算？下集，大结局，三种可能的人生。
+</code></pre>
+<hr />
+<h2>EP.05 · 上岸，但不是回到原点（多结局）</h2>
+<pre><code>（①Hook 接续）大结局。37 岁被优化的你，3 年后过成了什么样？系统给出了三种结算。
+
+（结局一·普通结局 · 达成率 58%）
+小公司没做大，但稳住了。你拿着比原来略低的钱，却找回了对生活的掌控感。
+【结算】财富★★★ 健康★★★★ 家庭★★★★ 快乐★★★★ 成就★★★
+旁白：原来&quot;上岸&quot;不是回到大厂，是不再怕被任何一家公司决定你的人生。
+
+（结局二·隐藏结局 · 达成率 9%）
+公司被收购，你的小股份兑现，你拿到了打工 12 年都没攒下的一笔钱。
+旁白：你没赢在选得多，你赢在被优化那天，没有把自己也一起优化掉。
+
+（结局三·真结局 · 达成率 ?%）
+你把这 3 年的经历讲出来，意外帮到了很多同样 35+ 的人——你成了那个&quot;过来人&quot;。
+旁白：有些副本，通关的方式不是赢，是把走过的坑，变成别人的地图。
+
+（⑨金句 + 互动）
+系统总结：35 岁不是被淘汰的年纪，是这张地图刷新了的年纪。
+你身边有正在闯这一关的人吗？把这 5 集转给 TA。
+下一个你想看谁的副本？评论区点单。
+</code></pre>
+<hr />
+<h2>系列运营要点（08 章）</h2>
+<ul>
+<li><strong>每集结尾的钩子</strong>是追更命门：EP.01 抛问题、EP.02–04 留"下集揭晓"、EP.05 给多结局制造"二刷找隐藏结局"。</li>
+<li><strong>置顶引导</strong>：EP.01 置顶"押他几个月上岸"；EP.05 置顶"你押对了吗"，形成首尾呼应。</li>
+<li><strong>合集功能</strong>：把 5 集做成抖音"合集"，提升连看完播和关注转化。</li>
+<li><strong>数据好就续作</strong>：主角可以继续开新副本（转行/创业/再就业），把"一个人物"做成"可追的连续剧"。</li>
+</ul>
+<hr />
+<blockquote>
+<p>想要更强的互动护城河，看 👉 <a href="#case-vote"><code>互动多结局-考公vs大厂.md</code></a>：让观众投票决定剧情走向。</p>
+</blockquote></section>
+<section class="doc" id="case-vote"><h1>互动多结局 · 打工人《考公上岸 vs 留在大厂》</h1>
+<blockquote>
+<p>这是把 <a href="#case-main"><code>实战样例</code></a> 选题 #6 做成 <a href="#ch08"><code>08</code></a> 的<strong>观众投票 + 多结局</strong>范例——
+把观众从"看客"变成"编剧"，建立别人抄不走的<strong>社区护城河</strong>。人设/包装沿用「职场副本·系统」。</p>
+</blockquote>
+<hr />
+<h2>一、玩法机制（怎么互动）</h2>
+<pre><code>EP.01 公共起点 → 结尾抛出 A/B 投票
+        │
+   评论区/点赞投票（24–48 小时）
+        │
+   ┌────┴────┐
+ A 考公线      B 大厂线        ← 按票数最高的先更，另一条之后补更
+   │            │
+ 各自再投票推进 → 各自 3 种结局（普通 / BAD END / 隐藏真结局）
+</code></pre>
+<ul>
+<li><strong>投票载体</strong>：视频结尾抛 A/B；观众在<strong>评论区扣 1/扣 2</strong>或给"代表 A/B 的两条置顶评论点赞"，<strong>点赞高的那条剧情线下集就走</strong>。</li>
+<li><strong>衔接</strong>：下集开头固定一句"上集你们投了 ___，于是……"，让投票"真的算数"。</li>
+<li><strong>追更钩子</strong>：每条线都留"还有隐藏结局没解锁"，逼出关注 + 二刷。</li>
+</ul>
+<hr />
+<h2>二、剧情树（全景）</h2>
+<pre><code>EP.01《28 岁，站在考公和大厂的岔路口》  →  投票：A 考公 / B 留大厂
+
+A·考公线
+ ├─ EP.A2《辞职备考的第一年》 → 投票：A 再战 / B 放弃回职场
+ │   ├─ 普通结局：二战上岸，稳定但清贫，重新理解&quot;安稳&quot;
+ │   ├─ BAD END：三战未中，积蓄耗尽，仓促回职场
+ │   └─ 隐藏真结局：备考中考清了自己要什么，转去考编/选调，找到真正适配的位置
+
+B·大厂线
+ ├─ EP.B2《留下后的第三年》 → 投票：A 卷上去 / B 躺平摸鱼搞副业
+ │   ├─ 普通结局：升到主管，钱多事多，用健康换来的中产
+ │   ├─ BAD END：35 岁那年遇上裁员，重演&quot;被优化&quot;
+ │   └─ 隐藏真结局：上班练出的技能长成副业，主动离开，不再被&quot;稳定&quot;绑架
+</code></pre>
+<blockquote>
+<p>看出来了吗：一个选题，用"双线 × 各 3 结局"，能产出 <strong>8+ 条视频</strong>，且每条都有互动——这就是 <a href="#ch08"><code>08</code></a> 说的"工业化 + 可持续"。</p>
+</blockquote>
+<hr />
+<h2>三、EP.01 完整脚本（公共起点）</h2>
+<pre><code>（①Hook）人生副本·职场篇。本局是一道送命题：28 岁，你要在&quot;考公上岸&quot;和&quot;留在大厂&quot;之间，选一个。
+（②身份）系统提示：你名校毕业，在大厂干了 5 年，月入 3 万，但发际线后退、班味很重、随时可能被优化。
+（③现状）家里人天天打电话：&quot;别折腾了，回来考个公，稳定。&quot;你妈已经帮你买好了 5 本行测资料。
+（冲突）你算过账：大厂的钱，是用确定的健康和不确定的未来换的；公务员的稳，是用一眼望到头的人生换的。两个都对，也两个都疼。
+（⑤选择·投票）【本局由你决定】
+   A. 裸辞，回家全力考公，赌一个安稳。
+   B. 留在大厂，继续往上爬，赌一个未来。
+（⑨互动钩子）系统提示：这一局没有标准答案，只有你的选择。
+评论区投票——选 A 的给&quot;A 考公&quot;那条置顶评论点赞，选 B 的给&quot;B 大厂&quot;点赞。
+48 小时后，票高的那条线，我先帮你打。你会怎么选？
+</code></pre>
+<blockquote>
+<p>发布后立刻在评论区置顶两条："🅰️ 我选考公上岸（点赞这条）" 和 "🅱️ 我选留在大厂（点赞这条）"，作为投票计数器。</p>
+</blockquote>
+<hr />
+<h2>四、分支开头（按投票二选一先更）</h2>
+<h3>若 A 考公线胜出 —— EP.A2《辞职备考的第一年》开头</h3>
+<pre><code>（接续）上集你们把票投给了 A——于是你交了辞职信，回到老家那张吱呀作响的旧书桌前。
+（过程）每天 6 点起，刷题刷到眼睛发酸。你曾经管百万项目，现在为一道资料分析卡 10 分钟。
+（⑤选择·投票）一战差 3 分进面。【投票】A. 再战一年 / B. 放弃，回大厂。票高者下集揭晓……
+</code></pre>
+<h3>若 B 大厂线胜出 —— EP.B2《留下后的第三年》开头</h3>
+<pre><code>（接续）上集你们把票投给了 B——于是你留下了，并且拼命往上爬。
+（过程）3 年后你升了主管，工资翻倍，体检报告也翻了倍。你开始在凌晨的工位上问自己值不值。
+（⑤选择·投票）公司开始&quot;优化&quot;。【投票】A. 继续卷保住位置 / B. 暗中用业余时间搞副业。票高者下集揭晓……
+</code></pre>
+<hr />
+<h2>五、六种结局梗概（用于后续集）</h2>
+<table>
+<thead>
+<tr>
+<th>线</th>
+<th>结局</th>
+<th>一句话</th>
+<th>旁白金句</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>考公</td>
+<td>普通</td>
+<td>二战上岸，安稳清贫</td>
+<td>"你要的从来不是钱，是‘不慌’。"</td>
+</tr>
+<tr>
+<td>考公</td>
+<td>BAD END</td>
+<td>三战未中，仓促回职场</td>
+<td>"稳定不是退路，备好退路再追稳定。"</td>
+</tr>
+<tr>
+<td>考公</td>
+<td>隐藏真结局</td>
+<td>转考编/选调，找到适配位置</td>
+<td>"选对赛道，比赢下比赛更重要。"</td>
+</tr>
+<tr>
+<td>大厂</td>
+<td>普通</td>
+<td>升主管，用健康换中产</td>
+<td>"你赢了 KPI，别输了自己。"</td>
+</tr>
+<tr>
+<td>大厂</td>
+<td>BAD END</td>
+<td>35 岁被裁，重演被优化</td>
+<td>"把鸡蛋放在别人的篮子里，篮子说了算。"</td>
+</tr>
+<tr>
+<td>大厂</td>
+<td>隐藏真结局</td>
+<td>副业长成主业，主动离开</td>
+<td>"真正的稳定，是你随时可以不稳定。"</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>每条结局都做成独立一集；隐藏真结局<strong>最后放</strong>，标"达成率 5%"，制造稀缺感和二刷。</p>
+</blockquote>
+<hr />
+<h2>六、投票运营 SOP</h2>
+<pre><code>1. EP.01 发布即置顶 A/B 两条计数评论，引导&quot;点赞 = 投票&quot;。
+2. 24–48h 截票，截图票数发到下集开头（&quot;上集你们选了 X&quot;），让投票可信。
+3. 票少的那条线别浪费——隔几天补更，开头说&quot;很多人想看另一条路，安排&quot;。
+4. 每集结尾继续投票，把&quot;追更 + 互动&quot;滚成习惯。
+5. 把整组做成抖音合集《你选的人生·考公vs大厂》，强化&quot;可玩&quot;心智。
+</code></pre>
+<hr />
+<h2>七、为什么这是最强护城河</h2>
+<ul>
+<li><strong>UI、文案、画面都能被抄，但"和你一起投票养出来的剧情"抄不走</strong>——那是你和粉丝的共同记忆。</li>
+<li>投票天然拉爆<strong>评论率/互动率</strong>（算法最爱，见 <a href="#ch00"><code>00</code></a>），还制造"必须看下集"的强追更。</li>
+<li>观众从"看客"变"玩家"，归属感 → 铁粉 → 私域和变现都更顺（见 <a href="#ch07"><code>07</code></a>）。</li>
+</ul>
+<hr />
+<blockquote>
+<p>建议上线顺序：账号稳定（有几条爆款 + 几千粉）后再上投票玩法，别在冷启动期就做（见 <a href="#ch08"><code>08</code></a> 升级路线图）。</p>
+</blockquote></section>
+<section class="doc" id="tpl-topic"><h1>模板 · 选题卡</h1>
+<blockquote>
+<p>每想到/筛出一个选题，复制一份填一行。建议汇总到飞书/Notion 表格统一管理。</p>
+</blockquote>
+<hr />
+<h2>单条选题卡</h2>
+<pre><code>编号：____
+副本名：《______ 的一生》
+副本类型：□职业 □黑暗(警示) □时代 □历史 □未来 □关系/其他
+目标人群：__________（如：22-35 岁打工人）
+叙事视角：□第一人称 □系统播报 □旁观者
+核心转折：__________（一句话说清最大的意外/反差）
+预设结局：□普通 □隐藏 □BAD END □真结局
+情绪基调：□共鸣 □爽/逆袭 □警示 □治愈
+
+【打分】每项 0–2 分，合规为一票否决
+代入感 __ ｜情绪强度 __ ｜转发动机 __ ｜反差转折 __ ｜合规安全 __(0则弃用)
+合计：__ / 10   （≥7 优先做）
+
+状态：□待做 □制作中 □已发布   发布日期：____   数据回填：____
+</code></pre>
+<hr />
+<h2>表格版（推荐用飞书多维表/Notion）</h2>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>副本名</th>
+<th>类型</th>
+<th>视角</th>
+<th>核心转折</th>
+<th>评分</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>001</td>
+<td>外卖员的一生</td>
+<td>职业</td>
+<td>第一人称</td>
+<td>为 4 块超时费差点没命，转行修车上岸</td>
+<td>9</td>
+<td>已发布</td>
+</tr>
+<tr>
+<td>002</td>
+<td>AI 创业者的一生</td>
+<td>未来/创业</td>
+<td>第一人称</td>
+<td>失败项目改成 Agent 一夜爆火</td>
+<td>8</td>
+<td>待做</td>
+</tr>
+<tr>
+<td>003</td>
+<td>科举考生的一生</td>
+<td>历史</td>
+<td>旁观者</td>
+<td>考到 50 岁中举那天却…</td>
+<td>8</td>
+<td>待做</td>
+</tr>
+<tr>
+<td>…</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>扩库方法见 <a href="#ch02"><code>../02-选题库-副本数据库.md</code></a> 的"四变量组合公式"。</p>
+</blockquote></section>
+<section class="doc" id="tpl-script"><h1>模板 · 五幕剧本（空白版）</h1>
+<blockquote>
+<p>每条视频复制一份填空。对应九段式公式，详见 <a href="#ch03"><code>../03-视频公式与五幕剧本.md</code></a>。
+目标时长 45–60 秒，每段一句话、口语化、有节奏。</p>
+</blockquote>
+<hr />
+<pre><code>副本名：《______ 的一生》    人群/基调：______    人设：______
+
+
+【第一幕 · 副本开启】（0–8s，①Hook ②身份）
+①Hook：正在载入人生副本……本次随机身份：______，开局难度：______。
+②身份：系统提示：______（一句话点出最大悬念或反差）
+
+
+【第二幕 · 出生与成长】（8–25s，③出生 ④成长）
+③出生：你出生在 ______（年代/地点/家境），父母 ______，初始天赋：______。
+④成长：你一路 ______，直到站在第一个岔路口。
+（UI：Lv.1 → Lv.2）
+
+
+【第三幕 · 第一次选择】（25–35s，⑤）
+⑤选择 1：
+   A. ______（稳妥）
+   B. ______（冒险）
+   你选了 ____。
+
+
+【第四幕 · 随机事件与转折】（35–55s，⑥⑦）
+⑦随机事件：🎲 ______（机遇/灾难/贵人/被骗）
+⑥选择 2：A. ______  B. ______ —— 你选了 ____，没有回头路。
+
+
+【第五幕 · 结局与评分】（55–70s，⑧⑨）
+⑧结算：
+   财富 ★____  健康 ★____  家庭 ★____  快乐 ★____  成就 ★____
+   ENDING：______（普通/隐藏/BAD END/真结局，可标达成率）
+⑨金句：______（能当标题的一句话）
+   互动钩子：______（投票/提问/求评分，决定下集走向）
+</code></pre>
+<hr />
+<h2>填写自检（写完过一遍）</h2>
+<pre><code>□ Hook 能在 5 秒内勾住人吗？
+□ 命中&quot;代入/认知/情绪&quot;三种爽里至少一种了吗？
+□ 有意料之外的转折吗？
+□ 结尾金句能当标题吗？
+□ 留互动钩子了吗？
+□ 不踩合规红线吗？
+</code></pre></section>
+<section class="doc" id="tpl-shot"><h1>模板 · 分镜脚本与 Prompt（空白版）</h1>
+<blockquote>
+<p>剧本定稿后，用这张表把每段拆成镜头 + 图片 Prompt。详见 <a href="#ch04"><code>../04-AI制作流水线与Prompt.md</code></a>。</p>
+</blockquote>
+<hr />
+<h2>固定风格词（每个 Prompt 都加，保证统一）</h2>
+<pre><code>我的专属风格词：______________________________________
+（示例：cinematic, ultra detailed, 8K, cyberpunk, blue holographic HUD, film grain）
+
+我的主角锚定：________________________________________
+（示例：25 yo Asian man, short black hair, grey hoodie —— 每镜都带，保证同一张脸）
+</code></pre>
+<hr />
+<h2>分镜表</h2>
+<table>
+<thead>
+<tr>
+<th>镜号</th>
+<th>对应段落</th>
+<th>画面内容</th>
+<th>景别</th>
+<th>时长(s)</th>
+<th>字幕关键词</th>
+<th>图片 Prompt</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>①Hook</td>
+<td>副本载入界面</td>
+<td>全景</td>
+<td>2</td>
+<td>正在载入…</td>
+<td><code>(载入UI Prompt + 风格词)</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>②身份</td>
+<td>身份卡特写</td>
+<td>特写</td>
+<td>3</td>
+<td>身份：__</td>
+<td></td>
+</tr>
+<tr>
+<td>3</td>
+<td>③出生</td>
+<td>出身场景</td>
+<td>中景</td>
+<td>4</td>
+<td>你出生在…</td>
+<td></td>
+</tr>
+<tr>
+<td>4</td>
+<td>④成长</td>
+<td>成长/入行</td>
+<td>中景</td>
+<td>5</td>
+<td>Lv.2</td>
+<td></td>
+</tr>
+<tr>
+<td>5</td>
+<td>⑤选择1</td>
+<td>岔路口</td>
+<td>全景</td>
+<td>4</td>
+<td>A/B</td>
+<td></td>
+</tr>
+<tr>
+<td>6</td>
+<td>⑦事件</td>
+<td>随机事件高潮</td>
+<td>特写</td>
+<td>4</td>
+<td>🎲事件</td>
+<td></td>
+</tr>
+<tr>
+<td>7</td>
+<td>⑥选择2</td>
+<td>二次抉择</td>
+<td>中景</td>
+<td>3</td>
+<td>A/B</td>
+<td></td>
+</tr>
+<tr>
+<td>8</td>
+<td>⑧结局</td>
+<td>结算评分面板</td>
+<td>全屏UI</td>
+<td>4</td>
+<td>ENDING</td>
+<td></td>
+</tr>
+<tr>
+<td>9</td>
+<td>⑨金句</td>
+<td>金句+投票</td>
+<td>黑底字</td>
+<td>3</td>
+<td>金句</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>制作流水线打勾（对照 04 章）</h2>
+<pre><code>□ 出图（即梦/Flux/MJ），主角一致、风格统一
+□ 图生视频（可灵/即梦/Runway），加轻运镜 + UI 动效
+□ 配音（固定音色），关键句留停顿
+□ 剪映合成：套 UI 包装模板（05）+ BGM + 节点音效
+□ 自动字幕 → 统一样式 + 关键词高亮
+□ 做封面（统一模板 + 系列编号）
+</code></pre></section>
+<section class="doc" id="tpl-checklist"><h1>模板 · 发布检查清单</h1>
+<blockquote>
+<p>每条视频发布前，从上到下过一遍。详见 <a href="#ch06"><code>../06-发布运营与SEO.md</code></a> 和 <a href="#ch05"><code>../05-固定包装与视听规范.md</code></a>。</p>
+</blockquote>
+<hr />
+<h2>一、内容质量（00、03）</h2>
+<pre><code>□ 前 3 秒有钩子（载入条 + 悬念句），没有废开场
+□ 命中&quot;代入/认知/情绪&quot;三种爽里至少一种
+□ 节奏紧、无废镜头，越往后越快
+□ 结尾金句能立住，能当标题
+□ 结局前留了 0.5s 停顿/悬念
+</code></pre>
+<h2>二、固定包装（05）</h2>
+<pre><code>□ 开场载入条 + 副本标题
+□ 属性面板 / 等级条 / 结算面板齐全
+□ 用的是固定那套配色 + 风格词
+□ 字幕：固定字体/位置 + 关键词高亮
+□ 开场音效 + 固定配音音色
+□ 封面：统一模板 + 系列编号（EP.xx）
+</code></pre>
+<h2>三、SEO 与标签（06）</h2>
+<pre><code>□ 标题含&quot;人生副本&quot; + 副本名
+□ 话题标签 5–8 个（核心词+形式词+情绪词+人群词）
+□ 封面大字含关键词
+□ 口播开场说出了&quot;人生副本&quot;四个字
+</code></pre>
+<h2>四、互动设置（06、08）</h2>
+<pre><code>□ 结尾有互动钩子（投票/提问/求评分）
+□ 准备好置顶引导评论的文案
+□ 若做 Universe：本集是否衔接上集投票结果？是否抛出下集投票？
+</code></pre>
+<h2>五、合规（02、07）</h2>
+<pre><code>□ 无违法/灰产方法教学，黑暗副本只做警示
+□ 无擦边、无极端负面诱导
+□ 无违规外链/联系方式硬导流
+□ 带货（如有）为正规渠道、不夸大
+</code></pre>
+<h2>六、发布动作（06）</h2>
+<pre><code>□ 黄金时段发布（午 11:30–13:00 / 晚 18:00–22:00）
+□ 发布后置顶引导评论
+□ 发布后 1 小时内回复所有评论
+□ 记录初始数据（5s 完播 / 完播率）到复盘表
+</code></pre>
+<hr />
+<blockquote>
+<p>六项全部打勾 → 发布。发完去 <a href="#ch09"><code>../09-7天上手SOP与批量排期.md</code></a> 的指标看板回填数据。</p>
+</blockquote></section>
+  </main>
+</div>
+<script>
+function showDoc(id){
+  var docs=document.querySelectorAll('.doc');
+  var found=false;
+  docs.forEach(function(d){var on=d.id===id;d.classList.toggle('active',on);if(on)found=true;});
+  if(!found){var first=document.querySelector('.doc');if(first){first.classList.add('active');id=first.id;}}
+  document.querySelectorAll('#navlist a').forEach(function(a){a.classList.toggle('active',a.dataset.id===id);});
+  document.getElementById('content').scrollTop=0;window.scrollTo(0,0);
+}
+function fromHash(){var id=(location.hash||'').replace('#','');showDoc(id||'overview');}
+window.addEventListener('hashchange',fromHash);
+document.addEventListener('DOMContentLoaded',function(){
+  fromHash();
+  var s=document.getElementById('search');
+  s.addEventListener('input',function(){
+    var q=this.value.trim().toLowerCase();
+    document.querySelectorAll('#navlist a').forEach(function(a){
+      var hit=a.textContent.toLowerCase().indexOf(q)>=0;
+      a.style.display=(!q||hit)?'':'none';
+    });
+    document.querySelectorAll('.nav-group').forEach(function(g){g.style.display=q?'none':'';});
+  });
+});
+</script>
 </body>
 </html>

@@ -28,16 +28,12 @@
 | [🗳️ 投票多结局·《考公vs大厂》](人生副本短视频工作流/互动多结局-考公vs大厂.md) | 观众投票 + 多结局，互动机制落地 |
 | [📋 模板](人生副本短视频工作流/模板/) | 选题卡 / 五幕剧本 / 分镜 Prompt / 发布清单 |
 
-## 🌐 在线浏览（GitHub Pages）
+## 🌐 在线浏览 / 离线查看
 
-本仓库已配好一个 [docsify](https://docsify.js.org) 静态站点（`index.html`），把上面所有文档渲染成带侧边栏、搜索的网站，**零构建**。
+`index.html` 是一个**完全自包含的单页网站**——所有文档已预渲染进去，**零外网依赖、零 CDN、零构建**，带侧边栏导航和标题搜索。三种用法任选：
 
-**启用方法**（仓库 Settings 里操作一次即可）：
+- ✅ **最简单（推荐）：本地双击** `index.html`，用浏览器直接打开即可查看。**不用联网、不用服务器。**
+- **本地服务器**（可选）：仓库根目录执行 `python3 -m http.server 8099`，浏览器打开 `http://localhost:8099`。
+- **在线（GitHub Pages）**：合并本 PR 到 `main` 后，进仓库 **Settings → Pages → Source 选「Deploy from a branch」→ Branch 选 `main`、目录 `/(root)`**，保存；约 1–2 分钟后访问 `https://3098236190-stack.github.io/10086/`。
 
-1. 打开仓库 **Settings → Pages**
-2. **Source** 选 **Deploy from a branch**
-3. **Branch** 选 `main`（合并本 PR 后）、目录选 `/ (root)`，保存
-4. 等 1–2 分钟，访问 `https://3098236190-stack.github.io/10086/`
-
-> 本地预览：仓库根目录执行 `python3 -m http.server 8099`，浏览器打开 `http://localhost:8099`。
-> 站点资源（docsify）走 CDN，需联网加载；如 CDN 访问慢可在 `index.html` 中替换为其他 CDN。
+> 内容唯一数据源是 `人生副本短视频工作流/` 下的 Markdown。改完文档后，运行 `python3 build_site.py` 重新生成 `index.html` 即可（需要 `pip install markdown`）。
