@@ -295,6 +295,23 @@
     if (k === "day") return f.day; return f.ret[k];
   }
 
+  function exportCSV(list) {
+    if (!list.length) { toast("没有可导出的数据"); return; }
+    var head = ["基金代码", "基金名称", "类型", "风险等级", "单位净值", "日涨跌%", "近1年%", "近3年%", "最大回撤%", "夏普", "波动率%", "规模(亿)", "基金公司", "基金经理"];
+    var rows = list.map(function (f) {
+      return [f.code, f.name, f.type, f.risk, f.nav, f.day, f.ret.y1, f.ret.y3, f.metrics.mdd, f.metrics.sharpe, f.metrics.vol, f.scale, f.company, f.manager];
+    });
+    var csv = [head].concat(rows).map(function (r) {
+      return r.map(function (c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(",");
+    }).join("\r\n");
+    var blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" }); // BOM 兼容 Excel 中文
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "基智汇-基金筛选结果.csv";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    toast("已导出 " + list.length + " 条（演示数据，不构成投资建议）");
+  }
+
   function render() {
     var list = applyFilters();
     list.sort(function (a, b) { return (sortVal(a, state.sortKey) - sortVal(b, state.sortKey)) * state.sortDir; });
@@ -302,11 +319,14 @@
     // 结果条
     var bar = document.getElementById("resultBar");
     bar.innerHTML =
-      '<div class="count">共筛选出 <b>' + list.length + '</b> 只基金（演示库）</div>' +
+      '<div class="count">共筛选出 <b>' + list.length + '</b> 只基金（演示库）　' +
+        '<button class="btn btn-sm btn-ghost" id="exportCsv">⬇ 导出 CSV</button></div>' +
       '<div class="sort-tabs">排序：' + SORTS.map(function (s) {
         var on = s.k === state.sortKey;
         return '<button class="' + (on ? "on" : "") + '" data-sort="' + s.k + '">' + s.t + (on ? ' <span class="ar">' + (state.sortDir < 0 ? "↓" : "↑") + '</span>' : '') + '</button>';
       }).join("") + '</div>';
+    var expBtn = document.getElementById("exportCsv");
+    if (expBtn) expBtn.addEventListener("click", function () { exportCSV(list); });
     bar.querySelectorAll("[data-sort]").forEach(function (b) {
       b.addEventListener("click", function () {
         var k = b.dataset.sort;
