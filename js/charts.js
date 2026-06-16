@@ -43,9 +43,9 @@
     for (var g = 0; g <= gridN; g++) {
       var gv = min + (max - min) * g / gridN;
       var gy = y(gv);
-      svg.appendChild(el("line", { x1: padL, y1: gy, x2: W - padR, y2: gy, stroke: "#eef2f7", "stroke-width": 1 }));
-      var tx = el("text", { x: padL - 6, y: gy + 3, "text-anchor": "end", "font-size": 10, fill: "#9aa4b2" });
-      tx.textContent = gv.toFixed(3);
+      svg.appendChild(el("line", { x1: padL, y1: gy, x2: W - padR, y2: gy, stroke: "rgba(125,138,158,.22)", "stroke-width": 1 }));
+      var tx = el("text", { x: padL - 6, y: gy + 3, "text-anchor": "end", "font-size": 10, fill: "#8a93a0" });
+      tx.textContent = (opts.fmtAxis || function (v) { return v.toFixed(3); })(gv);
       svg.appendChild(tx);
     }
 
@@ -102,9 +102,10 @@
       var rows = "";
       series.forEach(function (s, si) {
         dots[si].setAttribute("cx", x(i)); dots[si].setAttribute("cy", y(s.values[i])); dots[si].setAttribute("opacity", 1);
+        var vfmt = (opts.fmtVal || function (v) { return v.toFixed(4); })(s.values[i]);
         rows += '<div style="display:flex;align-items:center;gap:6px;margin-top:2px">' +
           '<span style="width:8px;height:8px;border-radius:50%;background:' + s.color + '"></span>' +
-          s.name + "：<b>" + s.values[i].toFixed(4) + "</b></div>";
+          s.name + "：<b>" + vfmt + "</b></div>";
       });
       var lab = opts.labels && opts.labels[i] ? opts.labels[i] : ("第 " + (i + 1) + " 个交易日");
       tip.innerHTML = '<div style="opacity:.8;margin-bottom:2px">' + lab + "</div>" + rows;

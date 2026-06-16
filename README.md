@@ -50,6 +50,23 @@ python3 -m http.server 8000
 
 也可直接部署到 GitHub Pages（根目录托管）。
 
+## 🧪 端到端测试（Playwright）
+
+`tests/e2e/` 下为 Playwright 端到端用例，覆盖**桌面端 + 移动端**两套设备，
+按真实用户流程走查（向导选基、筛选/排序/对比/导出、详情图表、定投计算器、
+风险测评、自选分组备注、搜索等），并包含边界 / 异常场景（对比上限拦截、
+非法基金代码、搜索无结果、计算器极值等），秉持「找茬」思想同时校验 UI 与 UX。
+
+```bash
+npm install
+npx playwright install chromium   # 若网络可访问 Playwright CDN
+npm run test:e2e                  # 桌面 + 移动全部
+npm run test:e2e:mobile           # 仅移动端
+```
+
+> 若环境无法下载 Playwright 自带浏览器，可设置 `CHROME_BIN` 指向本机已有的
+> Chromium/Chrome 可执行文件后再运行。
+
 ---
 
 演示项目 · 仅供学习交流。基金有风险，投资需谨慎。

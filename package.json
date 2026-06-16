@@ -1,0 +1,15 @@
+{
+  "name": "jizhihui",
+  "version": "1.0.0",
+  "private": true,
+  "description": "基智汇 · 基金资讯 + 投教门户（双受众静态站点）演示项目",
+  "scripts": {
+    "test:e2e": "playwright test",
+    "test:e2e:desktop": "playwright test --project=desktop",
+    "test:e2e:mobile": "playwright test --project=mobile"
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@playwright/test": "^1.61.0"
+  }
+}

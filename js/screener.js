@@ -148,6 +148,14 @@
     var summary = '你选择了：<b>' + a.risk + '型</b> · 投资 <b>' + WIZ[1].opts.filter(function(o){return o.v===a.term;})[0].t +
       '</b> · 偏好 <b>' + a.dir + '</b>';
 
+    // 透明度说明：当风险约束导致无法匹配到偏好方向时，明确告知（优先保障风险匹配）
+    var dirMatched = scored.some(function (x) { return x.f.direction === a.dir; });
+    if (scored.length && !dirMatched) {
+      summary += '<div style="font-size:12px;opacity:.9;margin-top:8px;line-height:1.6">' +
+        '注：在你的「' + a.risk + '型」风险偏好下，暂无符合「' + a.dir + '」方向的合适产品，已优先为你保障<b>风险等级匹配</b>。' +
+        '如仍想关注该方向，可切换进阶模式自行权衡。</div>';
+    }
+
     var cards = scored.length ? scored.map(function (x, i) {
       var f = x.f, yc = cls(f.ret.y1);
       var reasons = x.reasons.map(function (r) { return '<li>✓ ' + r + '</li>'; }).join("");
@@ -344,7 +352,7 @@
     if (!pageList.length) {
       table.innerHTML = '<tbody><tr><td><div class="empty"><div class="ic">🔍</div>没有符合条件的基金，试试放宽筛选条件</div></td></tr></tbody>';
     } else {
-      var head = '<thead><tr><th>基金名称</th><th class="tr">净值</th><th class="tr">日涨</th><th class="tr">近1年</th><th class="tr">近3年</th><th class="tr">最大回撤</th><th class="tr">夏普</th><th class="tr">规模/亿</th><th class="tr">操作</th></tr></thead>';
+      var head = '<thead><tr><th>基金名称</th><th class="tr">净值</th><th class="tr min-hide">日涨</th><th class="tr">近1年</th><th class="tr min-hide">近3年</th><th class="tr min-hide">最大回撤</th><th class="tr min-hide">夏普</th><th class="tr min-hide">规模/亿</th><th class="tr">操作</th></tr></thead>';
       var body = pageList.map(function (f) {
         var dc = cls(f.day), y1 = cls(f.ret.y1), y3 = cls(f.ret.y3);
         var inCompare = compare.indexOf(f.code) >= 0;
@@ -352,12 +360,12 @@
           '<td class="fund-name-cell"><a href="fund-detail.html?code=' + f.code + '"><div class="nm">' + f.name + '</div></a>' +
             '<div class="cd">' + f.code + ' <span class="risk ' + f.risk + '">' + f.risk + '</span> <span class="tag gray">' + f.type + '</span></div></td>' +
           '<td class="tr b">' + f.nav.toFixed(4) + '</td>' +
-          '<td class="tr ' + dc + '">' + fmt(f.day) + '</td>' +
+          '<td class="tr min-hide ' + dc + '">' + fmt(f.day) + '</td>' +
           '<td class="tr ' + y1 + ' b">' + fmt(f.ret.y1) + '</td>' +
-          '<td class="tr ' + y3 + '">' + fmt(f.ret.y3) + '</td>' +
-          '<td class="tr">' + f.metrics.mdd + '%</td>' +
-          '<td class="tr">' + f.metrics.sharpe.toFixed(2) + '</td>' +
-          '<td class="tr">' + f.scale.toFixed(1) + '</td>' +
+          '<td class="tr min-hide ' + y3 + '">' + fmt(f.ret.y3) + '</td>' +
+          '<td class="tr min-hide">' + f.metrics.mdd + '%</td>' +
+          '<td class="tr min-hide">' + f.metrics.sharpe.toFixed(2) + '</td>' +
+          '<td class="tr min-hide">' + f.scale.toFixed(1) + '</td>' +
           '<td class="tr" style="white-space:nowrap">' +
             '<button class="btn btn-sm wl-btn" data-code="' + f.code + '" title="加入自选">' + (Watchlist.has(f.code) ? "★" : "☆") + '</button> ' +
             '<button class="btn btn-sm cmp-btn ' + (inCompare ? "btn-primary" : "") + '" data-code="' + f.code + '">' + (inCompare ? "对比中" : "+对比") + '</button>' +

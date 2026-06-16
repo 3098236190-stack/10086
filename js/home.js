@@ -7,6 +7,21 @@
   if (!D) return;
   var fmt = D.fmtPct, cls = D.cls;
 
+  /* 滚动行情条（指数 + 板块，复制两份实现无缝滚动） */
+  (function () {
+    var host = document.getElementById("homeTicker");
+    if (!host) return;
+    var items = D.indices.concat(D.sectors.map(function (s) { return { name: s.name, value: null, change: s.change }; }));
+    function cell(x) {
+      var c = cls(x.change);
+      return '<span class="ticker-item">' + x.name +
+        (x.value !== null ? ' <b>' + x.value.toFixed(2) + '</b>' : '') +
+        ' <span class="' + c + '">' + fmt(x.change) + '</span></span>';
+    }
+    var one = items.map(cell).join("");
+    host.innerHTML = '<div class="wrap" style="overflow:hidden"><div class="ticker-track">' + one + one + '</div></div>';
+  })();
+
   /* 大盘指数 */
   (function () {
     var host = document.getElementById("homeIndices");

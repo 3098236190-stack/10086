@@ -206,13 +206,16 @@
     });
   });
   document.getElementById("openCalc").addEventListener("click", function () { openModal("calcModal"); });
+  function annuityFV(amt, months, annualRate) {
+    var r = annualRate / 12;
+    return r === 0 ? amt * months : amt * (Math.pow(1 + r, months) - 1) / r * (1 + r);
+  }
   document.getElementById("calcBtn").addEventListener("click", function () {
     var amt = +document.getElementById("cAmt").value || 0;
-    var years = +document.getElementById("cYears").value || 0;
+    var years = Math.max(1, Math.min(40, +document.getElementById("cYears").value || 1));
     var rate = (+document.getElementById("cRate").value || 0) / 100;
-    var months = years * 12, r = rate / 12;
-    // 期初定投年金终值
-    var fv = r === 0 ? amt * months : amt * (Math.pow(1 + r, months) - 1) / r * (1 + r);
+    var months = years * 12;
+    var fv = annuityFV(amt, months, rate);
     var invest = amt * months;
     document.getElementById("calcOut").classList.remove("hide");
     document.getElementById("cFinal").textContent = "¥" + Math.round(fv).toLocaleString();
@@ -221,6 +224,31 @@
     var pe = document.getElementById("cProfit");
     pe.textContent = (profit >= 0 ? "+¥" : "-¥") + Math.abs(Math.round(profit)).toLocaleString();
     pe.className = profit >= 0 ? "up" : "down";
+
+    // 多情景曲线（按年取点）
+    if (window.Charts) {
+      var rLow = Math.max(0, rate - 0.03), rHigh = rate + 0.03;
+      var principal = [], low = [], mid = [], high = [], labels = [];
+      for (var y = 1; y <= years; y++) {
+        var m = y * 12;
+        labels.push("第 " + y + " 年");
+        principal.push(amt * m);
+        low.push(annuityFV(amt, m, rLow));
+        mid.push(annuityFV(amt, m, rate));
+        high.push(annuityFV(amt, m, rHigh));
+      }
+      var money = function (v) { return v >= 10000 ? "¥" + (v / 10000).toFixed(1) + "万" : "¥" + Math.round(v); };
+      Charts.line(document.getElementById("calcChart"), {
+        height: 220, labels: labels,
+        fmtAxis: money, fmtVal: function (v) { return "¥" + Math.round(v).toLocaleString(); },
+        series: [
+          { name: "累计投入", color: "#8a93a0", values: principal, width: 1.5 },
+          { name: "谨慎", color: "#2670c9", values: low, width: 1.6 },
+          { name: "乐观", color: "#ff7a1a", values: high, width: 1.6 },
+          { name: "中性", color: "#00a878", values: mid, fill: true, width: 2.4 }
+        ]
+      });
+    }
   });
 
   /* ---------- 风险测评 ---------- */

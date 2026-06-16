@@ -8,8 +8,19 @@
   if (!D) return;
   var fmt = D.fmtPct, cls = D.cls;
 
-  var code = new URLSearchParams(location.search).get("code") || D.funds[0].code;
-  var f = D.getFund(code) || D.funds[0];
+  var code = new URLSearchParams(location.search).get("code");
+  var f = code ? D.getFund(code) : D.funds[0];
+  var root = document.getElementById("fdRoot");
+
+  if (!f) {
+    document.getElementById("bcName").textContent = "未找到";
+    document.title = "未找到基金 | 基智汇";
+    root.innerHTML = '<div class="card"><div class="empty"><div class="ic">🔍</div>' +
+      '<h3 style="margin-bottom:8px">未找到基金「' + code + '」</h3>' +
+      '<p class="muted" style="margin-bottom:18px">该基金代码可能不存在，或链接有误。</p>' +
+      '<a class="btn btn-primary" href="screener.html">去基金筛选器看看 →</a></div></div>';
+    return;
+  }
   document.getElementById("bcName").textContent = f.name;
   document.title = f.name + " " + f.code + " | 基智汇";
 
@@ -53,7 +64,6 @@
   var holderIndiv = 100 - holderInst - 2;
 
   /* ---------- 渲染 ---------- */
-  var root = document.getElementById("fdRoot");
   root.innerHTML =
     // 基础信息 + 当前净值
     '<div class="card fd-head">' +
@@ -175,7 +185,7 @@
     '</div>' +
 
     // 风险提示
-    '<div class="card" style="padding:18px 20px;margin-top:16px;background:#fbfaf4;border-color:#f0e6c8">' +
+    '<div class="card" style="padding:18px 20px;margin-top:16px;background:var(--warn-bg)">' +
       '<h3 style="font-size:15px;color:var(--orange-600);margin-bottom:8px">⚠️ 风险提示与免责声明</h3>' +
       '<p class="small muted" style="line-height:1.9;margin:0">本页面所有基金信息、净值、收益率、排名及风险指标均为<b>虚构演示数据</b>，不代表任何真实基金产品，不构成任何投资建议或收益承诺。基金有风险，投资需谨慎。' +
       '基金的过往业绩及其净值高低并不预示其未来表现，基金管理人管理的其他基金的业绩不构成本基金业绩的保证。投资者应认真阅读基金合同、招募说明书等法律文件，' +

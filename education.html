@@ -64,11 +64,20 @@
       <button class="btn btn-primary btn-block" id="calcBtn">开始测算</button>
       <div id="calcOut" class="hide">
         <div class="calc-result" style="margin-top:16px">
-          <div class="small muted">预计期末市值</div>
+          <div class="small muted">中性情景 · 预计期末市值</div>
           <div class="big" id="cFinal">--</div>
           <div class="small" style="margin-top:6px">累计投入 <b id="cInvest">--</b> · 预计收益 <b id="cProfit" class="up">--</b></div>
         </div>
-        <div class="disclaimer-inline" style="margin-top:14px">本测算基于固定收益率假设，仅用于理解复利与定投，<b>不代表真实收益，市场实际表现会上下波动甚至亏损</b>。历史业绩不代表未来表现。</div>
+        <div style="margin-top:16px">
+          <div class="flex" style="gap:16px;flex-wrap:wrap;font-size:12px;margin-bottom:6px">
+            <span><span style="display:inline-block;width:14px;height:3px;background:#8a93a0;vertical-align:middle"></span> 累计投入</span>
+            <span><span style="display:inline-block;width:14px;height:3px;background:#2670c9;vertical-align:middle"></span> 谨慎</span>
+            <span><span style="display:inline-block;width:14px;height:3px;background:#00a878;vertical-align:middle"></span> 中性</span>
+            <span><span style="display:inline-block;width:14px;height:3px;background:#ff7a1a;vertical-align:middle"></span> 乐观</span>
+          </div>
+          <div id="calcChart"></div>
+        </div>
+        <div class="disclaimer-inline" style="margin-top:14px">三种情景基于不同假设收益率（中性±3%）模拟，<b>不代表真实收益，市场实际表现会上下波动甚至亏损</b>，可能低于「谨慎」情景。历史业绩不代表未来表现。</div>
       </div>
     </div>
   </div>
@@ -86,6 +95,7 @@
 
 <script src="js/data.js"></script>
 <script src="js/site.js"></script>
+<script src="js/charts.js"></script>
 <script src="js/education.js"></script>
 </body>
 </html>

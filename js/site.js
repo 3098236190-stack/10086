@@ -20,6 +20,17 @@
 
   var page = document.body.getAttribute("data-page") || "";
 
+  /* ---------------- 主题（尽早应用，减少闪烁） ---------------- */
+  var THEME_KEY = "jzh_theme";
+  function curTheme() { try { return localStorage.getItem(THEME_KEY) || "light"; } catch (e) { return "light"; } }
+  function applyTheme(t) {
+    if (t === "dark") document.documentElement.setAttribute("data-theme", "dark");
+    else document.documentElement.removeAttribute("data-theme");
+    var btn = document.getElementById("themeToggle");
+    if (btn) btn.textContent = t === "dark" ? "☀️" : "🌙";
+  }
+  applyTheme(curTheme());
+
   /* ---------------- 顶部 ---------------- */
   function buildHeader() {
     var menu = NAV.map(function (n) {
@@ -42,6 +53,7 @@
         "</div>" +
         '<button class="nav-toggle" id="navToggle" aria-label="菜单">☰</button>' +
         '<div class="nav-menu" id="navMenu">' + menu + "</div>" +
+        '<button class="theme-toggle" id="themeToggle" title="切换深色/浅色" aria-label="切换主题">🌙</button>' +
       "</nav></div></header>";
 
     var host = document.getElementById("site-header");
@@ -85,14 +97,7 @@
     function go() {
       var q = input.value.trim();
       if (!q) { location.href = "screener.html"; return; }
-      // 直接命中代码
-      if (window.SiteData) {
-        var hit = SiteData.funds.filter(function (f) {
-          return f.code === q || f.name.indexOf(q) >= 0;
-        })[0];
-        if (hit) { location.href = "fund-detail.html?code=" + hit.code; return; }
-      }
-      location.href = "screener.html?q=" + encodeURIComponent(q);
+      location.href = "search.html?q=" + encodeURIComponent(q);
     }
     btn && btn.addEventListener("click", go);
     input.addEventListener("keydown", function (e) { if (e.key === "Enter") go(); });
@@ -104,12 +109,46 @@
     if (t && m) t.addEventListener("click", function () { m.classList.toggle("open"); });
   }
 
-  /* ---------------- 自选 Watchlist ---------------- */
-  var KEY = "jzh_watchlist";
+  function wireTheme() {
+    var btn = document.getElementById("themeToggle");
+    if (!btn) return;
+    applyTheme(curTheme());
+    btn.addEventListener("click", function () {
+      var next = curTheme() === "dark" ? "light" : "dark";
+      try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
+      applyTheme(next);
+      window.dispatchEvent(new CustomEvent("themechange", { detail: next }));
+    });
+  }
+
+  /* ---------------- 返回顶部 ---------------- */
+  function backToTop() {
+    var btn = document.createElement("button");
+    btn.className = "to-top"; btn.id = "toTop"; btn.innerHTML = "↑"; btn.title = "返回顶部";
+    btn.setAttribute("aria-label", "返回顶部");
+    document.body.appendChild(btn);
+    btn.addEventListener("click", function () { window.scrollTo({ top: 0, behavior: "smooth" }); });
+    var ticking = false;
+    window.addEventListener("scroll", function () {
+      if (ticking) return; ticking = true;
+      requestAnimationFrame(function () {
+        btn.classList.toggle("show", window.pageYOffset > 400); ticking = false;
+      });
+    });
+  }
+
+  /* ---------------- 自选 Watchlist（成员 + 分组 + 备注） ---------------- */
+  var KEY = "jzh_watchlist";       // 成员：代码数组
+  var META = "jzh_wl_meta";        // 元数据：{ groups:[], items:{code:{group,note}} }
+  function readMeta() {
+    try { var m = JSON.parse(localStorage.getItem(META) || "{}"); m.groups = m.groups || []; m.items = m.items || {}; return m; }
+    catch (e) { return { groups: [], items: {} }; }
+  }
+  function writeMeta(m) { try { localStorage.setItem(META, JSON.stringify(m)); } catch (e) {} }
+
   var Watchlist = {
     list: function () {
-      try { return JSON.parse(localStorage.getItem(KEY) || "[]"); }
-      catch (e) { return []; }
+      try { return JSON.parse(localStorage.getItem(KEY) || "[]"); } catch (e) { return []; }
     },
     has: function (code) { return this.list().indexOf(code) >= 0; },
     add: function (code) {
@@ -120,12 +159,31 @@
     remove: function (code) {
       var l = this.list().filter(function (c) { return c !== code; });
       localStorage.setItem(KEY, JSON.stringify(l));
+      var m = readMeta(); delete m.items[code]; writeMeta(m);
       return l;
     },
     toggle: function (code) {
       if (this.has(code)) { this.remove(code); return false; }
       this.add(code); return true;
-    }
+    },
+    /* 分组 */
+    groups: function () { return ["默认"].concat(readMeta().groups); },
+    addGroup: function (name) {
+      name = (name || "").trim(); if (!name || name === "默认") return false;
+      var m = readMeta(); if (m.groups.indexOf(name) >= 0) return false;
+      m.groups.push(name); writeMeta(m); return true;
+    },
+    removeGroup: function (name) {
+      if (name === "默认") return;
+      var m = readMeta();
+      m.groups = m.groups.filter(function (g) { return g !== name; });
+      Object.keys(m.items).forEach(function (c) { if (m.items[c] && m.items[c].group === name) m.items[c].group = "默认"; });
+      writeMeta(m);
+    },
+    groupOf: function (code) { var it = readMeta().items[code]; return (it && it.group) || "默认"; },
+    setGroup: function (code, name) { var m = readMeta(); m.items[code] = m.items[code] || {}; m.items[code].group = name; writeMeta(m); },
+    noteOf: function (code) { var it = readMeta().items[code]; return (it && it.note) || ""; },
+    setNote: function (code, note) { var m = readMeta(); m.items[code] = m.items[code] || {}; m.items[code].note = note; writeMeta(m); }
   };
   window.Watchlist = Watchlist;
 
@@ -171,4 +229,6 @@
   buildFooter();
   wireSearch();
   wireNavToggle();
+  wireTheme();
+  backToTop();
 })();
