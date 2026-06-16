@@ -25,6 +25,7 @@ class SectorSerializer(serializers.ModelSerializer):
 
 class FundListSerializer(serializers.ModelSerializer):
     manager_name = serializers.CharField(source="manager.name", read_only=True)
+    manager_years = serializers.IntegerField(source="manager.years", read_only=True)
     returns = serializers.SerializerMethodField()
     metrics = serializers.SerializerMethodField()
     age_years = serializers.SerializerMethodField()
@@ -32,9 +33,9 @@ class FundListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Fund
         fields = [
-            "code", "name", "ftype", "risk", "company", "manager_name", "direction",
-            "appetite", "scale", "nav", "acc_nav", "day_change", "rank_pct", "tags",
-            "returns", "metrics", "age_years",
+            "code", "name", "ftype", "risk", "company", "manager_name", "manager_years",
+            "direction", "appetite", "scale", "nav", "acc_nav", "day_change", "rank_pct",
+            "tags", "returns", "metrics", "age_years",
         ]
 
     def get_returns(self, obj):

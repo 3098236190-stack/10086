@@ -142,13 +142,16 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 20,
 }
 
-# CORS：开发期允许本地 Vite 前端跨域访问
+# CORS：开发期允许本地 Vite 前端跨域访问（dev 5173 / preview 4173）
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
+    "http://localhost:5173", "http://127.0.0.1:5173",
+    "http://localhost:4173", "http://127.0.0.1:4173",
 ]
 CORS_ALLOW_CREDENTIALS = True
-CSRF_TRUSTED_ORIGINS = ["http://localhost:5173", "http://127.0.0.1:5173"]
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173", "http://127.0.0.1:5173",
+    "http://localhost:4173", "http://127.0.0.1:4173",
+]
 
 # Simple UI 后台
 SIMPLEUI_HOME_TITLE = "基智汇运营后台"
