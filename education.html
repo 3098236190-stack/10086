@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>投教课堂 · 小白入门 + 进阶提升 | 基智汇</title>
+<meta name="description" content="基金投教知识库：小白入门篇 + 进阶提升篇，体系化学习路径；定投计算器、风险测评等实用工具。本站内容仅为投资者教育，不构成投资建议。">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="edu">
+<div id="site-header"></div>
+
+<section class="page-hero">
+  <div class="wrap">
+    <h1>🎓 投教课堂</h1>
+    <p>把复杂的基金知识讲成大白话。小白看「入门篇」按路径学，进阶看「提升篇」深度提升。本站内容仅为投资者教育，不构成投资建议。</p>
+  </div>
+</section>
+
+<div class="wrap section">
+  <!-- 列表视图 -->
+  <div id="eduListView">
+    <!-- 工具区 -->
+    <div id="tools" class="grid cols-3" style="margin-bottom:24px">
+      <div class="card tool-card t-orange" style="cursor:pointer" id="openCalc">
+        <div class="ic">🧮</div><div class="t">定投计算器</div><div class="d">测算定投到期收益（演示）</div>
+      </div>
+      <div class="card tool-card t-green" style="cursor:pointer" id="openQuiz">
+        <div class="ic">🛡️</div><div class="t">风险承受力测评</div><div class="d">3 分钟看看你属于哪类投资者</div>
+      </div>
+      <a class="card tool-card" href="screener.html?mode=wizard">
+        <div class="ic">🌱</div><div class="t">新手选基向导</div><div class="d">3 步匹配适合你的方向</div>
+      </a>
+    </div>
+
+    <div class="card" style="padding:18px 20px;margin-bottom:22px">
+      <h3 style="font-size:16px;margin-bottom:14px">🌱 小白学习路径（按顺序学最高效）</h3>
+      <div class="learn-path" id="eduPath"></div>
+    </div>
+
+    <div class="section-head"><h2>知识库</h2><span class="sub" id="eduCount"></span></div>
+    <div class="filter-pills" id="eduLevelPills">
+      <span class="pill on" data-level="all">全部</span>
+      <span class="pill" data-level="beginner">🌱 小白入门篇</span>
+      <span class="pill" data-level="advanced">🚀 进阶提升篇</span>
+    </div>
+    <div class="filter-pills" id="eduCatPills"></div>
+    <div class="grid cols-3" id="eduGrid"></div>
+  </div>
+
+  <!-- 文章视图 -->
+  <div id="eduArticleView" class="hide"></div>
+</div>
+
+<!-- 定投计算器 -->
+<div class="modal-mask" id="calcModal">
+  <div class="modal">
+    <div class="modal-head"><h3>🧮 定投计算器</h3><button class="x" data-close>&times;</button></div>
+    <div class="modal-body">
+      <div class="field"><label>每月定投金额（元）</label><input type="number" id="cAmt" value="1000" min="0"></div>
+      <div class="field"><label>定投期限（年）</label><input type="number" id="cYears" value="5" min="1" max="40"></div>
+      <div class="field"><label>预期年化收益率（%）<span class="small muted">假设值，非承诺</span></label>
+        <input type="number" id="cRate" value="6" step="0.5"></div>
+      <button class="btn btn-primary btn-block" id="calcBtn">开始测算</button>
+      <div id="calcOut" class="hide">
+        <div class="calc-result" style="margin-top:16px">
+          <div class="small muted">中性情景 · 预计期末市值</div>
+          <div class="big" id="cFinal">--</div>
+          <div class="small" style="margin-top:6px">累计投入 <b id="cInvest">--</b> · 预计收益 <b id="cProfit" class="up">--</b></div>
+        </div>
+        <div style="margin-top:16px">
+          <div class="flex" style="gap:16px;flex-wrap:wrap;font-size:12px;margin-bottom:6px">
+            <span><span style="display:inline-block;width:14px;height:3px;background:#8a93a0;vertical-align:middle"></span> 累计投入</span>
+            <span><span style="display:inline-block;width:14px;height:3px;background:#2670c9;vertical-align:middle"></span> 谨慎</span>
+            <span><span style="display:inline-block;width:14px;height:3px;background:#00a878;vertical-align:middle"></span> 中性</span>
+            <span><span style="display:inline-block;width:14px;height:3px;background:#ff7a1a;vertical-align:middle"></span> 乐观</span>
+          </div>
+          <div id="calcChart"></div>
+        </div>
+        <div class="disclaimer-inline" style="margin-top:14px">三种情景基于不同假设收益率（中性±3%）模拟，<b>不代表真实收益，市场实际表现会上下波动甚至亏损</b>，可能低于「谨慎」情景。历史业绩不代表未来表现。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 风险测评 -->
+<div class="modal-mask" id="quizModal">
+  <div class="modal">
+    <div class="modal-head"><h3>🛡️ 风险承受力测评</h3><button class="x" data-close>&times;</button></div>
+    <div class="modal-body" id="quizBody"></div>
+  </div>
+</div>
+
+<div id="site-footer"></div>
+
+<script src="js/data.js"></script>
+<script src="js/site.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/education.js"></script>
+</body>
+</html>

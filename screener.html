@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>基金筛选器 · 新手向导 + 进阶专业双模式 | 基智汇</title>
+<meta name="description" content="基金筛选器：新手向导模式 3 步问答智能匹配，进阶专业模式多维度精筛。市场有风险，投资需谨慎。">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="fund">
+<div id="site-header"></div>
+
+<section class="page-hero">
+  <div class="wrap">
+    <div class="flex between items-center" style="flex-wrap:wrap;gap:14px">
+      <div>
+        <h1>🔎 基金筛选器</h1>
+        <p>不会选？用「新手向导」3 步帮你匹配；想精挑？切到「进阶专业」多维度筛选。</p>
+      </div>
+      <div class="mode-switch" id="modeSwitch">
+        <button data-mode="wizard" class="active">🌱 新手向导模式</button>
+        <button data-mode="advanced">⚙️ 进阶专业模式</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap section">
+  <!-- 新手向导 -->
+  <div id="wizardPanel"></div>
+
+  <!-- 进阶专业 -->
+  <div id="advancedPanel" class="hide">
+    <div class="filter-panel">
+      <aside class="card filter-side" id="filterSide"></aside>
+      <div>
+        <div class="card result-bar" id="resultBar" style="margin-bottom:14px"></div>
+        <div class="card" style="padding:0;overflow:auto">
+          <table class="rank-table" id="resultTable"></table>
+        </div>
+        <div id="pager" class="flex" style="justify-content:center;gap:6px;margin-top:16px"></div>
+        <div class="disclaimer-inline" style="margin-top:16px">
+          以上基金数据、收益率、排名、风险指标均为<b>演示数据</b>，不构成任何投资建议。基金有风险，过往业绩及排名不代表未来表现，请结合自身风险承受能力独立决策。
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 对比浮条 -->
+<div class="compare-bar" id="compareBar">
+  <div class="wrap">
+    <b style="white-space:nowrap">基金对比</b>
+    <div class="compare-slots" id="compareSlots"></div>
+    <button class="btn btn-primary" id="compareGo">开始对比</button>
+    <button class="btn btn-sm" id="compareClear">清空</button>
+  </div>
+</div>
+
+<!-- 对比弹窗 -->
+<div class="modal-mask" id="compareModal">
+  <div class="modal" style="max-width:880px">
+    <div class="modal-head"><h3>📊 基金对比（最多 4 只）</h3><button class="x" data-close>&times;</button></div>
+    <div class="modal-body" id="compareBody" style="overflow:auto"></div>
+  </div>
+</div>
+
+<div id="site-footer"></div>
+
+<script src="js/data.js"></script>
+<script src="js/site.js"></script>
+<script src="js/screener.js"></script>
+</body>
+</html>
