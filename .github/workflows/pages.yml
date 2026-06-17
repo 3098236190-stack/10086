@@ -1,0 +1,40 @@
+name: 部署静态站到 GitHub Pages
+
+# 仅发布根目录的「早期静态版」基智汇（零依赖 HTML/CSS/JS）。
+# 全栈版（backend/ + frontend/）需服务端运行，无法由 Pages 托管。
+on:
+  push:
+    branches: ["claude/beautiful-thompson-sl6c4v"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: 组装静态站点（仅根目录静态资源）
+        run: |
+          mkdir -p _site
+          cp *.html .nojekyll _site/
+          cp -r css js _site/
+      - name: 配置 Pages（不存在则自动启用）
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4
