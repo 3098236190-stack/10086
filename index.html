@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>基智汇 · 基金资讯 + 投教门户 | 新手友好 · 进阶够用</title>
+<meta name="description" content="面向理财小白与进阶基民的基金资讯与投资者教育平台：基金数据查询、基金筛选器、投教课堂、策略专栏。市场有风险，投资需谨慎。">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="home">
+<div id="site-header"></div>
+
+<!-- 滚动行情条 -->
+<div class="ticker" id="homeTicker"></div>
+
+<!-- 首屏 Banner -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div class="hero-left">
+        <span class="eyebrow">📚 0 基础也能看懂的基金平台</span>
+        <h1>新手理财入门<br>从<span class="hl">看懂一只基金</span>开始</h1>
+        <p>不懂术语？怕踩坑？这里用大白话带你认识基金，3 步测出适合你的方向，再用数据工具帮你做选择。小白友好，进阶够用。</p>
+        <div class="hero-actions">
+          <a class="btn btn-cta" href="screener.html?mode=wizard">🚀 1 分钟找到适合我的基金</a>
+          <a class="btn btn-ghost" style="color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.4)" href="education.html">先去投教课堂学一学</a>
+        </div>
+        <ul class="hero-steps">
+          <li><b>双梯队</b>投教体系</li>
+          <li><b>双模式</b>选基工具</li>
+          <li><b>全维度</b>基金数据</li>
+        </ul>
+      </div>
+
+      <div class="hero-right">
+        <div class="flex between items-center">
+          <h3>📈 今日大盘概览</h3>
+          <span class="risk-note">数据为演示用途</span>
+        </div>
+        <div class="index-list" id="homeIndices"></div>
+        <div class="disclaimer-inline" style="margin-top:12px">指数行情仅供参考，历史与当前表现均不代表未来走势。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 快捷工具入口 -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>常用工具</h2>
+      <span class="sub">小白找入门入口，进阶直达数据工具</span>
+    </div>
+    <div class="tools-grid">
+      <a class="tool-card" href="screener.html"><div class="ic">🔎</div><div class="t">基金筛选</div><div class="d">双模式选基</div></a>
+      <a class="tool-card t-green" href="screener.html"><div class="ic">💹</div><div class="t">净值查询</div><div class="d">实时净值走势</div></a>
+      <a class="tool-card t-orange" href="education.html#tools"><div class="ic">🧮</div><div class="t">定投计算器</div><div class="d">测算定投收益</div></a>
+      <a class="tool-card t-green" href="education.html#tools"><div class="ic">🛡️</div><div class="t">风险测评</div><div class="d">看看你属哪类</div></a>
+      <a class="tool-card" href="education.html"><div class="ic">🎓</div><div class="t">新手入门</div><div class="d">0 基础学理财</div></a>
+      <a class="tool-card t-orange" href="strategy.html"><div class="ic">🧭</div><div class="t">热门策略</div><div class="d">可复用方法论</div></a>
+    </div>
+  </div>
+</section>
+
+<!-- 投教精选 -->
+<section class="section" style="background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>投教精选</h2>
+      <a class="more" href="education.html">进入投教课堂 →</a>
+    </div>
+    <div class="edu-grid">
+      <a class="edu-feature a" href="education.html?id=e01">
+        <span class="aud">小白入门</span>
+        <div>
+          <h3>基金到底是什么？一个买菜的比喻就讲清</h3>
+          <p>把钱交给专业的人帮你打理，大家一起出钱、分担风险、分享收益——这就是基金。</p>
+        </div>
+      </a>
+      <a class="edu-feature b" href="education.html?id=e07">
+        <span class="aud">小白入门</span>
+        <div>
+          <h3>R1 到 R5，基金的风险等级怎么看？</h3>
+          <p>买之前先看风险等级是否匹配你的承受能力，这是新手最该上的一课。</p>
+        </div>
+      </a>
+    </div>
+
+    <div class="grid cols-2" style="margin-top:16px">
+      <div class="card" style="padding:18px 20px">
+        <div class="flex between items-center" style="margin-bottom:6px">
+          <h3 style="font-size:16px">🌱 小白学习路径</h3>
+          <a class="more" href="education.html">查看全部 →</a>
+        </div>
+        <div class="learn-path" id="homePath"></div>
+      </div>
+      <div class="card" style="padding:18px 20px">
+        <div class="flex between items-center" style="margin-bottom:6px">
+          <h3 style="font-size:16px">🚀 进阶提升精选</h3>
+          <a class="more" href="education.html?level=advanced">更多进阶 →</a>
+        </div>
+        <div class="edu-list" id="homeAdvEdu"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 市场行情 -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>市场行情</h2>
+      <span class="sub">行情与榜单均为演示数据 · 历史业绩不代表未来</span>
+    </div>
+    <div class="grid split-feature">
+      <div class="card" style="padding:0;overflow:hidden">
+        <div class="flex between items-center" style="padding:14px 16px;border-bottom:1px solid var(--line)">
+          <h3 style="font-size:15px">🔥 今日基金涨幅 TOP10</h3>
+          <a class="more" href="screener.html">去筛选 →</a>
+        </div>
+        <table class="rank-table" id="homeTop10"></table>
+      </div>
+      <div class="card" style="padding:16px">
+        <h3 style="font-size:15px;margin-bottom:12px">🏭 热门板块涨幅榜</h3>
+        <div class="sector-list" id="homeSectors"></div>
+        <div class="risk-note" style="margin-top:10px">红涨绿跌为示意，板块表现存在轮动，过往不代表未来。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 资讯要闻 -->
+<section class="section" style="background:#fff;border-top:1px solid var(--line)">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>资讯要闻</h2>
+      <a class="more" href="news.html">更多资讯 →</a>
+    </div>
+    <div class="grid cols-3">
+      <div class="news-col"><h3>📰 基金行业要闻</h3><div id="newsIndustry"></div></div>
+      <div class="news-col"><h3>📢 基金公司公告</h3><div id="newsNotice"></div></div>
+      <div class="news-col"><h3>💡 市场观点解读</h3><div id="newsView"></div></div>
+    </div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<script src="js/data.js"></script>
+<script src="js/site.js"></script>
+<script src="js/home.js"></script>
+</body>
+</html>
